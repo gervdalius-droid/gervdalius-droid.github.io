@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dalius Gervinskas · Tools that fix everyday business headaches</title>
+<meta name="description" content="I run operations at a bespoke furniture company in Vilnius and build the tools that fix its everyday headaches: quoting, cabinet design, production tracking, nesting and CNC programs.">
+<meta name="author" content="Dalius Gervinskas">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dalius Gervinskas · Tools that fix everyday business headaches">
+<meta property="og:description" content="A guided tour of real apps I built and run: quote calculator, cabinet creator, ShopFlow production tracking and board nesting.">
+<meta property="og:url" content="https://gervdalius-droid.github.io/">
+<meta property="og:image" content="https://gervdalius-droid.github.io/img/og.png">
+<link rel="canonical" href="https://gervdalius-droid.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F6F6F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1311" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2323624B'/%3E%3Ctext x='16' y='21' font-family='Arial,sans-serif' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3EDG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: product-site structure. Sticky nav, hero with real app windows, a guided product tour (step list + app window + hotspots), case studies, searchable project index, experience, contact. */
+:root{
+  --bg:#F6F6F3; --surface:#FFFFFF; --sunken:#EEEEEA; --fg:#18201C; --muted:#5E6762; --faint:#8B938E;
+  --line:#E2E3DE; --line-strong:#CDD0CA;
+  --accent:#23624B; --accent-fg:#FFFFFF; --accent-soft:#E3EFE9; --accent-ink:#1B4D3B;
+  --pin:#23624B; --shadow:0 1px 2px rgba(20,30,25,.06),0 8px 24px rgba(20,30,25,.08);
+  --ok:#1E7A4C; --ok-soft:#DFF1E7; --warn:#8A5A00; --warn-soft:#F7EDD6; --info:#2B55C9; --info-soft:#E6ECFB; --neutral-soft:#ECEDE9;
+  --chrome:#ECECE8; --scrim:rgba(14,18,16,.72);
+  --f-sans:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1311; --surface:#161B18; --sunken:#1C221F; --fg:#E7ECE9; --muted:#9BA5A0; --faint:#6E7873;
+  --line:#26302B; --line-strong:#34403A;
+  --accent:#5CC59A; --accent-fg:#0C1A14; --accent-soft:#17302A; --accent-ink:#8BDDB9;
+  --pin:#5CC59A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  --ok:#6FD3A0; --ok-soft:#173226; --warn:#F2BE62; --warn-soft:#332715; --info:#8EAAFF; --info-soft:#1B2540; --neutral-soft:#232A26;
+  --chrome:#1E2421; --scrim:rgba(0,0,0,.8);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1311; --surface:#161B18; --sunken:#1C221F; --fg:#E7ECE9; --muted:#9BA5A0; --faint:#6E7873;
+  --line:#26302B; --line-strong:#34403A;
+  --accent:#5CC59A; --accent-fg:#0C1A14; --accent-soft:#17302A; --accent-ink:#8BDDB9;
+  --pin:#5CC59A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  --ok:#6FD3A0; --ok-soft:#173226; --warn:#F2BE62; --warn-soft:#332715; --info:#8EAAFF; --info-soft:#1B2540; --neutral-soft:#232A26;
+  --chrome:#1E2421; --scrim:rgba(0,0,0,.8);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1200px;margin:0 auto}
+h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.02em;line-height:1.1}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.serif{font-family:var(--f-serif);font-weight:400;font-style:italic;letter-spacing:-.01em}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);font-weight:500;font-size:.9rem;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn.primary:hover{opacity:.88}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunken)}
+.btn.sm{height:32px;padding:0 10px;font-size:.84rem}
+.btn svg{width:16px;height:16px;flex:none}
+.kbd{font-family:var(--f-mono);font-size:.72rem;border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:var(--muted);background:var(--surface)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;text-decoration:none;white-space:nowrap}
+.avatar{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-size:.78rem;font-weight:700;letter-spacing:.02em}
+.navlinks{display:flex;gap:2px;margin-left:8px}
+@media (max-width:1180px){.navlinks a[href="#tour"]{display:none}}
+.navlinks a{text-decoration:none;font-size:.9rem;color:var(--muted);padding:6px 10px;border-radius:6px}
+.navlinks a:hover,.navlinks a.on{color:var(--fg);background:var(--sunken)}
+@media (max-width:520px){.ghl{display:none}}
+.nav .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.avail{display:flex;align-items:center;gap:7px;font-size:.84rem;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+@media (max-width:900px){.navlinks{display:none}.avail{display:none}}
+
+/* hero */
+.hero{padding-block:64px 40px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;align-items:center}
+@media (max-width:980px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+.hero h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:600}
+.hero h1 .serif{font-size:1.08em;color:var(--accent-ink)}
+.hero .lead{font-size:1.12rem;color:var(--muted);max-width:52ch;margin-top:18px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:36px;border-top:1px solid var(--line)}
+.facts div{padding:14px 16px 0 0}
+.facts b{display:block;font-size:1.6rem;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.facts span{font-size:.84rem;color:var(--muted);display:block;line-height:1.35}
+@media (max-width:520px){.facts{grid-template-columns:1fr 1fr}.facts div:last-child{grid-column:1/-1}}
+
+/* app window */
+.win{background:var(--surface);border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.win-bar{display:flex;align-items:center;gap:12px;height:36px;padding:0 12px;background:var(--chrome);border-bottom:1px solid var(--line)}
+.lights{display:flex;gap:6px}
+.lights i{width:10px;height:10px;border-radius:50%;background:var(--line-strong)}
+.url{flex:1;min-width:0;display:flex;justify-content:center}
+.url span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.win img{display:block;width:100%;height:auto;max-width:100%}
+
+.stack{position:relative;aspect-ratio:1.28/1;max-width:100%}
+.stack .win{position:absolute;width:78%;cursor:pointer;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.stack .w1{left:0;top:0;z-index:1}
+.stack .w2{left:11%;top:15%;z-index:2}
+.stack .w3{left:22%;top:30%;z-index:3}
+.stack .win:hover{transform:translateY(-6px)}
+.stack .tagline{position:absolute;z-index:4;left:22%;bottom:-6px;transform:translateY(100%);font-size:.82rem;color:var(--muted);padding-top:10px}
+
+/* sections */
+section.block{padding-block:72px}
+.sec-head{display:flex;flex-wrap:wrap;gap:12px 32px;align-items:end;justify-content:space-between;margin-bottom:28px}
+.sec-head h2{font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:600}
+.sec-head p{color:var(--muted);max-width:56ch;margin-top:10px}
+hr.rule{border:0;border-top:1px solid var(--line);margin:0}
+
+/* tour */
+.tour{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:980px){.tour{grid-template-columns:1fr}}
+.steps{display:grid;gap:4px;position:sticky;top:84px}
+@media (max-width:980px){.steps{position:static;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}}
+.step{display:grid;grid-template-columns:28px 1fr;gap:4px 12px;text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:12px;cursor:pointer;scroll-snap-align:start;position:relative}
+.step:hover{background:var(--sunken)}
+.step[aria-selected="true"]{background:var(--surface);border-color:var(--line-strong);box-shadow:var(--shadow)}
+.step .n{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:var(--f-mono);font-size:.72rem;color:var(--muted);grid-row:span 2}
+.step[aria-selected="true"] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.step .t{font-weight:600;font-size:.95rem}
+.step .s{font-size:.82rem;color:var(--muted);line-height:1.35}
+.step .bar{position:absolute;left:12px;right:12px;bottom:6px;height:2px;border-radius:2px;background:var(--line);overflow:hidden;display:none}
+.step[aria-selected="true"] .bar{display:block}
+.step .bar i{display:block;height:100%;width:0;background:var(--accent)}
+.stage{display:grid;gap:14px;min-width:0}
+.stage-top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.stage-top h3{font-size:1.35rem;font-weight:600}
+.stage-top .app{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.seg{display:inline-flex;background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:2px;gap:2px;max-width:100%;overflow-x:auto}
+.seg button{border:0;background:transparent;border-radius:6px;padding:5px 10px;font-size:.82rem;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.shot{position:relative;background:var(--sunken)}
+.shot img{cursor:zoom-in}
+.shot.portrait{display:flex;justify-content:center;padding:18px}
+.shot.portrait .frame{position:relative;width:min(380px,100%)}
+.shot.portrait img{border-radius:8px;border:1px solid var(--line)}
+.pin{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);background:var(--pin);color:var(--accent-fg);font-family:var(--f-mono);font-size:.75rem;font-weight:500;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .15s}
+.pin::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--pin);opacity:0;animation:ping 2.4s ease-out infinite}
+@keyframes ping{0%{transform:scale(.7);opacity:.7}80%,100%{transform:scale(1.5);opacity:0}}
+.pin:hover,.pin.on{transform:translate(-50%,-50%) scale(1.18)}
+.pin.on::after{animation:none}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.notes{grid-template-columns:1fr}}
+.note{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:default;font-size:.9rem;line-height:1.45}
+.note .k{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-mono);font-size:.7rem}
+.note.on{border-color:var(--accent)}
+.note b{font-weight:600}
+.stage-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.stage-foot .hint{font-size:.8rem;color:var(--faint);display:flex;gap:6px;align-items:center}
+
+/* case studies */
+.cases{display:grid;gap:20px}
+.case{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.case:nth-child(even) .case-media{order:2;border-left:1px solid var(--line);border-right:0}
+@media (max-width:900px){.case{grid-template-columns:1fr}.case:nth-child(even) .case-media{order:0;border-left:0}}
+.case-media{background:var(--sunken);padding:22px;display:grid;gap:10px;border-right:1px solid var(--line);align-content:start;min-width:0}
+.case-media .win img{cursor:zoom-in}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.thumbs button{flex:none;width:92px;border:2px solid transparent;border-radius:7px;padding:0;overflow:hidden;cursor:pointer;background:var(--surface);opacity:.75}
+.thumbs button img{display:block;width:100%;height:auto}
+.thumbs button[aria-pressed="true"]{border-color:var(--accent);opacity:1}
+.case-body{padding:28px;display:grid;gap:18px;align-content:start;min-width:0}
+.case-body h3{font-size:1.5rem;font-weight:600}
+.case-kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-live{background:var(--ok-soft);color:var(--ok)}
+.s-use{background:var(--info-soft);color:var(--info)}
+.s-built{background:var(--neutral-soft);color:var(--muted)}
+.s-prog{background:var(--warn-soft);color:var(--warn)}
+.s-flag{background:var(--accent);color:var(--accent-fg)}
+.s-flag::before{display:none}
+.hl summary{cursor:pointer;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.hl ul{margin:10px 0 0;padding-left:18px;display:grid;gap:6px;font-size:.92rem}
+.case.flag{border-color:var(--accent)}
+.psi{display:grid;gap:12px}
+.psi div{display:grid;grid-template-columns:96px 1fr;gap:12px;font-size:.93rem}
+.psi dt,.psi .lbl{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:3px}
+.metrics{display:flex;flex-wrap:wrap;gap:20px;padding-top:4px;border-top:1px solid var(--line)}
+.metrics div{padding-top:12px}
+.metrics b{display:block;font-size:1.3rem;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.metrics span{font-size:.8rem;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);background:var(--sunken);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.case-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* desktop tools */
+.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+@media (max-width:980px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.tools{grid-template-columns:1fr}}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:10px;align-content:start;grid-template-rows:auto auto 1fr auto}
+.tool h4{font-size:1rem;font-weight:600}
+.tool p{font-size:.88rem;color:var(--muted)}
+.tool .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.tool .ico{width:34px;height:34px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center}
+.tool .ico svg{width:18px;height:18px}
+
+/* deep dives */
+.dive{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:20px}
+.dive.rev .dive-media{order:2}
+@media (max-width:900px){.dive{grid-template-columns:1fr;padding:18px}.dive.rev .dive-media{order:0}}
+.dive-media{display:grid;gap:12px;min-width:0}
+.dive-shot{padding:0;cursor:zoom-in;text-align:left;width:100%}
+.dive-body{display:grid;gap:16px;align-content:start;min-width:0}
+.dive-body h3{font-size:1.5rem;font-weight:600}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem}
+.flow span{background:var(--sunken);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+.flow i{font-style:normal;color:var(--faint)}
+.cncdiag{background:var(--sunken);border:1px solid var(--line);border-radius:12px;padding:14px}
+.cncdiag svg{width:100%;height:auto;display:block}
+/* products */
+.prods{display:grid;gap:20px}
+.prod{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.prod:nth-child(even) .prod-media{order:2;border-left:1px solid var(--line);border-right:0}
+@media (max-width:900px){.prod{grid-template-columns:1fr}.prod:nth-child(even) .prod-media{order:0;border-left:0}}
+.prod-media{background:var(--sunken);padding:20px;display:grid;gap:10px;border-right:1px solid var(--line);min-width:0;align-content:start}
+.prod-body{padding:26px;display:grid;gap:16px;align-content:start;min-width:0}
+.prod-body h3{font-size:1.5rem;font-weight:600}
+.biz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.biz{grid-template-columns:1fr}}
+.biz div{background:var(--sunken);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.biz b{display:block;font-size:.72rem;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:500;margin-bottom:3px}
+.biz span{font-size:.9rem}
+
+/* more tools */
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.more .mcard:last-child:nth-child(3n+1){grid-column:auto}
+@media (max-width:980px){.more{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.more{grid-template-columns:1fr}}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;min-width:0}
+.mcard .thumb{display:block;width:100%;border:0;padding:0;background:var(--sunken);border-bottom:1px solid var(--line);cursor:zoom-in;aspect-ratio:16/10;overflow:hidden}
+.mcard .thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:top left;transition:transform .3s}
+.mcard .thumb:hover img{transform:scale(1.03)}
+.mcard .diagram{aspect-ratio:16/10;background:var(--sunken);border-bottom:1px solid var(--line);display:grid;place-items:center;padding:16px}
+.mcard .diagram svg{width:100%;height:auto;max-height:100%}
+.mcard .body{padding:16px 18px 18px;display:grid;gap:10px;grid-template-rows:auto auto 1fr auto auto;align-content:start}
+.mcard h4{font-size:1.05rem;font-weight:600}
+.mcard .sub{font-size:.8rem;color:var(--muted);font-family:var(--f-mono);margin-top:2px}
+.mcard p{font-size:.9rem;color:var(--muted)}
+.mcard .stat{display:flex;gap:8px;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
+.mcard .stat b{font-size:1.15rem;font-weight:600;font-variant-numeric:tabular-nums}
+.mcard .stat span{font-size:.8rem;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+
+/* project index */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.search{position:relative;flex:1;min-width:220px;max-width:360px}
+.search input{width:100%;height:38px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);padding:0 70px 0 36px;font-size:.9rem}
+.search svg{position:absolute;left:11px;top:11px;width:16px;height:16px;color:var(--faint)}
+.search .kbd{position:absolute;right:10px;top:9px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{height:32px;padding:0 11px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);font-size:.84rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip .c{font-family:var(--f-mono);font-size:.72rem;color:var(--faint)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip[aria-pressed="true"] .c{color:var(--bg);opacity:.7}
+.table{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.row{display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(0,2.4fr) 130px 110px 24px;gap:16px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);text-align:left;width:100%;background:transparent;border-left:0;border-right:0;border-bottom:0;cursor:pointer}
+.row:first-child{border-top:0}
+.row:hover{background:var(--sunken)}
+.row.head{cursor:default;background:var(--sunken);font-family:var(--f-mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-block:8px}
+.row .nm{font-weight:600;font-size:.93rem}
+.row .ds{font-size:.88rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .ar{color:var(--faint);transition:transform .15s}
+.row[aria-expanded="true"] .ar{transform:rotate(90deg)}
+.row .area{font-size:.82rem;color:var(--muted)}
+.detail{padding:4px 16px 16px;border-top:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start;background:var(--sunken)}
+.detail p{font-size:.92rem;max-width:72ch;padding-top:10px}
+.detail .acts{display:flex;gap:8px;padding-top:8px;flex-wrap:wrap}
+@media (max-width:760px){.row{grid-template-columns:minmax(0,1fr) auto 24px}.row .ds,.row .area,.row.head .h-ds,.row.head .h-area{display:none}.detail{grid-template-columns:1fr}}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:.92rem}
+
+/* experience */
+.exp{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:40px}
+@media (max-width:900px){.exp{grid-template-columns:1fr}}
+.roles{display:grid}
+.role{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.role:first-child{border-top:0;padding-top:0}
+.logo{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;font-weight:700;font-size:.8rem;color:var(--muted)}
+.role h4{font-size:1rem;font-weight:600}
+.role .meta{font-size:.84rem;color:var(--muted);margin-top:2px}
+.role ul{margin:10px 0 0;padding-left:18px;display:grid;gap:4px;font-size:.92rem}
+.skills{display:grid;gap:18px}
+.skillgrp h4{font-size:.78rem;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:500;margin-bottom:8px}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:10px}
+.how div{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:.9rem}
+.how svg{width:18px;height:18px;color:var(--accent);margin-top:2px}
+
+/* contact */
+.contact{background:var(--fg);color:var(--bg);border-radius:18px;padding:44px clamp(20px,4vw,48px);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:860px){.contact{grid-template-columns:1fr}}
+.contact h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:600}
+.contact p{opacity:.72;margin-top:12px;max-width:50ch}
+.mailcard{background:color-mix(in srgb,var(--bg) 8%,transparent);border:1px solid color-mix(in srgb,var(--bg) 18%,transparent);border-radius:12px;padding:16px;display:grid;gap:12px}
+.mailcard .addr{font-family:var(--f-mono);font-size:1rem;user-select:all;word-break:break-all}
+.mailcard .row2{display:flex;flex-wrap:wrap;gap:8px}
+.contact .btn{border-color:color-mix(in srgb,var(--bg) 25%,transparent);background:transparent;color:var(--bg)}
+.contact .btn.inv{background:var(--bg);color:var(--fg);border-color:var(--bg)}
+footer{padding-block:28px 40px;font-size:.84rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;display:flex;gap:8px;align-items:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:80;background:var(--scrim);display:grid;grid-template-rows:auto 1fr auto;padding:calc(12px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.lb[hidden],[hidden]{display:none!important}
+.lb-top{display:flex;align-items:center;gap:10px;color:#fff;padding:4px 4px 12px}
+.lb-top .ttl{font-weight:500;font-size:.95rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-top .cnt{font-family:var(--f-mono);font-size:.8rem;opacity:.7}
+.lb-top .sp{flex:1}
+.lb .btn{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
+.lb-view{overflow:auto;display:grid;place-items:center;min-height:0;border-radius:10px}
+.lb-view img{max-width:100%;max-height:100%;border-radius:8px;cursor:zoom-in;background:#fff}
+.lb-view.zoom{place-items:start}
+.lb-view.zoom img{max-width:none;max-height:none;width:auto;cursor:zoom-out}
+.lb-cap{color:rgba(255,255,255,.8);font-size:.88rem;text-align:center;padding-top:10px}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+</style>
+</head>
+<body>
+
+<nav class="nav gut" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="avatar">DG</span><span>Dalius Gervinskas</span></a>
+    <div class="navlinks" id="navlinks">
+      <a href="#tour">Product tour</a>
+      <a href="#apps">Apps</a>
+      <a href="#deep">Deep dives</a>
+      <a href="#products">Products</a>
+      <a href="#projects">All projects</a>
+      <a href="#experience">Experience</a>
+    </div>
+    <div class="right">
+      <a class="btn sm ghost" href="https://github.com/gervdalius-droid" target="_blank" rel="noopener" aria-label="GitHub profile"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg><span class="ghl">GitHub</span></a>
+      <button class="btn sm primary" id="navMail">Copy email</button>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<!-- HERO -->
+<header class="hero gut">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Runs a business · builds the tools it needs</span>
+      <h1 style="margin-top:14px">I turn everyday business headaches into <span class="serif">tools that fix them.</span></h1>
+      <p class="lead">I run operations, sales and project delivery at Dėdės Baldai, a bespoke furniture company in Vilnius. When something keeps costing the team time, like a quote that takes too long, an order nobody can find or a drawing that waits on one person, I build a tool for it. The team now uses those tools every day.</p>
+      <div class="cta">
+        <a class="btn primary" href="#tour">Take the product tour</a>
+        <a class="btn" href="https://gervdalius-droid.github.io/offer/" target="_blank" rel="noopener">Open a live app
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h7v7M13 3 4 12"/></svg></a>
+      </div>
+      <div class="facts">
+        <div><b>26 → 25</b><span>panels to CNC programs in one click, sample kitchen</span></div>
+        <div><b>1,057</b><span>automated tests in ShopFlow, the production tracker</span></div>
+        <div><b>1</b><span>paid CAM licence replaced by my own post-processor</span></div>
+      </div>
+    </div>
+    <div class="stack" aria-label="Screens from three of my apps">
+      <button class="win w1" data-go="0" aria-label="Open the tour at Quote"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Quote calculator</span></span></div><img src="img/offer-quote.webp" alt="Quote calculator: cost to quote breakdown" width="1600" height="1000"></button>
+      <button class="win w2" data-go="4" aria-label="Open the tour at Cut"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Nesting</span></span></div><img src="img/nesting-layout.webp" alt="Nesting: board layout" width="1600" height="1000"></button>
+      <button class="win w3" data-go="2" aria-label="Open the tour at Plan production"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>ShopFlow</span></span></div><img src="img/shopflow-dashboard.webp" alt="ShopFlow: production dashboard" width="1600" height="1000"></button>
+    </div>
+    </div>
+  </div>
+</header>
+
+<hr class="rule">
+
+<!-- TOUR -->
+<section class="block gut" id="tour" aria-labelledby="tourH">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Product tour · real screens</span>
+        <h2 id="tourH" style="margin-top:8px">Follow one kitchen through the shop</h2>
+        <p>Every screen below is a screenshot of my working apps with sample data loaded. The part list exported in step 4 is the same file the nesting app reads in step 5.</p>
+      </div>
+      <button class="btn" id="autoplay" aria-pressed="false">
+        <svg viewBox="0 0 16 16" fill="currentColor" id="apIcon"><path d="M4 2.5v11l9-5.5z"/></svg><span id="apLabel">Autoplay</span></button>
+    </div>
+    <div class="tour">
+      <div class="steps" role="tablist" aria-label="Tour steps" id="steps"></div>
+      <div class="stage" role="tabpanel" id="stage" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- APPS -->
+<section class="block gut" id="apps" aria-labelledby="appsH">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Case studies</span>
+        <h2 id="appsH" style="margin-top:8px">The main tools</h2>
+        <p>ShopFlow and Nesting carry the most weight: production runs through one, every board is cut through the other. All four are public on GitHub as demo builds with no customer data.</p>
+      </div>
+    </div>
+    <div class="cases" id="cases"></div>
+
+    <div style="margin-top:56px" id="more">
+      <span class="eyebrow">More tools</span>
+      <h3 style="font-size:1.35rem;font-weight:600;margin-top:8px">Smaller headaches, same approach</h3>
+      <p class="muted" style="margin-top:8px;max-width:64ch;margin-bottom:20px">Each of these replaced a paper process, a subscription or a manual fix. Click a screen to enlarge it.</p>
+      <div class="more" id="moreGrid"></div>
+    </div>
+
+    <div style="margin-top:56px">
+      <span class="eyebrow">Desktop and machine tools</span>
+      <h3 style="font-size:1.35rem;font-weight:600;margin-top:8px">Behind the screens: CAD and CAM automation</h3>
+      <p class="muted" style="margin-top:8px;max-width:64ch">These run inside SolidWorks or on the engineer's PC rather than in a browser, so there's nothing to screenshot.</p>
+      <div class="tools" id="tools"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- DEEP DIVES -->
+<section class="block gut" id="deep" aria-labelledby="deepH">
+  <div class="wrap">
+    <div class="sec-head"><div>
+      <span class="eyebrow">Deep dives</span>
+      <h2 id="deepH" style="margin-top:8px">Two problems with no off-the-shelf fix</h2>
+      <p>Drawings took the engineer hours and still had mistakes. The CNC's control software was hard to read and had no vendor support. Both needed tools that fit the machines and people we have.</p>
+    </div></div>
+
+    <article class="dive" id="drawings">
+      <div class="dive-media">
+        <button class="win dive-shot" data-lb="bSheet" aria-label="Enlarge the generated drawing"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Generated A3 sheet</span></span></div><img src="img/builder-sheet.webp" alt="Automatically generated A3 manufacturing drawing for one cabinet" width="1800" height="1273" loading="lazy"></button>
+        <div class="flow" aria-label="How a drawing is produced">
+          <span>3D model</span><i>→</i><span>views + dimensions</span><i>→</i><span>parts &amp; hardware tables</span><i>→</i><span>PDF set</span>
+        </div>
+      </div>
+      <div class="dive-body">
+        <div class="case-kicker"><span class="pill s-use">In use</span><span class="eyebrow">Design · Production</span></div>
+        <h3>Automatic manufacturing drawings</h3>
+        <div class="psi">
+          <div><span class="lbl">Problem</span><span>Every cabinet needed a drawing for the shop floor. The engineer drew them by hand in SolidWorks, slowly, and mistakes reached production.</span></div>
+          <div><span class="lbl">Built</span><span>Two generators that make the same kind of sheet with no manual drafting. One is inside the cabinet creator. The other works on full kitchens modelled in SolidWorks.</span></div>
+        </div>
+        <details class="hl" open><summary>What a sheet contains</summary><ul>
+          <li>Front, without-fronts and side views at 1:15, with front dimensions in bold and gaps marked separately</li>
+          <li>Parts table with material and edgebanding, plus a hardware list (runners, legs, connectors)</li>
+          <li>Assembly diagram with numbered balloons that match the parts table</li>
+          <li>Room plan and wall elevations for the whole kitchen, then one sheet per cabinet, as one PDF</li>
+          <li>Colours by role so shop-floor staff read a sheet at a glance. I tested and rejected transparent and wireframe styles as hard to read</li>
+        </ul></details>
+        <div class="metrics"><div><b>13</b><span>sheets generated for a real kitchen</span></div><div><b>A3 / A4</b><span>one-click PDF</span></div><div><b>0</b><span>manual drafting per cabinet</span></div></div>
+        <p class="muted" style="font-size:.88rem">The first SolidWorks version ran on Python and OpenCascade. It wouldn't install on the engineer's PC, so I rebuilt it as a native SolidWorks macro rather than make him fight the setup.</p>
+        <div class="tags"><span class="tag">JavaScript / SVG</span><span class="tag">SolidWorks VBA</span><span class="tag">Python</span><span class="tag">OpenCascade</span></div>
+      </div>
+    </article>
+
+    <article class="dive rev" id="cnc">
+      <div class="dive-media">
+        <div class="cncdiag" role="img" aria-label="Diagram: the new skin replaces the controller's screen images, and NLNCView reads the live position and draws the cut">
+          <svg viewBox="0 0 480 300" font-family="Geist,system-ui,sans-serif">
+            <rect x="10" y="10" width="460" height="280" rx="14" fill="var(--surface)" stroke="var(--line-strong)"/>
+            <text x="28" y="38" font-size="11" fill="var(--muted)" font-family="Geist Mono,monospace">MACHINE PC · WINDOWS XP EMBEDDED · TOUCH ONLY</text>
+            <rect x="28" y="52" width="200" height="214" rx="10" fill="var(--sunken)" stroke="var(--line)"/>
+            <text x="128" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="var(--fg)">Volter NLNC control</text>
+            <text x="128" y="94" text-anchor="middle" font-size="11" fill="var(--muted)">closed, compiled program</text>
+            <rect x="46" y="108" width="164" height="46" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+            <text x="128" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="var(--accent-ink)">New operator skin</text>
+            <text x="128" y="144" text-anchor="middle" font-size="10" fill="var(--accent-ink)">every screen redrawn</text>
+            <rect x="46" y="166" width="164" height="40" rx="8" fill="var(--surface)" stroke="var(--line-strong)"/>
+            <text x="128" y="190" text-anchor="middle" font-size="11" fill="var(--fg)">live X · Y · Z on screen</text>
+            <rect x="46" y="216" width="164" height="36" rx="8" fill="var(--surface)" stroke="var(--line-strong)"/>
+            <text x="128" y="238" text-anchor="middle" font-size="11" fill="var(--fg)">.nc program on D:\</text>
+            <rect x="262" y="52" width="190" height="214" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+            <text x="357" y="76" text-anchor="middle" font-size="13" font-weight="600" fill="var(--accent-ink)">NLNCView</text>
+            <text x="357" y="94" text-anchor="middle" font-size="11" fill="var(--accent-ink)">my companion program, in C</text>
+            <g fill="var(--surface)" stroke="var(--accent)" stroke-width="1"><path d="M290 200 L357 166 L424 200 L357 234Z"/></g>
+            <path d="M310 200 L357 176 L400 198" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+            <circle cx="400" cy="198" r="4" fill="var(--accent)"/>
+            <text x="357" y="254" text-anchor="middle" font-size="10" fill="var(--accent-ink)">3D view of the board being cut</text>
+            <g stroke="var(--accent)" stroke-width="1.5" fill="none" stroke-dasharray="4 3"><path d="M210 186 H262M210 234 H240 V214 H262"/></g>
+            <text x="236" y="180" text-anchor="middle" font-size="9" fill="var(--muted)">reads</text>
+          </svg>
+        </div>
+      </div>
+      <div class="dive-body">
+        <div class="case-kicker"><span class="pill s-use">In use</span><span class="eyebrow">Shop floor · CNC router</span></div>
+        <h3>A new operator interface for an old CNC</h3>
+        <div class="psi">
+          <div><span class="lbl">Problem</span><span>Our CNC router runs closed control software on a touch-only Windows XP PC built into the machine. The screens were hard to read, the vendor gives no support, and the operator couldn't see the program being cut.</span></div>
+          <div><span class="lbl">Built</span><span>A complete new skin for the control software, and a companion program that shows the job live, without changing a single line of the vendor's code.</span></div>
+        </div>
+        <details class="hl" open><summary>How it works</summary><ul>
+          <li>Read the layout of every screen out of the compiled program, so each new button lines up exactly with the touch area it replaces</li>
+          <li>Redrew all screens from one design system and rendered them into the exact image files the software loads: clearer type, higher contrast, tidied English messages</li>
+          <li>NLNCView, a small C program that runs on the old Pentium PC with no runtime. It shows the loaded program over the jog keys and follows the file the operator selects</li>
+          <li>Tracks the tool live by reading the coordinates the controller already shows, then draws the board being carved in 3D in real time</li>
+          <li>Installs with numbered one-tap scripts and an undo, because the machine has no keyboard. It never touches Windows start-up settings after one of them broke boot</li>
+        </ul></details>
+        <div class="metrics"><div><b>0</b><span>changes to the vendor's code</span></div><div><b>XP</b><span>runs on the original machine PC</span></div><div><b>Live</b><span>tool position and 3D cut view</span></div></div>
+        <div class="tags"><span class="tag">C (Win32)</span><span class="tag">Reverse engineering</span><span class="tag">Design system → PNG pipeline</span><span class="tag">Playwright</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PRODUCTS -->
+<section class="block gut" id="products" aria-labelledby="prodH">
+  <div class="wrap">
+    <div class="sec-head"><div>
+      <span class="eyebrow">New products</span>
+      <h2 id="prodH" style="margin-top:8px">Taking the same approach beyond the workshop</h2>
+      <p>Two products I'm building as businesses of their own. Both started from a problem I kept seeing around me.</p>
+    </div></div>
+    <div class="prods" id="prods"></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PROJECTS -->
+<section class="block gut" id="projects" aria-labelledby="projH">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Index</span>
+        <h2 id="projH" style="margin-top:8px">Everything I've built</h2>
+        <p>Workshop systems, product experiments and side projects. Click a row for details.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <label class="search" for="q"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+        <input id="q" type="search" placeholder="Search projects" autocomplete="off" aria-label="Search projects"><span class="kbd">/</span></label>
+      <div class="chips" id="chips" role="group" aria-label="Filter by area"></div>
+    </div>
+    <div class="table" id="table"></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- EXPERIENCE -->
+<section class="block gut" id="experience" aria-labelledby="expH">
+  <div class="wrap exp">
+    <div>
+      <span class="eyebrow">Experience</span>
+      <h2 id="expH" style="margin-top:8px;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:600;margin-bottom:24px">Business first, software second</h2>
+      <div class="roles">
+        <div class="role"><span class="logo">DB</span><div>
+          <h4>Dėdės Baldai · bespoke furniture</h4><div class="meta">Operations and project delivery · Vilnius</div>
+          <ul>
+            <li>Deliver customer projects end to end, from first quote to install</li>
+            <li>Manage B2B partners and negotiate with suppliers; sell directly</li>
+            <li>Designed, built and support the workshop's software: quoting, CRM, production tracking, nesting, CAD/CAM automation</li>
+          </ul></div></div>
+        <div class="role"><span class="logo">MG</span><div>
+          <h4>Modus Group (Autobrava) · automotive distribution</h4><div class="meta">Product → product development → sales development · Baltics</div>
+          <ul>
+            <li>Progressed through product, product development and sales development roles</li>
+            <li>Worked across dealerships in the Baltic states</li>
+          </ul></div></div>
+        <div class="role"><span class="logo">VU</span><div>
+          <h4>Vilnius University</h4><div class="meta">BSc Business Information Management · 2013–2017</div></div></div>
+      </div>
+    </div>
+    <div class="skills">
+      <div class="skillgrp"><h4>Operations</h4><div class="tags"><span class="tag">Project delivery</span><span class="tag">Production planning</span><span class="tag">Supplier negotiation</span><span class="tag">B2B partnerships</span><span class="tag">Direct sales</span><span class="tag">Costing and pricing</span></div></div>
+      <div class="skillgrp"><h4>Product and build</h4><div class="tags"><span class="tag">JavaScript</span><span class="tag">HTML / CSS</span><span class="tag">Supabase</span><span class="tag">Python</span><span class="tag">OpenCascade</span><span class="tag">SolidWorks VBA</span><span class="tag">Excel / XLSM</span><span class="tag">Web Workers</span><span class="tag">WebAssembly (Rust)</span><span class="tag">three.js</span><span class="tag">PWA / IndexedDB</span></div></div>
+      <div class="skillgrp"><h4>The business I build for</h4><div class="tags"><span class="tag">SWOOD Design</span><span class="tag">SCM Xilog .XXL</span><span class="tag">G-code</span><span class="tag">DXF / STEP</span><span class="tag">Nesting</span><span class="tag">Blum hardware</span></div></div>
+      <div class="skillgrp"><h4>Languages</h4><div class="tags"><span class="tag">Lithuanian · native</span><span class="tag">English · fluent</span></div></div>
+      <div class="how">
+        <span class="eyebrow">How I work</span>
+        <div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.5 3 3 7-7"/></svg><span>I build next to the people who use the tool. Workshop staff and the engineer test every release.</span></div>
+        <div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.5 3 3 7-7"/></svg><span>Offline first. The shop's internet drops and a saw doesn't stop for it, so data lives in the browser and cloud sync is optional.</span></div>
+        <div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.5 3 3 7-7"/></svg><span>Decisions backed by the business's own data, like the 1,284 real programs behind the XXL rotation rule.</span></div>
+        <div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.5 3 3 7-7"/></svg><span>Plain web apps with no build step, so anyone can open them on any PC in the workshop.</span></div>
+        <div><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.5 3 3 7-7"/></svg><span>I use AI coding assistants heavily. That's how one person ships this much while running a business.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="gut" style="padding-block:24px 0" aria-labelledby="contactH">
+  <div class="wrap">
+    <div class="contact" id="contact">
+      <div>
+        <h2 id="contactH">Like to see how these were built?</h2>
+        <p>I'm happy to walk you through any of these apps live: the problem behind it, how it's used day to day, and what I'd do next.</p>
+      </div>
+      <div class="mailcard">
+        <span class="eyebrow" style="color:inherit;opacity:.7">Email</span>
+        <span class="addr" id="addr">dalius.gervinskas@gmail.com</span>
+        <div class="row2">
+          <button class="btn inv" id="copyMail">Copy email</button>
+          <a class="btn" href="https://github.com/gervdalius-droid" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+          <a class="btn" href="https://gervdalius-droid.github.io/shopflow/" target="_blank" rel="noopener">ShopFlow demo ↗</a>
+          <a class="btn" href="https://gervdalius-droid.github.io/nesting/" target="_blank" rel="noopener">Nesting demo ↗</a>
+          <a class="btn" href="https://gervdalius-droid.github.io/offer/" target="_blank" rel="noopener">Quote app ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="gut"><div class="wrap" style="display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;width:100%"><span>Dalius Gervinskas · Vilnius, Lithuania</span><span>Screens use sample data. No customer data. · <a href="https://github.com/gervdalius-droid" target="_blank" rel="noopener">github.com/gervdalius-droid</a></span></div></footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbTitle">
+  <div class="lb-top">
+    <span class="ttl" id="lbTitle"></span><span class="cnt" id="lbCount"></span><span class="sp"></span>
+    <button class="btn sm" id="lbPrev" aria-label="Previous screen">←</button>
+    <button class="btn sm" id="lbNext" aria-label="Next screen">→</button>
+    <button class="btn sm" id="lbZoom">Zoom</button>
+    <button class="btn sm" id="lbClose" aria-label="Close">Close <span class="kbd" style="color:inherit;background:transparent;border-color:rgba(255,255,255,.3)">Esc</span></button>
+  </div>
+  <div class="lb-view" id="lbView"><img id="lbImg" alt=""></div>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- data: real screens + hotspots (x/y in % of the image) ---------- */
+const S={
+ offerCab:{src:"img/offer-cabinet.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/offer",cap:"Quote calculator · cabinet editor"},
+ offerQuote:{src:"img/offer-quote.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/offer",cap:"Quote calculator · cost to quote"},
+ offerQuick:{src:"img/offer-quick.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/offer",cap:"Quote calculator · quick estimate by kitchen run"},
+ bCab:{src:"img/builder-cabinet.webp",w:1600,h:1000,url:"Cabinet creator",cap:"Cabinet creator · cabinet editor with live 3D"},
+ bNoFront:{src:"img/builder-nofronts.webp",w:1600,h:1000,url:"Cabinet creator",cap:"Cabinet creator · fronts hidden to check drawers"},
+ bFurn:{src:"img/builder-furniture.webp",w:1600,h:1000,url:"Cabinet creator",cap:"Cabinet creator · room layout"},
+ bParts:{src:"img/builder-parts.webp",w:1600,h:1000,url:"Cabinet creator",cap:"Cabinet creator · part list and CNC programs"},
+ bPanel:{src:"img/builder-panel.webp",w:920,h:1386,url:"Cabinet creator",cap:"Cabinet creator · one panel's drilling view",portrait:true},
+ bDraw:{src:"img/builder-drawings.webp",w:1600,h:1000,url:"Cabinet creator",cap:"Cabinet creator · drawing sheets"},
+ bSheet:{src:"img/builder-sheet.webp",w:1800,h:1273,url:"Cabinet creator · Sheet 3/5",cap:"Generated A3 manufacturing drawing"},
+ nLay:{src:"img/nesting-layout.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/nesting",cap:"Nesting · board layout"},
+ nExp:{src:"img/nesting-export.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/nesting",cap:"Nesting · export files"},
+ sfDash:{src:"img/shopflow-dashboard.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · manager dashboard"},
+ sfList:{src:"img/shopflow-orders.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · orders list"},
+ sfTime:{src:"img/shopflow-timeline.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · timeline"},
+ sfOrder:{src:"img/shopflow-order.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · order details"},
+ sfWork:{src:"img/shopflow-mywork.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · worker tablet, My Work"},
+ sfScan:{src:"img/shopflow-scan.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/shopflow",cap:"ShopFlow · scan station"},
+ cabStudio:{src:"img/cabinet-studio.webp",w:1600,h:1000,url:"Cabinet Studio",cap:"Cabinet Studio · room in 3D with the generated cabinet drawing"},
+ cad:{src:"img/cad.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/cad",cap:"Browser CAD · 2.5D drawing with DXF export"},
+ ccPhones:{src:"img/crewcal-phones.webp",w:1600,h:1000,url:"CrewCal · phone",cap:"CrewCal · calendar, events and members on a phone (sample group)"},
+ ccDesk:{src:"img/crewcal-desktop.webp",w:1600,h:1000,url:"CrewCal",cap:"CrewCal · desktop with the group sidebar (sample group)"},
+ wlHome:{src:"img/worxlead-home.webp",w:1600,h:1000,url:"worxlead.lt",cap:"WorxLead · home page"},
+ wlTrades:{src:"img/worxlead-trades.webp",w:1600,h:1000,url:"worxlead.lt",cap:"WorxLead · how it works and trades"},
+ wlTrust:{src:"img/worxlead-trust.webp",w:1600,h:1000,url:"worxlead.lt",cap:"WorxLead · why clients can trust it"},
+ xxl:{src:"img/xxl-fix.webp",w:1600,h:1100,url:"XXL Axis Fixer",cap:"XXL Axis Fixer · rotates CNC programs to fit the machine"},
+ inv:{src:"img/invoices.webp",w:1600,h:1000,url:"gervdalius-droid.github.io/invoices",cap:"Invoicing · buyer search over the Lithuanian company register"}
+};
+const PRODS=[
+ {name:"CrewCal",status:"prog",tag:"Group calendar · PWA",views:["ccPhones","ccDesk"],
+  pitch:"See when your whole group is free, without the 40-message chat.",
+  problem:"Planning anything with a group of friends or a crew means chasing everyone for dates in a chat. Nobody sees the whole picture.",
+  built:"A shared calendar where each person taps the days they're busy. The group sees free days at a glance, shares events, splits costs and searches for things to do with AI.",
+  hl:["Tap a day to mark it busy or free. Everyone's availability merges into one view","Shared events with Going / Busy replies, and a daily brief of who is free","AI event and place search through Gemini. The API key stays on the server in a Supabase Edge Function","Expense splitting for trips, .ics export to Google, Apple or Outlook calendars","Invite by group code, with admin approval before anyone joins. Syncs live across devices, installs as an app"],
+  biz:[["Who it's for","Friend groups, sports teams, small crews"],["Model","Free core, paid AI searches (in the app now)"],["Stage","Working app, private beta"]],
+  stack:["JavaScript","PWA","Supabase","Edge Functions","Gemini API"]},
+ {name:"WorxLead",status:"prog",tag:"Marketplace · Lithuania",views:["wlHome","wlTrades","wlTrust"],
+  pitch:"Describe the job in two minutes. Get up to five offers from verified contractors.",
+  problem:"Finding a reliable contractor in Lithuania means calling around, and lead sites sell one request to dozens of companies, so the client's phone never stops.",
+  built:"A request platform where the client describes the job with questions adapted to the trade. Only verified contractors in that trade and region see it, and at most five can unlock the contact details.",
+  hl:["12 trades, from architects and plumbing to furniture and renewable energy, each with its own request form","Contacts stay private until a contractor unlocks them. A request is never sold to more than five","Every company checked against registry, tax and social-security data before it can join","Price calculator gives an indicative market range, so clients can judge the offers they get","Lithuanian and English, light and dark themes. Deploys automatically from GitHub to hosting"],
+  biz:[["Who pays","Contractors, per unlocked request"],["Price","From €16 per lead, no commission"],["Stage","Launching on worxlead.lt"]],
+  stack:["HTML / CSS / JS","SEO","Git deploy","Ads campaign"],repo:"worxlead"}
+];
+const MORE=[
+ {k:"cabStudio",n:"Cabinet Studio",sub:"Kitchen designer",p:"Customer kitchen planners make a pretty picture and a price. The workshop needs the drawing. This does both from one 3D model.",st:["3D","room view and shop drawing from the same model"],repo:"cabinet-studio"},
+ {k:"cad",n:"Browser CAD",sub:"2.5D drawing to DXF",p:"The capable free CAD tools are licensed for non-commercial use only. This draws one-off parts precisely and exports DXF the router accepts, flagging open contours in red.",st:["72","automated checks"],repo:"cad",live:"https://gervdalius-droid.github.io/cad/draft.html"},
+ {k:"xxl",n:"XXL Axis Fixer",sub:"CNC program rotation",p:"Someone rotated CNC programs by hand every day. I checked 1,284 real programs to prove the rule was safe, then automated it.",st:["1,284","real programs analysed"],repo:"xxl-fix"},
+ {k:"inv",n:"Invoicing",sub:"Offline, with company search",p:"Typing buyer details off a scrap of paper is the slow part. Type three letters and the company's codes and address fill in from an offline register.",st:["233,000","companies searchable offline"],repo:"invoices",live:"https://gervdalius-droid.github.io/invoices/"},
+ {k:null,n:"Hub",sub:"One system out of several apps",p:"The apps grew one problem at a time, each with its own idea of a customer. Hub links a quote to its production order and invoice, sharing one customer.",st:["3 → 1","apps sharing one customer record"],repo:"hub",live:"https://gervdalius-droid.github.io/hub/"}
+];
+const TOUR=[
+ {t:"Quote",s:"Price the job while the client is still in the room",app:"Quote calculator",views:[
+   {k:"offerCab",l:"Cabinet editor",pins:[
+     [21,52.8,"Stacked sections","A cabinet is built from drawers, doors, oven and shelf sections, top to bottom."],
+     [82,47,"Live sketch","The drawing redraws on every change, so the client sees what they're buying."],
+     [62,48,"Height check","Sections must add up to the carcass height. “Fill” takes whatever is left."],
+     [90,9,"Always-on totals","Cost and the VAT-inclusive quote stay pinned in the header."]]},
+   {k:"offerQuote",l:"Cost → quote",pins:[
+     [72,45,"Every cost line","Material, waste, defects, fasteners, depreciation and design time, each one visible."],
+     [72,79,"Margin on full cost","Margin is applied after labour and overheads. This fixed a pattern of under-quoting."],
+     [13,40,"Rates per project","Project type and VAT zone drive the rates."]]},
+   {k:"offerQuick",l:"Quick estimate",pins:[
+     [27,33,"Kitchen runs","For a first call: enter runs in metres instead of individual cabinets."],
+     [84,17,"Ballpark in seconds","Same cost model as the detailed quote, so the two agree."]]}
+ ]},
+ {t:"Design",s:"Turn the quote into a buildable kitchen",app:"Cabinet creator",views:[
+   {k:"bCab",l:"Cabinet",pins:[
+     [75,45,"Live 3D model","Real panels, Blum runners and legs. Drag to orbit, open the drawers with the slider."],
+     [30,11.3,"Five steps","Size, sections, CNC operations, materials, extras. Built for workshop staff, not just the engineer."],
+     [7,24,"Whole kitchen","Every cabinet in the project. A yellow dot means something needs a look."],
+     [70,19.4,"Checking views","Without fronts, connectors and underside views to check joinery before cutting."]]},
+   {k:"bNoFront",l:"Without fronts",pins:[
+     [72,47,"Drawer boxes","Tandembox drawers shown at their real positions with fronts removed."]]},
+   {k:"bFurn",l:"Room layout",pins:[
+     [47,45,"Place on walls","Cabinets snap to wall ends, corners and neighbours."],
+     [87.5,49,"Collision check","Warns when cabinets overlap or don't fit the wall."],
+     [8,40,"Templates","Drawer, door, wall, tall-with-oven and dishwasher starting points."]]}
+ ]},
+ {t:"Plan production",s:"See every order, station and person at a glance",app:"ShopFlow",views:[
+   {k:"sfDash",l:"Dashboard",pins:[
+     [65.5,9.6,"What needs action","Open, due, overdue, short on material and ready to ship, in one row."],
+     [57.5,35,"Production flow","Live count of jobs at every station, from cutting to packing."],
+     [31,57.6,"Needs attention","Blocked and overdue orders plus low stock, with the reason."],
+     [77.5,3.2,"Import SWOOD","Creates orders and tasks straight from the engineer's part list."]]},
+   {k:"sfList",l:"Orders",pins:[
+     [66,9.4,"Five views","List, board, timeline, calendar and workload, like Monday or ClickUp."],
+     [71.5,28,"Piece progress","Workers report pieces per task, so progress is real, not guessed."],
+     [92.5,28,"Status at a glance","Blocked, paused, shipped: every state is a coloured pill."],
+     [80,9.4,"Two kinds of work","Production orders and engineering projects, each with its own stages."]]},
+   {k:"sfTime",l:"Timeline",pins:[
+     [62.5,28,"Gantt per order","Bars run from order date to due date, filled by progress."],
+     [86.9,50,"Reschedule by dragging","Drag a bar's end to move the due date. Every change is logged with who made it."]]},
+   {k:"sfOrder",l:"Order details",pins:[
+     [82,23.2,"Material shortage","Linked stock shows what's missing before it stops the job."],
+     [82,17,"Project files","Opens the project's OneDrive folder in one click."],
+     [82,68.6,"Parallel routing","Fronts and carcass move through their own stations, then merge for assembly."]]}
+ ]},
+ {t:"Parts, CNC & drawings",s:"One click from cabinets to machine files",app:"Cabinet creator",views:[
+   {k:"bParts",l:"Part list",pins:[
+     [16,14.4,"Counted for you","3 cabinets → 26 parts, 25 programs, 5.6 m² of board, 23.3 m of edging."],
+     [65.3,11.3,"One ZIP","Every .XXL program, the .xlsm list for nesting, a CSV and the project file."],
+     [14,23.7,"Pre-flight check","Project name, materials and programs are checked before anything reaches the machine."],
+     [57,50.4,"Program per panel","Each panel gets its own program. A second one (2OP) is added when both faces need drilling."]]},
+   {k:"bPanel",l:"One panel",pins:[
+     [9.2,85.6,"Machine origin","X0 Y0 shown as the CNC sees the panel."],
+     [38.8,50.5,"Runner markings","Ø5 marks for drawer runners, placed by the same rules as the SolidWorks post."],
+     [11,63.9,"Edge bores","Horizontal bores into the edge for connectors."],
+     [50,26,"Edgebanding","Click an edge to toggle banding. The label uses the same picture."]]},
+   {k:"bSheet",l:"Drawing",pins:[
+     [10,20,"Dimensioned views","Front, without-fronts and side views at 1:15."],
+     [27,47.7,"Parts and hardware","Part table with materials and edges, plus Blum hardware counts."],
+     [77,47,"Assembly diagram","Exploded view with numbered balloons that match the part table."],
+     [77,90.6,"Title block","Project, sheet number, scale and date filled in automatically."]]},
+   {k:"bDraw",l:"All sheets",pins:[
+     [37,24,"Whole set at once","Room layout, wall elevations and one sheet per cabinet, A3 or A4, one PDF."]]}
+ ]},
+ {t:"Cut",s:"Nest parts on boards, print labels",app:"Nesting",views:[
+   {k:"nLay",l:"Board layout",pins:[
+     [24.5,51,"Reads the export","The .xlsm list from the previous step: 26 parts, 2 materials and 23 CNC op IDs, picked up automatically."],
+     [68,72,"Editable layout","Placed with kerf and edge trim. Drag to adjust, R to rotate."],
+     [73,30.4,"Yield at a glance","Sheets, parts, efficiency and waste update with every change."],
+     [24.6,93.6,"Layout versions","Save and compare versions before cutting."]]},
+   {k:"nExp",l:"Export",pins:[
+     [69,53,"Machine files","One DXF per board for the router, plus a cut report."],
+     [81.5,41.3,"Uses real stock","Reserves boards from the warehouse, then confirms what was cut."]]}
+ ]},
+ {t:"Shop floor",s:"Workers report progress from a shared tablet",app:"ShopFlow",views:[
+   {k:"sfWork",l:"My Work",pins:[
+     [47,24.7,"Live timer","The running job with time spent against the estimate."],
+     [76.5,24.7,"Pieces done","Tap + or − as pieces are finished. The next station unlocks as pieces arrive."],
+     [76.5,35.5,"Big targets","Pause, Problem and Done are sized for gloves and a shared tablet."],
+     [76.5,68,"Up next","Queue sorted by priority and due date. Starting a job pauses the last one."]]},
+   {k:"sfScan",l:"Scan station",pins:[
+     [42.6,20.3,"Scan the label","A scanner or camera reads the part's QR label and advances it through the station."],
+     [86,14.7,"Per-machine kiosk","Each machine gets its own device and live count of pieces today."]]}
+ ]}
+];
+const CASES=[
+ {name:"ShopFlow",repo:"shopflow",status:"live",flag:true,tag:"Production · Tracking · Shop floor",views:["sfDash","sfList","sfTime","sfOrder","sfWork","sfScan"],tour:2,
+  problem:"MRP tools like MRPEasy charge per seat, assume a straight-line routing and expect everyone at a computer with reliable wifi. A furniture shop has parallel work, one shared tablet and wifi that drops.",
+  built:"A production tracker built around how the shop really works: fronts and carcass made in parallel lanes that merge, piece-by-piece progress, PIN sign-in on a shared tablet, QR scan stations, and everything working offline.",
+  impact:"The system it comes from runs daily in the workshop. This public demo ships with a fictional workshop and no customer data.",
+  metrics:[["1,057","in-browser tests"],["~31k","lines of code"],["Offline","installable app"]],
+  stack:["JavaScript","PWA","Supabase sync","QR / barcode"],live:"https://gervdalius-droid.github.io/shopflow/",hl:["Parallel routing: fronts and carcass move through their own stations and merge for assembly. Ordering 12 cabinets creates every task automatically","Piece-by-piece progress, so the next station unlocks as pieces arrive, not when a whole batch is done","Five project views: list, Monday-style board, Gantt timeline, calendar and per-person workload","Engineering projects with their own stages: brief, measurement, design, client approval, CNC programs, handoff","Warehouse linked to orders, with shortage warnings before material stops a job","Worker tablet mode with PIN sign-in, big Start/Pause/Done targets and QR scan stations per machine","Every change logged with who made it and when. Works offline, syncs when the internet is back"],note:"Demo sign-in: Eglė, PIN 5678 (manager) · Andrius, PIN 1111 (worker)"},
+ {name:"Nesting",repo:"nesting",status:"live",flag:true,tag:"Cutting · Labels · Stock",views:["nLay","nExp"],tour:4,
+  problem:"Cutting plans were done by hand or in CAM software sold per seat per month, which still couldn't read our files without a workaround.",
+  built:"Reads SWOOD and cabinet creator part lists, CSV and DXF. Rectangle packing for panels, true-shape nesting for curved parts, Zebra labels with a QR code per CNC program.",
+  impact:"Every board cut in the workshop goes through it. It also reserves and confirms stock in the warehouse.",
+  metrics:[["~17k","lines of code"],["2","nesting engines"],["4","import formats"]],
+  stack:["JavaScript","Web Workers","WebAssembly","DXF","ZPL","Supabase"],live:"https://gervdalius-droid.github.io/nesting/",hl:["Reads what the shop already produces: SWOOD project files, the cabinet creator export, CSV lists and shaped parts from DXF. Boards are created from the materials automatically","Two engines: fast strip packing for rectangular panels, and a Rust true-shape engine compiled to WebAssembly and run on several threads for curved parts","Machine routing per sheet: CNC, saw or both, with kerf and edge trim","Zebra thermal labels with one QR code per CNC program, so the operator scans the part to load its program","Reserves boards in the warehouse, then confirms and recalculates stock after cutting","Layout versions you can compare, edit by hand and save. ~17,000 lines"]},
+ {name:"Quote calculator",repo:"offer",status:"live",tag:"Sales · Costing",views:["offerCab","offerQuote","offerQuick"],tour:0,
+  problem:"The quick and detailed estimates disagreed, and kitchens were being quoted too low.",
+  built:"One cost model behind both a detailed cabinet-by-cabinet quote and a quick estimate by kitchen run, with a live sketch, cloud sync and a client PDF.",
+  impact:"Margin now applies to the full cost, so quotes stopped coming in under cost. Sales use it in client meetings.",
+  metrics:[["38","releases"],["2","quote modes, one model"],["PDF","client quote"]],
+  stack:["JavaScript","SVG","Supabase"],live:"https://gervdalius-droid.github.io/offer/"},
+ {name:"Cabinet creator",repo:"builder",status:"prog",tag:"Design · Parts · CNC · Drawings",views:["bCab","bFurn","bParts","bSheet"],tour:1,
+  problem:"Every cabinet waited on the engineer and SolidWorks, even simple ones. That held up production for days.",
+  built:"A browser app any workshop employee can use. Size and sections in, then a part list, .XXL programs that match the SolidWorks post-processor, and A3 drawings out.",
+  impact:"Simple cabinets no longer queue for the engineer. The export feeds straight into the nesting app.",
+  metrics:[["26 → 25","parts to programs, sample"],["5","drawing sheets, auto"],["1 ZIP","everything for the machine"]],
+  stack:["JavaScript","3D","SVG","XLSM export"]}
+];
+const TOOLS=[
+ {n:"step2xxl",st:"use",d:"Reads STEP panels exported from SolidWorks and writes .XXL drilling programs for our SCM CNC. Checked against the paid CAM output.",k:["Python","OpenCascade"],i:'<path d="M3 13V5l5-3 5 3v8l-5 3z"/><path d="M8 8v8M3 5l5 3 5-3"/>'},
+ {n:"DB_PartList",st:"prog",d:"Builds the cut list straight from the assembly in the exact workbook layout the nesting app and label printer expect.",k:["SolidWorks VBA","Excel"],i:'<path d="M3 4h12M3 9h12M3 14h8"/>'}
+];
+const GH="https://github.com/gervdalius-droid/";
+const AREAS={ops:"Operations",cad:"CAD / CAM",product:"Product",side:"Side projects"};
+const ST={live:["Live","s-live"],use:["In use","s-use"],built:["Built","s-built"],prog:["In progress","s-prog"]};
+const PROJ=[
+ {n:"Quote calculator",a:"ops",st:"live",d:"Detailed and quick furniture quotes with a live sketch and cloud sync.",x:"38 releases. Unified two cost models that disagreed and fixed systematic under-quoting.",l:"https://gervdalius-droid.github.io/offer/",r:"offer",go:"apps"},
+ {n:"Cabinet creator",a:"cad",st:"prog",d:"Cabinet design to part list, CNC programs and drawings, for workshop staff.",x:"Built so simple cabinets don't wait for the engineer. Exports the same .xlsm the nesting app reads.",r:"builder",go:"apps"},
+ {n:"ShopFlow",a:"ops",st:"live",d:"Production tracking: parallel routings, piece progress, shop-floor tablet, scan stations.",x:"Manager dashboard with five project views, warehouse with shortage warnings, PIN sign-in, QR scan stations and offline mode. ~31,000 lines, 1,057 in-browser tests.",l:"https://gervdalius-droid.github.io/shopflow/",r:"shopflow",go:"apps"},
+ {n:"Nesting",a:"cad",st:"live",d:"Board nesting, true-shape nesting, labels and stock reservation.",x:"Rectangle packing plus a Rust/WebAssembly true-shape engine. Prints Zebra labels with one QR code per CNC program. ~17,000 lines.",l:"https://gervdalius-droid.github.io/nesting/",r:"nesting",go:"apps"},
+ {n:"Invoicing",a:"ops",st:"live",d:"Offline invoicing with a search over 233,000 Lithuanian companies.",x:"VAT invoices, waybills and UBL e-invoices. The company register is pre-built into a compressed file and searched locally. 28 checks.",l:"https://gervdalius-droid.github.io/invoices/",r:"invoices",go:"more"},
+ {n:"Hub",a:"ops",st:"live",d:"Links quote, production order and invoice through one customer.",x:"Mounts the separate apps on one origin and adds a shared customer record and document index, without rewriting the apps.",l:"https://gervdalius-droid.github.io/hub/",r:"hub",go:"more"},
+ {n:"Cabinet Studio",a:"cad",st:"built",d:"Kitchen designer that outputs the shop drawing.",x:"Room plan, front and 3D views on three.js. The same model generates the dimensioned cabinet drawing.",r:"cabinet-studio",go:"more"},
+ {n:"Browser CAD",a:"cad",st:"live",d:"2.5D CAD in a browser tab with DXF export.",x:"Snapping, typed numeric entry, fillet, chamfer, trim and offset. Open contours are flagged before they reach CAM. ~1,800 lines, 72 checks.",l:"https://gervdalius-droid.github.io/cad/draft.html",r:"cad",go:"more"},
+ {n:"XXL Axis Fixer",a:"cad",st:"use",d:"Rotates CNC programs so they fit the machine. Removed a daily manual fix.",x:"Rule proven on 1,284 real machine programs before automating it. 66 checks.",r:"xxl-fix",go:"more"},
+ {n:"step2xxl",a:"cad",st:"use",d:"STEP panels to .XXL CNC programs. Replaced a paid CAM licence.",x:"Python and OpenCascade. One SolidWorks macro exports 100+ kitchen panels and runs it. Shipped to the engineer as a self-testing installer with a PDF guide."},
+ {n:"Automatic drawings",a:"cad",st:"use",d:"Manufacturing drawings generated from the 3D model, no manual drafting.",x:"Views, dimensions, parts and hardware tables, assembly diagram and title block on every sheet. 13 sheets generated for a real kitchen.",go:"drawings"},
+ {n:"CNC operator interface",a:"cad",st:"use",d:"New skin and a live program view for an old CNC controller.",x:"Reverse-engineered the screen layouts, redrew every screen, and wrote a C companion program that tracks the tool live and draws the cut in 3D.",go:"cnc"},
+ {n:"DB_PartList",a:"cad",st:"prog",d:"Cut list straight from the SolidWorks assembly.",x:"Replaces a report that crashed the PC, while keeping the exact workbook layout downstream tools expect."},
+ {n:"CRM",a:"ops",st:"built",d:"Clients, pipeline, projects and tasks with activity logging.",x:"Same look as the quote app so the team switches between them without retraining."},
+ {n:"Cost spreadsheet audit",a:"ops",st:"built",d:"Found €900+ of costs silently reading as zero.",x:"Traced broken cross-sheet links, circular references and a mislabelled margin, then rebuilt it as a nine-sheet cost template."},
+ {n:"3D G-code viewer",a:"cad",st:"built",d:"Toolpath preview with material-removal simulation.",x:"Built for a CNC router whose own software has no usable preview."},
+ {n:"template2dxf",a:"cad",st:"built",d:"Photo of a cardboard template to a clean DXF.",x:"Uses AI background removal to trace templates for one-off shaped parts."},
+ {n:"WorxLead",a:"product",st:"prog",d:"Marketplace connecting clients with verified contractors.",x:"Clients get up to five offers; contractors pay per unlocked request, no commission. Launching on worxlead.lt.",r:"worxlead",go:"products"},
+ {n:"CrewCal",a:"product",st:"prog",d:"Shared calendar showing when the whole group is free.",x:"Busy/free days merged across a group, shared events, cost splitting and AI event search. Private beta.",go:"products"},
+ {n:"Camper van kit configurator",a:"product",st:"prog",d:"Vehicle to compatible designs, options, bill of materials.",x:"Catalogue-driven configurator for flat-pack plywood camper kits shipped from Vilnius."},
+ {n:"Faber suite",a:"product",st:"built",d:"Packaging the workshop tools as one SaaS product.",x:"Explored shared auth and entitlements, Stripe billing and Cloudflare Pages hosting.",r:"faber"},
+ {n:"Cards",a:"side",st:"built",d:"Loyalty cards on your phone, offline, with barcode display.",x:"Scans a physical card with the camera, supports every common barcode format, installs to the home screen. No account, no server.",r:"wallet"}
+];
+
+/* ---------- toast + copy ---------- */
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2200)}
+function copyMail(){const a="dalius.gervinskas@gmail.com";
+  const fb=()=>{const r=document.createRange();r.selectNodeContents($("#addr"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("#contact").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});toast("Email selected. Press Ctrl+C to copy.")};
+  try{navigator.clipboard.writeText(a).then(()=>toast("Copied dalius.gervinskas@gmail.com"),fb)}catch(e){fb()}}
+$("#navMail").addEventListener("click",copyMail);$("#copyMail").addEventListener("click",copyMail);
+
+/* ---------- lightbox ---------- */
+let lbList=[],lbIdx=0,lastFocus=null;
+function openLB(list,i){lbList=list;lbIdx=i;lastFocus=document.activeElement;$("#lb").hidden=false;document.body.style.overflow="hidden";showLB();$("#lbClose").focus()}
+function showLB(){const s=S[lbList[lbIdx]];const v=$("#lbView");v.classList.remove("zoom");$("#lbZoom").textContent="Zoom";
+  const im=$("#lbImg");im.src=s.src;im.alt=s.cap;$("#lbTitle").textContent=s.cap;$("#lbCount").textContent=(lbIdx+1)+" / "+lbList.length;
+  $("#lbCap").textContent=s.url;$("#lbPrev").disabled=lbList.length<2;$("#lbNext").disabled=lbList.length<2}
+function closeLB(){$("#lb").hidden=true;document.body.style.overflow="";if(lastFocus)lastFocus.focus()}
+function zoomLB(){const v=$("#lbView");v.classList.toggle("zoom");$("#lbZoom").textContent=v.classList.contains("zoom")?"Fit":"Zoom"}
+$("#lbClose").addEventListener("click",closeLB);$("#lbZoom").addEventListener("click",zoomLB);$("#lbImg").addEventListener("click",zoomLB);
+$("#lbPrev").addEventListener("click",()=>{lbIdx=(lbIdx-1+lbList.length)%lbList.length;showLB()});
+$("#lbNext").addEventListener("click",()=>{lbIdx=(lbIdx+1)%lbList.length;showLB()});
+$("#lb").addEventListener("click",e=>{if(e.target.id==="lb"||e.target.id==="lbView")closeLB()});
+
+/* ---------- tour ---------- */
+let cur=0,view=0,timer=null,tick=null;const DUR=7000;
+function renderSteps(){
+  $("#steps").innerHTML=TOUR.map((t,i)=>`<button class="step" role="tab" id="st${i}" aria-controls="stage" aria-selected="${i===cur}" tabindex="${i===cur?0:-1}">
+    <span class="n">${i+1}</span><span class="t">${esc(t.t)}</span><span class="s">${esc(t.s)}</span><span class="bar"><i></i></span></button>`).join("");
+  $$(".step").forEach((b,i)=>{b.addEventListener("click",()=>{stopAuto();go(i,0)});
+    b.addEventListener("keydown",e=>{const k=e.key;let n=null;if(k==="ArrowDown"||k==="ArrowRight")n=(i+1)%TOUR.length;if(k==="ArrowUp"||k==="ArrowLeft")n=(i-1+TOUR.length)%TOUR.length;if(n!=null){e.preventDefault();stopAuto();go(n,0);$("#st"+n).focus()}})});
+}
+function go(i,v){cur=i;view=v||0;
+  $$(".step").forEach((b,k)=>{b.setAttribute("aria-selected",k===i);b.tabIndex=k===i?0:-1;const bar=b.querySelector(".bar i");if(bar)bar.style.width="0"});
+  const sb=$("#st"+i);if(sb&&window.innerWidth<=980)sb.scrollIntoView({block:"nearest",inline:"nearest"});
+  renderStage();
+}
+function renderStage(){
+  const t=TOUR[cur],v=t.views[view],s=S[v.k];
+  const pins=v.pins.map((p,j)=>`<button class="pin" style="left:${p[0]}%;top:${p[1]}%" data-p="${j}" aria-label="${j+1}. ${esc(p[2])}">${j+1}</button>`).join("");
+  const img=`<img src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" data-zoom>`;
+  const shot=s.portrait?`<div class="shot portrait"><div class="frame">${img}${pins}</div></div>`:`<div class="shot">${img}${pins}</div>`;
+  $("#stage").setAttribute("aria-labelledby","st"+cur);
+  $("#stage").innerHTML=`
+   <div class="stage-top">
+     <div><span class="app"><span class="eyebrow">Step ${cur+1} of ${TOUR.length}</span>·<span>${esc(t.app)}</span></span><h3 style="margin-top:4px">${esc(t.s)}</h3></div>
+     ${t.views.length>1?`<div class="seg" role="group" aria-label="Screens">${t.views.map((x,k)=>`<button aria-pressed="${k===view}" data-v="${k}">${esc(x.l)}</button>`).join("")}</div>`:""}
+   </div>
+   <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>${esc(s.url)}</span></span></div>${shot}</div>
+   <div class="notes">${v.pins.map((p,j)=>`<div class="note" data-p="${j}"><span class="k">${j+1}</span><span><b>${esc(p[2])}.</b> ${esc(p[3])}</span></div>`).join("")}</div>
+   <div class="stage-foot">
+     <span class="hint">Use <span class="kbd">←</span><span class="kbd">→</span> to move between steps · click the screen to enlarge</span>
+     <span style="display:flex;gap:8px"><button class="btn sm" id="tPrev" ${cur===0?"disabled":""}>← Previous</button><button class="btn sm accent" id="tNext">${cur===TOUR.length-1?"See the apps →":"Next: "+esc(TOUR[cur+1].t)+" →"}</button></span>
+   </div>`;
+  $$("#stage .seg button").forEach(b=>b.addEventListener("click",()=>{stopAuto();view=+b.dataset.v;renderStage()}));
+  const hl=j=>{$$("#stage .pin").forEach(p=>p.classList.toggle("on",p.dataset.p==j));$$("#stage .note").forEach(n=>n.classList.toggle("on",n.dataset.p==j))};
+  $$("#stage .pin,#stage .note").forEach(el=>{el.addEventListener("mouseenter",()=>hl(el.dataset.p));el.addEventListener("mouseleave",()=>hl(-1));el.addEventListener("focus",()=>hl(el.dataset.p));el.addEventListener("blur",()=>hl(-1))});
+  $$("#stage .pin").forEach(p=>p.addEventListener("click",e=>{e.stopPropagation();stopAuto();hl(p.dataset.p);const n=$(`#stage .note[data-p="${p.dataset.p}"]`);if(n&&window.innerWidth<640)n.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"})}));
+  $("#stage [data-zoom]").addEventListener("click",()=>{stopAuto();openLB(t.views.map(x=>x.k),view)});
+  $("#tPrev").addEventListener("click",()=>{stopAuto();if(cur>0)go(cur-1,0)});
+  $("#tNext").addEventListener("click",()=>{stopAuto();if(cur<TOUR.length-1)go(cur+1,0);else $("#apps").scrollIntoView({behavior:reduce?"auto":"smooth"})});
+}
+function stopAuto(){if(timer){clearInterval(timer);timer=null}if(tick){cancelAnimationFrame(tick);tick=null}
+  $("#autoplay").setAttribute("aria-pressed","false");$("#apLabel").textContent="Autoplay";$("#apIcon").innerHTML='<path d="M4 2.5v11l9-5.5z"/>';$$(".step .bar i").forEach(b=>b.style.width="0")}
+function startAuto(){
+  $("#autoplay").setAttribute("aria-pressed","true");$("#apLabel").textContent="Pause";$("#apIcon").innerHTML='<path d="M4 3h3v10H4zM9 3h3v10H9z"/>';
+  let t0=performance.now();
+  const frame=now=>{const f=Math.min(1,(now-t0)/DUR);const bar=$(`#st${cur} .bar i`);if(bar)bar.style.width=(f*100)+"%";
+    if(f>=1){t0=now;const v=TOUR[cur].views;if(view<v.length-1)go(cur,view+1);else if(cur<TOUR.length-1)go(cur+1,0);else{stopAuto();return}}
+    tick=requestAnimationFrame(frame)};
+  tick=requestAnimationFrame(frame);
+}
+$("#autoplay").addEventListener("click",()=>{if(tick)stopAuto();else startAuto()});
+$$(".stack .win").forEach(w=>w.addEventListener("click",()=>{stopAuto();go(+w.dataset.go,0);$("#tour").scrollIntoView({behavior:reduce?"auto":"smooth"})}));
+
+/* ---------- products ---------- */
+function renderProds(){
+  $("#prods").innerHTML=PRODS.map((c,i)=>{const s=S[c.views[0]];return `<article class="prod" data-i="${i}">
+    <div class="prod-media">
+      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" style="cursor:zoom-in"></div>
+      ${c.views.length>1?`<div class="thumbs" role="group" aria-label="${esc(c.name)} screens">${c.views.map((k,j)=>`<button aria-pressed="${j===0}" data-j="${j}" aria-label="${esc(S[k].cap)}"><img src="${S[k].src}" alt="" loading="lazy" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></button>`).join("")}</div>`:""}
+    </div>
+    <div class="prod-body">
+      <div class="case-kicker"><span class="pill ${ST[c.status][1]}">${ST[c.status][0]}</span><span class="eyebrow">${esc(c.tag)}</span></div>
+      <div><h3>${esc(c.name)}</h3><p style="margin-top:6px;font-size:1.05rem">${esc(c.pitch)}</p></div>
+      <div class="psi"><div><span class="lbl">Problem</span><span>${esc(c.problem)}</span></div><div><span class="lbl">Built</span><span>${esc(c.built)}</span></div></div>
+      <details class="hl"><summary>Features</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>
+      <div class="biz">${c.biz.map(b=>`<div><b>${esc(b[0])}</b><span>${esc(b[1])}</span></div>`).join("")}</div>
+      <div class="tags">${c.stack.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
+      ${c.repo?`<div class="case-actions"><a class="btn sm" href="${GH}${c.repo}" target="_blank" rel="noopener">Code on GitHub</a></div>`:""}
+    </div></article>`}).join("");
+  $$(".prod").forEach(el=>{const c=PRODS[+el.dataset.i];let j=0;
+    el.querySelectorAll(".thumbs button").forEach(b=>b.addEventListener("click",()=>{j=+b.dataset.j;const s=S[c.views[j]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((x,q)=>x.setAttribute("aria-pressed",q===j))}));
+    el.querySelector("[data-main]").addEventListener("click",()=>openLB(c.views,j));});
+  $$("[data-lb]").forEach(b=>b.addEventListener("click",()=>openLB(["bSheet","bDraw"],0)));
+}
+
+/* ---------- more tools ---------- */
+const hubSvg=`<svg viewBox="0 0 320 200" role="img" aria-label="Hub links quote, production order and invoice through one customer" font-family="Geist,system-ui,sans-serif">
+  <rect x="110" y="16" width="100" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="160" y="41" text-anchor="middle" font-size="13" font-weight="600" fill="var(--accent-ink)">Customer</text>
+  <g font-size="12" fill="var(--fg)" text-anchor="middle">
+  <rect x="10" y="130" width="86" height="40" rx="8" fill="var(--surface)" stroke="var(--line-strong)"/><text x="53" y="155">Quote</text>
+  <rect x="117" y="130" width="86" height="40" rx="8" fill="var(--surface)" stroke="var(--line-strong)"/><text x="160" y="155">Order</text>
+  <rect x="224" y="130" width="86" height="40" rx="8" fill="var(--surface)" stroke="var(--line-strong)"/><text x="267" y="155">Invoice</text></g>
+  <g stroke="var(--accent)" stroke-width="1.5" fill="none"><path d="M140 56 L60 128M160 56 V128M180 56 L260 128"/></g>
+  <g stroke="var(--faint)" stroke-width="1.5" stroke-dasharray="4 3"><path d="M98 150 H115M205 150 H222"/></g>
+  <text x="160" y="192" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="Geist Mono,monospace">one document index</text></svg>`;
+const ghI='<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
+function renderMore(){
+  const shots=MORE.filter(m=>m.k).map(m=>m.k);
+  $("#moreGrid").innerHTML=MORE.map(m=>`<article class="mcard">
+    ${m.k?`<button class="thumb" data-k="${m.k}" aria-label="Enlarge ${esc(m.n)} screen"><img src="${S[m.k].src}" alt="${esc(S[m.k].cap)}" loading="lazy" width="${S[m.k].w}" height="${S[m.k].h}"></button>`:`<div class="diagram">${hubSvg}</div>`}
+    <div class="body"><div><h4>${esc(m.n)}</h4><div class="sub">${esc(m.sub)}</div></div><span></span><p>${esc(m.p)}</p>
+      <div class="stat"><b>${esc(m.st[0])}</b><span>${esc(m.st[1])}</span></div>
+      <div class="links"><a class="btn sm" href="${GH}${m.repo}" target="_blank" rel="noopener">${ghI}Code</a>${m.live?`<a class="btn sm" href="${m.live}" target="_blank" rel="noopener">Live demo ↗</a>`:""}</div></div></article>`).join("");
+  $$("#moreGrid .thumb").forEach(b=>b.addEventListener("click",()=>openLB(shots,shots.indexOf(b.dataset.k))));
+}
+
+/* ---------- cases ---------- */
+function renderCases(){
+  $("#cases").innerHTML=CASES.map((c,i)=>{const s=S[c.views[0]];return `<article class="case${c.flag?" flag":""}" data-i="${i}">
+    <div class="case-media">
+      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></div>
+      <div class="thumbs" role="group" aria-label="${esc(c.name)} screens">${c.views.map((k,j)=>`<button aria-pressed="${j===0}" data-k="${k}" data-j="${j}" aria-label="${esc(S[k].cap)}"><img src="${S[k].src}" alt="" loading="lazy" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></button>`).join("")}</div>
+    </div>
+    <div class="case-body">
+      <div class="case-kicker">${c.flag?`<span class="pill s-flag">Flagship</span>`:""}<span class="pill ${ST[c.status][1]}">${ST[c.status][0]}</span><span class="eyebrow">${esc(c.tag)}</span></div>
+      <h3>${esc(c.name)}</h3>
+      <div class="psi">
+        <div><span class="lbl">Problem</span><span>${esc(c.problem)}</span></div>
+        <div><span class="lbl">Built</span><span>${esc(c.built)}</span></div>
+        <div><span class="lbl">Result</span><span>${esc(c.impact)}</span></div>
+      </div>
+      ${c.hl?`<details class="hl" open><summary>What it does</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>`:""}<div class="metrics">${c.metrics.map(m=>`<div><b>${esc(m[0])}</b><span>${esc(m[1])}</span></div>`).join("")}</div>
+      <div class="tags">${c.stack.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
+      ${c.note?`<p class="muted" style="font-size:.84rem">${esc(c.note)}</p>`:""}<div class="case-actions">${c.live?`<a class="btn primary sm" href="${c.live}" target="_blank" rel="noopener">Open live app ↗</a>`:""}<a class="btn sm" href="${GH}${c.repo}" target="_blank" rel="noopener">Code on GitHub</a><button class="btn sm" data-tour="${i}">See it in the tour</button></div>
+    </div></article>`}).join("");
+  $$(".case").forEach(el=>{const c=CASES[+el.dataset.i];let j=0;
+    const set=k=>{j=k;const s=S[c.views[k]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((b,q)=>b.setAttribute("aria-pressed",q===k))};
+    el.querySelectorAll(".thumbs button").forEach(b=>b.addEventListener("click",()=>set(+b.dataset.j)));
+    el.querySelector("[data-main]").addEventListener("click",()=>openLB(c.views,j));
+    el.querySelector("[data-tour]").addEventListener("click",()=>{go(CASES[+el.dataset.i].tour,0);$("#tour").scrollIntoView({behavior:reduce?"auto":"smooth"})});
+  });
+  $("#tools").innerHTML=TOOLS.map(t=>`<div class="tool"><div class="top"><span class="ico"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">${t.i}</svg></span><span class="pill ${ST[t.st][1]}">${ST[t.st][0]}</span></div><h4>${esc(t.n)}</h4><p>${esc(t.d)}</p><div class="tags">${t.k.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div></div>`).join("");
+}
+
+/* ---------- projects ---------- */
+let area="all",open=-1;
+function renderChips(){
+  const all=[["all","All",PROJ.length]].concat(Object.entries(AREAS).map(([k,v])=>[k,v,PROJ.filter(p=>p.a===k).length]));
+  $("#chips").innerHTML=all.map(([k,v,n])=>`<button class="chip" aria-pressed="${k===area}" data-a="${k}">${esc(v)}<span class="c">${n}</span></button>`).join("");
+  $$("#chips .chip").forEach(b=>b.addEventListener("click",()=>{area=b.dataset.a;open=-1;renderChips();renderTable()}));
+}
+function renderTable(){
+  const q=$("#q").value.trim().toLowerCase();
+  const rows=PROJ.map((p,i)=>({p,i})).filter(({p})=>(area==="all"||p.a===area)&&(!q||(p.n+" "+p.d+" "+p.x).toLowerCase().includes(q)));
+  let h=`<div class="row head" role="presentation"><span>Project</span><span class="h-ds">What it does</span><span class="h-area">Area</span><span>Status</span><span></span></div>`;
+  if(!rows.length)h+=`<div class="empty">No projects match “${esc(q)}”. <button class="btn sm ghost" id="clrQ">Clear search</button></div>`;
+  rows.forEach(({p,i})=>{const ex=i===open;
+    h+=`<button class="row" aria-expanded="${ex}" aria-controls="d${i}" data-i="${i}"><span class="nm">${esc(p.n)}</span><span class="ds">${esc(p.d)}</span><span class="area">${esc(AREAS[p.a])}</span><span><span class="pill ${ST[p.st][1]}">${ST[p.st][0]}</span></span><span class="ar">›</span></button>`;
+    if(ex)h+=`<div class="detail" id="d${i}"><p>${esc(p.x)}</p><div class="acts">${p.l?`<a class="btn sm primary" href="${p.l}" target="_blank" rel="noopener">Open live ↗</a>`:""}${p.r?`<a class="btn sm" href="${GH}${p.r}" target="_blank" rel="noopener">Code ↗</a>`:""}${p.go?`<a class="btn sm" href="#${p.go}">${p.go==="apps"?"Case study":"Details"}</a>`:""}</div></div>`;
+  });
+  $("#table").innerHTML=h;
+  $$("#table .row[data-i]").forEach(r=>r.addEventListener("click",()=>{const i=+r.dataset.i;open=open===i?-1:i;renderTable();const n=$(`#table .row[data-i="${i}"]`);if(n)n.focus()}));
+  const c=$("#clrQ");if(c)c.addEventListener("click",()=>{$("#q").value="";renderTable();$("#q").focus()});
+}
+$("#q").addEventListener("input",()=>{open=-1;renderTable()});
+
+/* ---------- keyboard ---------- */
+document.addEventListener("keydown",e=>{
+  if(!$("#lb").hidden){if(e.key==="Escape")closeLB();else if(e.key==="ArrowRight")$("#lbNext").click();else if(e.key==="ArrowLeft")$("#lbPrev").click();
+    else if(e.key==="Tab"){const f=$$("#lb button:not([disabled])");const a=f.indexOf(document.activeElement);if(e.shiftKey&&a<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&a===f.length-1){e.preventDefault();f[0].focus()}}return}
+  const tag=(e.target.tagName||"").toLowerCase();if(tag==="input"||tag==="textarea"||tag==="select")return;
+  if(e.key==="/"){e.preventDefault();$("#q").focus();$("#projects").scrollIntoView({behavior:reduce?"auto":"smooth"});return}
+  const r=$("#tour").getBoundingClientRect();const inTour=r.top<innerHeight*.6&&r.bottom>innerHeight*.4;
+  if(inTour&&!e.target.closest(".step")){if(e.key==="ArrowRight"&&cur<TOUR.length-1){stopAuto();go(cur+1,0)}else if(e.key==="ArrowLeft"&&cur>0){stopAuto();go(cur-1,0)}}
+});
+
+/* ---------- scroll spy ---------- */
+const links=$$("#navlinks a");
+if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id))}})},{rootMargin:"-45% 0px -50% 0px"});
+  ["tour","apps","deep","products","projects","experience"].forEach(id=>io.observe(document.getElementById(id)))}
+
+renderSteps();go(0,0);renderCases();renderMore();renderProds();renderChips();renderTable();
+})();
+</script>
+</body>
+</html>
