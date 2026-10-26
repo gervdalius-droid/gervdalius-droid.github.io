@@ -938,7 +938,7 @@ function renderProds(){
       <details class="hl"><summary>Features</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>
       <div class="biz">${c.biz.map(b=>`<div><b>${esc(b[0])}</b><span>${esc(b[1])}</span></div>`).join("")}</div>
       <div class="tags">${c.stack.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
-      ${c.repo?`<div class="case-actions"><a class="btn sm" href="${GH}${c.repo}" target="_blank" rel="noopener">Code on GitHub</a></div>`:""}
+      
     </div></article>`}).join("");
   $$(".prod").forEach(el=>{const c=PRODS[+el.dataset.i];let j=0;
     el.querySelectorAll(".thumbs button").forEach(b=>b.addEventListener("click",()=>{j=+b.dataset.j;const s=S[c.views[j]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((x,q)=>x.setAttribute("aria-pressed",q===j))}));
@@ -963,7 +963,7 @@ function renderMore(){
     ${m.k?`<button class="thumb" data-k="${m.k}" aria-label="Enlarge ${esc(m.n)} screen"><img src="${S[m.k].src}" alt="${esc(S[m.k].cap)}" loading="lazy" width="${S[m.k].w}" height="${S[m.k].h}"></button>`:`<div class="diagram">${hubSvg}</div>`}
     <div class="body"><div><h4>${esc(m.n)}</h4><div class="sub">${esc(m.sub)}</div></div><span></span><p>${esc(m.p)}</p>
       <div class="stat"><b>${esc(m.st[0])}</b><span>${esc(m.st[1])}</span></div>
-      <div class="links"><a class="btn sm" href="${GH}${m.repo}" target="_blank" rel="noopener">${ghI}Code</a>${m.live?`<a class="btn sm" href="${m.live}" target="_blank" rel="noopener">Live demo ↗</a>`:""}</div></div></article>`).join("");
+      ${m.live?`<div class="links"><a class="btn sm" href="${m.live}" target="_blank" rel="noopener">Live demo ↗</a></div>`:""}</div></article>`).join("");
   $$("#moreGrid .thumb").forEach(b=>b.addEventListener("click",()=>openLB(shots,shots.indexOf(b.dataset.k))));
 }
 
@@ -984,7 +984,7 @@ function renderCases(){
       </div>
       ${c.hl?`<details class="hl" open><summary>What it does</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>`:""}<div class="metrics">${c.metrics.map(m=>`<div><b>${esc(m[0])}</b><span>${esc(m[1])}</span></div>`).join("")}</div>
       <div class="tags">${c.stack.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
-      ${c.note?`<p class="muted" style="font-size:.84rem">${esc(c.note)}</p>`:""}<div class="case-actions">${c.live?`<a class="btn primary sm" href="${c.live}" target="_blank" rel="noopener">Open live app ↗</a>`:""}<a class="btn sm" href="${GH}${c.repo}" target="_blank" rel="noopener">Code on GitHub</a><button class="btn sm" data-tour="${i}">See it in the tour</button></div>
+      ${c.note?`<p class="muted" style="font-size:.84rem">${esc(c.note)}</p>`:""}<div class="case-actions">${c.live?`<a class="btn primary sm" href="${c.live}" target="_blank" rel="noopener">Open live app ↗</a>`:""}<button class="btn sm" data-tour="${i}">See it in the tour</button></div>
     </div></article>`}).join("");
   $$(".case").forEach(el=>{const c=CASES[+el.dataset.i];let j=0;
     const set=k=>{j=k;const s=S[c.views[k]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((b,q)=>b.setAttribute("aria-pressed",q===k))};
@@ -1009,7 +1009,7 @@ function renderTable(){
   if(!rows.length)h+=`<div class="empty">No projects match “${esc(q)}”. <button class="btn sm ghost" id="clrQ">Clear search</button></div>`;
   rows.forEach(({p,i})=>{const ex=i===open;
     h+=`<button class="row" aria-expanded="${ex}" aria-controls="d${i}" data-i="${i}"><span class="nm">${esc(p.n)}</span><span class="ds">${esc(p.d)}</span><span class="area">${esc(AREAS[p.a])}</span><span><span class="pill ${ST[p.st][1]}">${ST[p.st][0]}</span></span><span class="ar">›</span></button>`;
-    if(ex)h+=`<div class="detail" id="d${i}"><p>${esc(p.x)}</p><div class="acts">${p.l?`<a class="btn sm primary" href="${p.l}" target="_blank" rel="noopener">Open live ↗</a>`:""}${p.r?`<a class="btn sm" href="${GH}${p.r}" target="_blank" rel="noopener">Code ↗</a>`:""}${p.go?`<a class="btn sm" href="#${p.go}">${p.go==="apps"?"Case study":"Details"}</a>`:""}</div></div>`;
+    if(ex)h+=`<div class="detail" id="d${i}"><p>${esc(p.x)}</p><div class="acts">${p.l?`<a class="btn sm primary" href="${p.l}" target="_blank" rel="noopener">Open live ↗</a>`:""}${p.go==="apps"?`<a class="btn sm" href="#apps">Case study</a>`:""}</div></div>`;
   });
   $("#table").innerHTML=h;
   $$("#table .row[data-i]").forEach(r=>r.addEventListener("click",()=>{const i=+r.dataset.i;open=open===i?-1:i;renderTable();const n=$(`#table .row[data-i="${i}"]`);if(n)n.focus()}));
