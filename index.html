@@ -590,6 +590,39 @@ footer{padding-block:29px 45px}
 @media(hover:none){.image-open:after{opacity:1;transform:none;font-size:.61rem}}
 @media(prefers-reduced-motion:reduce){.stack .win,.case,.mcard,.tool,.image-open img{transition:none!important}}
 
+
+/* ========================================================================
+   COMPACT LANDING · the page shows names, screens and numbers only.
+   Problem / solution / features / stack open from a Details button.
+   ======================================================================== */
+.sec-head p,.hero-footnote,.proof-intro,.step .s,.stage-foot .hint,.contact p{display:none!important}
+.one{font-size:1.02rem;color:var(--muted);margin:0;line-height:1.45;max-width:46ch}
+.case-body,.prod-body,.dive-body{gap:18px}
+.more-info{display:none}
+.notes{grid-template-columns:1fr!important}
+.notes .note{display:none!important}
+.notes .note.on{display:grid!important}
+.row{grid-template-columns:minmax(0,1fr) 140px 120px 24px!important}
+.row .ds,.row.head .h-ds{display:none!important}
+@media(max-width:760px){.row{grid-template-columns:minmax(0,1fr) auto 24px!important}}
+.exp{grid-template-columns:1fr!important}
+.exp .role ul,.exp .skills{display:none!important}
+.exp .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.exp .role{border-top:0!important;padding:0!important}
+@media(max-width:860px){.exp .roles{grid-template-columns:1fr}}
+.exp-actions{margin-top:22px}
+.info-btn span{font-weight:700}
+.dlg[hidden]{display:none!important}
+.dlg{position:fixed;inset:0;z-index:85;background:var(--scrim,rgba(10,16,12,.6));display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dlg-panel{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lift,0 20px 50px rgba(0,0,0,.25));width:min(720px,100%);max-height:min(86vh,900px);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dlg-head h3{font-size:1.2rem;font-weight:600;margin:0}
+.dlg-body{overflow:auto;padding:20px;display:grid;gap:16px;align-content:start}
+.dlg-body>div{display:grid;gap:16px}
+.dlg-body .hl summary{display:none}
+.dlg-body .roles{display:grid;gap:16px}
+.dlg-body .skills{display:grid;gap:14px}
+@media(prefers-reduced-motion:no-preference){.dlg:not([hidden]) .dlg-panel{animation:dlgIn .18s ease-out}@keyframes dlgIn{from{transform:translateY(10px);opacity:.6}to{transform:none;opacity:1}}}
 </style>
 </head>
 <body>
@@ -633,7 +666,7 @@ footer{padding-block:29px 45px}
         <div class="hero-copy">
           <div class="hero-meta"><span class="hero-status"><span class="live-dot"></span> BUILT FOR REAL WORK</span><span class="hero-loc">VILNIUS, LITHUANIA <span aria-hidden="true">↗</span></span></div>
           <h1>I build the tools<br> I wish we'd<br> <span class="serif">already had.</span></h1>
-          <p class="lead">I run operations, sales and project delivery at a furniture business. When the tools on the market don't fit the way we work, I build better ones. These are the results.</p>
+          <p class="lead">Operations at a Vilnius furniture company. I build the tools we run on.</p>
           <div class="cta">
             <a class="btn hero-primary" href="#apps">Explore the work <span aria-hidden="true">↗</span></a>
             <a class="btn hero-secondary" href="#tour">See how it works <span aria-hidden="true">↓</span></a>
@@ -699,14 +732,12 @@ footer{padding-block:29px 45px}
     <div style="margin-top:56px" id="more">
       <span class="eyebrow">More tools</span>
       <h3 style="font-size:1.35rem;font-weight:600;margin-top:8px">Smaller headaches, same approach</h3>
-      <p class="muted" style="margin-top:8px;max-width:64ch;margin-bottom:20px">Each of these replaced a paper process, a subscription or a manual fix. Click a screen to enlarge it.</p>
       <div class="more" id="moreGrid"></div>
     </div>
 
     <div style="margin-top:56px">
       <span class="eyebrow">Desktop and machine tools</span>
       <h3 style="font-size:1.35rem;font-weight:600;margin-top:8px">Behind the screens: CAD and CAM automation</h3>
-      <p class="muted" style="margin-top:8px;max-width:64ch">These run inside SolidWorks or on the engineer's PC rather than in a browser, so there's nothing to screenshot.</p>
       <div class="tools" id="tools"></div>
     </div>
   </div>
@@ -733,6 +764,7 @@ footer{padding-block:29px 45px}
       <div class="dive-body">
         <div class="case-kicker"><span class="pill s-use">In use</span><span class="eyebrow">Design · Production</span></div>
         <h3>Automatic manufacturing drawings</h3>
+        <p class="one">Shop drawings generated from the 3D model, no manual drafting.</p>
         <div class="psi">
           <div><span class="lbl">Problem</span><span>Every cabinet needed a drawing for the shop floor. The engineer drew them by hand in SolidWorks, slowly, and mistakes reached production.</span></div>
           <div><span class="lbl">Built</span><span>Two generators that make the same kind of sheet with no manual drafting. One is inside the cabinet creator. The other works on full kitchens modelled in SolidWorks.</span></div>
@@ -781,6 +813,7 @@ footer{padding-block:29px 45px}
       <div class="dive-body">
         <div class="case-kicker"><span class="pill s-use">In use</span><span class="eyebrow">Shop floor · CNC router</span></div>
         <h3>A new operator interface for an old CNC</h3>
+        <p class="one">Clearer screens and a live 3D view of the cut, on the original machine.</p>
         <div class="psi">
           <div><span class="lbl">Problem</span><span>Our CNC router runs closed control software on a touch-only Windows XP PC built into the machine. The screens were hard to read, the vendor gives no support, and the operator couldn't see the program being cut.</span></div>
           <div><span class="lbl">Built</span><span>A complete new skin for the control software, and a companion program that shows the job live, without changing a single line of the vendor's code.</span></div>
@@ -903,6 +936,13 @@ footer{padding-block:29px 45px}
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="dlg" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+  <div class="dlg-panel">
+    <div class="dlg-head"><h3 id="dlgTitle"></h3><button class="btn sm" id="dlgClose" type="button">Close <span class="kbd">Esc</span></button></div>
+    <div class="dlg-body" id="dlgBody"></div>
+  </div>
+</div>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbTitle">
   <div class="lb-top">
@@ -1064,25 +1104,25 @@ const TOUR=[
  ]}
 ];
 const CASES=[
- {name:"ShopFlow",repo:"shopflow",status:"live",flag:true,tag:"Production · Tracking · Shop floor",views:["sfDash","sfList","sfTime","sfOrder","sfWork","sfScan"],tour:2,
+ {name:"ShopFlow",one:"Production tracking built around how the shop really works.",repo:"shopflow",status:"live",flag:true,tag:"Production · Tracking · Shop floor",views:["sfDash","sfList","sfTime","sfOrder","sfWork","sfScan"],tour:2,
   problem:"MRP tools like MRPEasy charge per seat, assume a straight-line routing and expect everyone at a computer with reliable wifi. A furniture shop has parallel work, one shared tablet and wifi that drops.",
   built:"A production tracker built around how the shop really works: fronts and carcass made in parallel lanes that merge, piece-by-piece progress, PIN sign-in on a shared tablet, QR scan stations, and everything working offline.",
   impact:"The system it comes from runs daily in the workshop. This public demo ships with a fictional workshop and no customer data.",
   metrics:[["1,057","in-browser tests"],["~31k","lines of code"],["Offline","installable app"]],
   stack:["JavaScript","PWA","Supabase sync","QR / barcode"],live:"https://gervdalius-droid.github.io/shopflow/",hl:["Parallel routing: fronts and carcass move through their own stations and merge for assembly. Ordering 12 cabinets creates every task automatically","Piece-by-piece progress, so the next station unlocks as pieces arrive, not when a whole batch is done","Five project views: list, Monday-style board, Gantt timeline, calendar and per-person workload","Engineering projects with their own stages: brief, measurement, design, client approval, CNC programs, handoff","Warehouse linked to orders, with shortage warnings before material stops a job","Worker tablet mode with PIN sign-in, big Start/Pause/Done targets and QR scan stations per machine","Every change logged with who made it and when. Works offline, syncs when the internet is back"],note:"Demo sign-in: Eglė, PIN 5678 (manager) · Andrius, PIN 1111 (worker)"},
- {name:"Nesting",repo:"nesting",status:"live",flag:true,tag:"Cutting · Labels · Stock",views:["nLay","nExp"],tour:4,
+ {name:"Nesting",one:"Cutting plans for every board, with labels and stock.",repo:"nesting",status:"live",flag:true,tag:"Cutting · Labels · Stock",views:["nLay","nExp"],tour:4,
   problem:"Cutting plans were done by hand or in CAM software sold per seat per month, which still couldn't read our files without a workaround.",
   built:"Reads SWOOD and cabinet creator part lists, CSV and DXF. Rectangle packing for panels, true-shape nesting for curved parts, Zebra labels with a QR code per CNC program.",
   impact:"Every board cut in the workshop goes through it. It also reserves and confirms stock in the warehouse.",
   metrics:[["~17k","lines of code"],["2","nesting engines"],["4","import formats"]],
   stack:["JavaScript","Web Workers","WebAssembly","DXF","ZPL","Supabase"],live:"https://gervdalius-droid.github.io/nesting/",hl:["Reads what the shop already produces: SWOOD project files, the cabinet creator export, CSV lists and shaped parts from DXF. Boards are created from the materials automatically","Two engines: fast strip packing for rectangular panels, and a Rust true-shape engine compiled to WebAssembly and run on several threads for curved parts","Machine routing per sheet: CNC, saw or both, with kerf and edge trim","Zebra thermal labels with one QR code per CNC program, so the operator scans the part to load its program","Reserves boards in the warehouse, then confirms and recalculates stock after cutting","Layout versions you can compare, edit by hand and save. ~17,000 lines"]},
- {name:"Quote calculator",repo:"offer",status:"live",tag:"Sales · Costing",views:["offerCab","offerQuote","offerQuick"],tour:0,
+ {name:"Quote calculator",one:"Accurate furniture quotes during the client meeting.",repo:"offer",status:"live",tag:"Sales · Costing",views:["offerCab","offerQuote","offerQuick"],tour:0,
   problem:"The quick and detailed estimates disagreed, and kitchens were being quoted too low.",
   built:"One cost model behind both a detailed cabinet-by-cabinet quote and a quick estimate by kitchen run, with a live sketch, cloud sync and a client PDF.",
   impact:"Margin now applies to the full cost, so quotes stopped coming in under cost. Sales use it in client meetings.",
   metrics:[["38","releases"],["2","quote modes, one model"],["PDF","client quote"]],
   stack:["JavaScript","SVG","Supabase"],live:"https://gervdalius-droid.github.io/offer/"},
- {name:"Cabinet creator",repo:"builder",status:"prog",tag:"Design · Parts · CNC · Drawings",views:["bCab","bFurn","bParts","bSheet"],tour:1,
+ {name:"Cabinet creator",one:"From cabinet size to part list, CNC programs and drawings.",repo:"builder",status:"prog",tag:"Design · Parts · CNC · Drawings",views:["bCab","bFurn","bParts","bSheet"],tour:1,
   problem:"Every cabinet waited on the engineer and SolidWorks, even simple ones. That held up production for days.",
   built:"A browser app any workshop employee can use. Size and sections in, then a part list, .XXL programs that match the SolidWorks post-processor, and A3 drawings out.",
   impact:"Simple cabinets no longer queue for the engineer. The export feeds straight into the nesting app.",
@@ -1172,9 +1212,10 @@ function renderStage(){
      <span style="display:flex;gap:8px"><button class="btn sm" id="tPrev" ${cur===0?"disabled":""}>← Previous</button><button class="btn sm accent" id="tNext">${cur===TOUR.length-1?"See the apps →":"Next: "+esc(TOUR[cur+1].t)+" →"}</button></span>
    </div>`;
   $$("#stage .seg button").forEach(b=>b.addEventListener("click",()=>{stopAuto();view=+b.dataset.v;renderStage()}));
-  const hl=j=>{$$("#stage .pin").forEach(p=>p.classList.toggle("on",p.dataset.p==j));$$("#stage .note").forEach(n=>n.classList.toggle("on",n.dataset.p==j))};
+  let selP=0;const hl=j=>{if(j==-1)j=selP;$$("#stage .pin").forEach(p=>p.classList.toggle("on",p.dataset.p==j));$$("#stage .note").forEach(n=>n.classList.toggle("on",n.dataset.p==j))};
   $$("#stage .pin,#stage .note").forEach(el=>{el.addEventListener("mouseenter",()=>hl(el.dataset.p));el.addEventListener("mouseleave",()=>hl(-1));el.addEventListener("focus",()=>hl(el.dataset.p));el.addEventListener("blur",()=>hl(-1))});
-  $$("#stage .pin").forEach(p=>p.addEventListener("click",e=>{e.stopPropagation();stopAuto();hl(p.dataset.p);const n=$(`#stage .note[data-p="${p.dataset.p}"]`);if(n&&window.innerWidth<640)n.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"})}));
+  $$("#stage .pin").forEach(p=>p.addEventListener("click",e=>{e.stopPropagation();stopAuto();selP=p.dataset.p;hl(p.dataset.p);const n=$(`#stage .note[data-p="${p.dataset.p}"]`);if(n&&window.innerWidth<640)n.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"})}));
+  hl(0);
   const zoomImg=$("#stage [data-zoom]");
   zoomImg.tabIndex=0;zoomImg.setAttribute("role","button");zoomImg.setAttribute("aria-label","Enlarge screenshot: "+s.cap);
   zoomImg.addEventListener("click",()=>{stopAuto();openLB(t.views.map(x=>x.k),view)});
@@ -1247,7 +1288,7 @@ function renderCases(){
     </div>
     <div class="case-body">
       <div class="case-kicker"><span class="case-number mono">${String(i+1).padStart(2,"0")} / ${String(CASES.length).padStart(2,"0")}</span>${c.flag?`<span class="pill s-flag">Flagship</span>`:""}<span class="pill ${ST[c.status][1]}">${ST[c.status][0]}</span><span class="eyebrow">${esc(c.tag)}</span></div>
-      <h3>${esc(c.name)}</h3>
+      <h3>${esc(c.name)}</h3>${c.one?`<p class="one">${esc(c.one)}</p>`:""}
       <div class="psi">
         <div><span class="lbl">Problem</span><span>${esc(c.problem)}</span></div>
         <div><span class="lbl">Built</span><span>${esc(c.built)}</span></div>
@@ -1315,7 +1356,34 @@ let progressPending=false;
 function updateProgress(){const max=document.documentElement.scrollHeight-innerHeight;const width=max>0?Math.min(100,Math.max(0,scrollY/max*100)):0;$("#readingProgress").style.width=width+"%";progressPending=false}
 addEventListener("scroll",()=>{if(!progressPending){progressPending=true;requestAnimationFrame(updateProgress)}},{passive:true});
 addEventListener("resize",updateProgress);updateProgress();
-renderSteps();go(0,0);renderCases();renderMore();renderProds();renderChips();renderTable();
+/* ---------- compact landing: details behind buttons ---------- */
+let dlgLast=null;
+function openInfo(title,box){dlgLast=document.activeElement;$("#dlgTitle").textContent=title;const body=$("#dlgBody");body.innerHTML="";const c=box.cloneNode(true);c.className="";c.hidden=false;c.querySelectorAll("details").forEach(d=>d.open=true);body.appendChild(c);$("#dlg").hidden=false;document.body.style.overflow="hidden";$("#dlgClose").focus()}
+function closeInfo(){$("#dlg").hidden=true;document.body.style.overflow="";if(dlgLast)dlgLast.focus()}
+$("#dlgClose").addEventListener("click",closeInfo);
+$("#dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeInfo()});
+document.addEventListener("keydown",e=>{if($("#dlg").hidden)return;if(e.key==="Escape"){e.stopPropagation();closeInfo()}else if(e.key==="Tab"){const f=[...$("#dlg").querySelectorAll("button,a[href],summary")].filter(x=>x.offsetParent);if(!f.length)return;const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}},true);
+function makeInfo(card,body,sels,title,actionsSel){
+  const nodes=[];sels.forEach(sel=>body.querySelectorAll(":scope > "+sel).forEach(n=>nodes.push(n)));
+  if(!nodes.length)return;
+  const box=document.createElement("div");box.className="more-info";nodes.forEach(n=>box.appendChild(n));card.appendChild(box);
+  const b=document.createElement("button");b.type="button";b.className="btn sm info-btn";b.innerHTML='Details <span aria-hidden="true">+</span>';b.setAttribute("aria-haspopup","dialog");
+  b.addEventListener("click",()=>openInfo(title,box));
+  let act=actionsSel?body.querySelector(actionsSel):null;
+  if(!act){act=document.createElement("div");act.className="case-actions";body.appendChild(act)}
+  act.insertBefore(b,act.firstChild);
+}
+function compactAll(){
+  $$(".case").forEach(c=>{const b=c.querySelector(".case-body");makeInfo(c,b,[".psi",".hl",".tags","p.muted"],b.querySelector("h3").textContent,".case-actions")});
+  $$(".prod").forEach(c=>{const b=c.querySelector(".prod-body");makeInfo(c,b,[".psi",".hl",".biz",".tags"],b.querySelector("h3").textContent,".case-actions")});
+  $$(".dive").forEach(c=>{const b=c.querySelector(".dive-body");makeInfo(c,b,[".psi",".hl","p.muted",".tags"],b.querySelector("h3").textContent,null)});
+  $$(".mcard").forEach(c=>{const b=c.querySelector(".body");makeInfo(c,b,["p"],b.querySelector("h4").textContent,".links")});
+  $$(".tool").forEach(c=>{makeInfo(c,c,["p",".tags"],c.querySelector("h4").textContent,null)});
+  const exp=$(".exp");if(exp){const box=document.createElement("div");box.className="more-info";box.appendChild($(".exp .roles").cloneNode(true));box.appendChild($(".exp .skills").cloneNode(true));exp.appendChild(box);
+    const a=document.createElement("div");a.className="exp-actions";a.innerHTML='<button class="btn sm info-btn" type="button" aria-haspopup="dialog">Experience, skills and how I work <span aria-hidden="true">+</span></button>';
+    exp.firstElementChild.appendChild(a);a.firstChild.addEventListener("click",()=>openInfo("Experience and skills",box));}
+}
+renderSteps();go(0,0);renderCases();renderMore();renderProds();renderChips();renderTable();compactAll();
 })();
 </script>
 </body>
