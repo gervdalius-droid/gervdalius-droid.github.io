@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dalius Gervinskas · Tools that fix everyday business headaches</title>
+<title>Dalius Gervinskas · Business operations & tools that work</title>
 <meta name="description" content="I run operations at a bespoke furniture company in Vilnius and build the tools that fix its everyday headaches: quoting, cabinet design, production tracking, nesting and CNC programs.">
 <meta name="author" content="Dalius Gervinskas">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Dalius Gervinskas · Tools that fix everyday business headaches">
-<meta property="og:description" content="A guided tour of real apps I built and run: quote calculator, cabinet creator, ShopFlow production tracking and board nesting.">
+<meta property="og:title" content="Dalius Gervinskas · I build the tools I wish we’d already had">
+<meta property="og:description" content="Real tools built for real work: production tracking, quoting, cabinet design, nesting, CNC automation and more.">
 <meta property="og:url" content="https://gervdalius-droid.github.io/">
 <meta property="og:image" content="https://gervdalius-droid.github.io/img/og.png">
 <link rel="canonical" href="https://gervdalius-droid.github.io/">
@@ -343,52 +343,320 @@ footer{padding-block:28px 40px;font-size:.84rem;color:var(--muted);display:flex;
 html,body{margin:0}
 body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 img{max-width:100%}
+
+/* ========================================================================
+   PORTFOLIO V2 · editorial clarity / functional product design
+   Deliberately only presentation changes: project and case-study ordering,
+   data, hyperlinks, and core interactive tour remain exactly as before.
+   ======================================================================== */
+:root{
+  --bg:#F6F7F2; --surface:#FFFFFF; --sunken:#EEF1EB; --fg:#17231D;
+  --muted:#5D6C62;--faint:#7C8A81;--line:#E0E6DD;--line-strong:#CAD5CA;
+  --accent:#1D694A;--accent-fg:#FFFFFF;--accent-soft:#E4F0E6;--accent-ink:#1C6445;
+  --pin:#1C8159;--chrome:#F1F4F0;--r:14px;
+  --shadow:0 3px 6px rgba(20,32,24,.035),0 16px 42px rgba(20,32,24,.055);
+  --shadow-lift:0 12px 24px rgba(20,32,24,.07),0 30px 60px rgba(20,32,24,.09);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1411;--surface:#18221C;--sunken:#111C16;--fg:#EBF2EB;--muted:#A9B9AA;
+  --faint:#809084;--line:#2A392F;--line-strong:#3A5040;--accent:#B6E9A0;
+  --accent-fg:#112319;--accent-soft:#203F2C;--accent-ink:#C8F5B8;--chrome:#1E2A22;
+  --shadow:0 5px 20px rgba(0,0,0,.2);--shadow-lift:0 20px 50px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --bg:#0D1411;--surface:#18221C;--sunken:#111C16;--fg:#EBF2EB;--muted:#A9B9AA;
+  --faint:#809084;--line:#2A392F;--line-strong:#3A5040;--accent:#B6E9A0;
+  --accent-fg:#112319;--accent-soft:#203F2C;--accent-ink:#C8F5B8;--chrome:#1E2A22;
+  --shadow:0 5px 20px rgba(0,0,0,.2);--shadow-lift:0 20px 50px rgba(0,0,0,.35);
+}
+html{scroll-padding-top:92px}
+body{font-size:15px;line-height:1.6;overflow-x:clip}
+.wrap{max-width:1320px}
+.gut{padding-left:max(clamp(20px,4.1vw,76px),env(safe-area-inset-left,0px));padding-right:max(clamp(20px,4.1vw,76px),env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{letter-spacing:-.045em}
+button,a{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #7BBE8D;outline-offset:3px}
+.skip{position:fixed;z-index:101;top:-80px;left:24px;background:#C9F18F;color:#102016;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700}
+.skip:focus{top:12px}
+.eyebrow{letter-spacing:.105em;font-size:.72rem;font-weight:500}
+.btn{height:42px;padding:0 16px;border-radius:9px;font-size:.86rem;font-weight:600;transition:transform .2s ease,background .2s,border-color .2s,box-shadow .2s;line-height:1.2}
+.btn:not(:disabled):hover{transform:translateY(-2px)}
+.btn.sm{height:36px;padding:0 13px;font-size:.82rem}
+.btn.primary{background:var(--fg);color:var(--bg)}
+.btn.primary:hover{opacity:1;box-shadow:0 7px 20px rgba(16,32,22,.12)}
+.nav{z-index:60;background:color-mix(in srgb,var(--bg) 94%,transparent);border-bottom:1px solid var(--line)}
+.nav .wrap{height:74px;gap:28px}
+.reading-progress{height:2px;width:0;position:absolute;top:0;left:0;background:#5BA276;transition:width .12s linear;pointer-events:none}
+.brand{font-size:.96rem;gap:12px;letter-spacing:-.035em}
+.avatar{position:relative;width:39px;height:39px;background:#173C2B;color:#D8F6DA;border-radius:11px;font-size:.78rem;letter-spacing:-.03em}
+.avatar-dot{position:absolute;right:-3px;bottom:-3px;width:9px;height:9px;border:2px solid var(--bg);border-radius:100%;background:#AEEC76}
+.navlinks{gap:2px;margin-left:12px}
+.navlinks a{padding:8px 11px;font-size:.82rem;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.navlinks a:hover,.navlinks a.on{background:var(--accent-soft);color:var(--accent-ink)}
+.nav .right{gap:12px}
+.nav-contact{background:#173C2B!important;color:#F3FFF2!important;border-color:#173C2B!important}
+.nav-contact span{font-size:1.02rem}
+.menu-toggle{display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;width:43px;height:43px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);cursor:pointer}
+.menu-toggle span{display:block;width:18px;height:2px;background:var(--fg);border-radius:5px;transition:transform .2s}
+.menu-toggle[aria-expanded="true"] span:first-child{transform:translateY(4px) rotate(45deg)}
+.menu-toggle[aria-expanded="true"] span:last-child{transform:translateY(-4px) rotate(-45deg)}
+.mobile-nav[hidden]{display:none!important}
+.mobile-nav{position:absolute;top:100%;left:0;right:0;z-index:60;padding:13px 24px 22px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 18px 30px rgba(20,35,25,.1);display:grid;gap:0}
+.mobile-nav a{display:flex;align-items:center;gap:16px;text-decoration:none;padding:14px 6px;border-bottom:1px solid var(--line);font-weight:600;font-size:1.04rem}
+.mobile-nav a:last-child{border-bottom:0;color:var(--accent)}
+.mobile-nav a span{font-family:var(--f-mono);color:var(--faint);font-size:.7rem;width:20px}
+@media(max-width:1150px){.navlinks{gap:0;margin-left:0}.navlinks a{padding:8px 7px}.nav .wrap{gap:16px}}
+@media(max-width:1030px){.navlinks{display:none}.menu-toggle{display:flex}}
+@media(max-width:600px){.brand-last{display:none}.nav .wrap{height:68px}.nav .right>a:first-child{display:none}.nav-contact{height:38px}.nav .right{gap:8px}}
+/* The hero is a single strong editorial moment, followed by proof instead of a stats wall. */
+.hero{padding-block:28px 12px}
+.hero-shell{position:relative;overflow:hidden;color:#F0F8EF;background:#14251B;border-radius:22px;padding:clamp(30px,4vw,58px);isolation:isolate}
+.hero-shell:before{content:"";position:absolute;pointer-events:none;z-index:-1;inset:0;background:radial-gradient(ellipse 60% 95% at 79% 12%,rgba(84,140,87,.24),transparent 75%),linear-gradient(145deg,rgba(255,255,255,.025),transparent 55%)}
+.hero-shell:after{content:"";pointer-events:none;position:absolute;inset:0;opacity:.28;background-image:linear-gradient(to right,rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.055) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(90deg,transparent 14%,black 100%);z-index:-1}
+.hero-corner{position:absolute;height:32px;width:32px;pointer-events:none;opacity:.55}
+.hero-corner-tl{top:19px;left:20px;border-top:1px solid #97C9A0;border-left:1px solid #97C9A0}
+.hero-corner-br{bottom:19px;right:20px;border-bottom:1px solid #97C9A0;border-right:1px solid #97C9A0}
+.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,.99fr);gap:clamp(30px,5vw,75px);align-items:center}
+.hero-copy{min-width:0;padding-block:16px}
+.hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 25px;font-family:var(--f-mono);font-size:.67rem;letter-spacing:.12em;font-weight:500;color:#C0D2C1;margin-bottom:32px}
+.hero-status{display:inline-flex;gap:9px;align-items:center;color:#C6ECAB}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#B9F083;box-shadow:0 0 0 4px rgba(178,236,127,.12)}
+.hero-loc{opacity:.7}
+.hero-loc span{padding-left:4px}
+.hero h1{font-size:clamp(3rem,4.2vw,5.4rem);line-height:1.06;letter-spacing:-.065em;font-weight:600;max-width:660px;text-wrap:initial}
+.hero h1 .serif{color:#C4EE9A;letter-spacing:-.035em;font-size:1.12em}
+.hero .lead{color:#C0CDC2;font-size:clamp(.95rem,1.12vw,1.1rem);line-height:1.8;max-width:50ch;margin-top:27px}
+.hero .cta{margin-top:32px;gap:10px}
+.hero .cta .btn{height:48px;padding:0 19px}
+.hero-primary{background:#C8EF9F;color:#183224!important;border:1px solid #C8EF9F}
+.hero-primary:hover{background:#DDF7C8;box-shadow:0 8px 30px rgba(141,211,110,.19)}
+.hero-secondary{background:rgba(255,255,255,.07);color:#E7F2E9!important;border:1px solid rgba(255,255,255,.22)}
+.hero-secondary:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4)}
+.hero-footnote{margin-top:40px;display:flex;align-items:center;gap:12px;font-family:var(--f-mono);color:#8FA897;font-size:.64rem;letter-spacing:.11em}
+.footline{height:1px;width:29px;background:#A5DC8C;opacity:.8}
+.hero-showcase{min-width:0;background:rgba(10,22,14,.3);border:1px solid rgba(219,255,208,.14);border-radius:18px;padding:16px;box-shadow:0 34px 65px rgba(0,0,0,.14)}
+.showcase-head,.showcase-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#D9E9D6;font-size:.76rem;font-weight:500;line-height:1.4}
+.showcase-head{padding:2px 2px 14px}
+.showcase-count{font-size:.7rem;opacity:.62}
+.sparkle{color:#C1EC98;font-size:1.25rem;vertical-align:middle;margin-right:7px}
+.showcase-footer{font-family:var(--f-mono);color:#9DBAA3;letter-spacing:.08em;font-size:.6rem;padding:13px 3px 2px}
+.stack{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px;aspect-ratio:auto}
+.stack .win{position:relative;top:auto;left:auto;display:block;width:100%;height:auto;transform:none!important;box-shadow:0 10px 24px rgba(0,0,0,.15);border-radius:10px;border-color:#A3B2A8;transition:box-shadow .22s,border-color .22s,filter .22s}
+.stack .win:hover{box-shadow:0 12px 32px rgba(0,0,0,.28);border-color:#CDF19E;filter:brightness(1.04)}
+.stack .w3{grid-column:1/-1;order:-1;z-index:3}
+.stack .w1,.stack .w2{z-index:2}
+.stack .win-bar{height:31px;padding:0 10px;gap:8px}
+.stack .lights{gap:4px}
+.stack .lights i{width:7px;height:7px;background:#B7C1B9}
+.stack .url span{font-size:.64rem;border:0;background:transparent}
+.stack .win img{width:100%;height:116px;object-fit:cover;object-position:top;display:block}
+.stack .w3 img{height:clamp(165px,17vw,254px)}
+.window-arrow{color:#618B6D;font-size:1rem}
+.proof-bar{display:grid;grid-template-columns:1.3fr repeat(3,minmax(0,1fr));gap:0;margin:14px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.proof-intro,.proof{padding:22px 28px}
+.proof-intro{display:grid;gap:7px}
+.proof-intro .eyebrow{color:var(--accent)}
+.proof-intro strong{font-size:1.07rem;line-height:1.27;letter-spacing:-.025em;font-weight:600}
+.proof-intro strong em{font-family:var(--f-serif);font-weight:400;font-size:1.16em}
+.proof{border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:6px}
+.proof b{font-size:clamp(1.55rem,2vw,2.1rem);font-weight:600;line-height:1.1;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.proof b span{font-size:.7em;color:var(--accent)}
+.proof>span{color:var(--muted);font-size:.78rem;line-height:1.42}
+@media(max-width:1080px){.hero-grid{grid-template-columns:1fr}.hero h1{font-size:clamp(3.2rem,6vw,5.3rem)}.hero-copy{padding:0}.hero-showcase{max-width:750px;width:100%}.stack .w3 img{height:clamp(220px,28vw,320px)}.stack .win:not(.w3) img{height:140px}}
+@media(max-width:720px){.hero{padding-top:16px}.hero-shell{padding:32px 22px;border-radius:16px}.hero h1{font-size:clamp(2.7rem,10.4vw,4.7rem)}.hero-meta{margin-bottom:22px}.hero .lead{font-size:.96rem;margin-top:20px;line-height:1.7}.hero .cta{margin-top:24px}.hero-footnote{margin-top:28px;font-size:.59rem}.hero-showcase{padding:10px}.stack .w3 img{height:clamp(145px,44vw,285px)}.stack .win:not(.w3) img{height:90px}.showcase-head{padding:4px 3px 9px}.showcase-footer{font-size:.55rem}.proof-bar{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}.proof-intro{grid-column:1/-1;border-bottom:1px solid var(--line);padding:16px 18px;display:flex;align-items:center;gap:18px}.proof-intro strong{font-size:.9rem}.proof{padding:15px 11px;border-left:1px solid var(--line)}.proof:nth-child(2){border-left:0}.proof b{font-size:1.42rem}.proof>span{font-size:.66rem}}
+@media(max-width:390px){.hero-shell{padding:27px 19px}.hero h1{font-size:2.55rem}.hero .cta{display:grid}.hero .cta .btn{width:100%}.hero-footnote{font-size:.52rem}.showcase-footer span:last-child{display:none}}
+/* Section rhythm + editorial labels. */
+section.block{padding-block:clamp(70px,7vw,108px)}
+.shot img:focus-visible{outline:3px solid var(--accent);outline-offset:-4px}
+.sec-head{margin-bottom:34px;align-items:end}
+.sec-head h2,#expH{font-size:clamp(2.05rem,3.5vw,3.55rem)!important;letter-spacing:-.055em;line-height:1.13;font-weight:600}
+.sec-head h2 .serif,#contactH .serif{font-size:1.08em;color:var(--accent-ink)}
+.sec-head p{font-size:.97rem;line-height:1.7;margin-top:14px;max-width:68ch}
+.section-label{display:inline-flex;align-items:center;gap:11px;color:var(--accent-ink)}
+.section-mark{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line-strong);border-radius:8px;color:var(--accent-ink);font-weight:600;font-size:.65rem;letter-spacing:0;background:var(--surface)}
+.rule{border-top-color:var(--line)!important;opacity:.8}
+/* Product tour — keep advanced interactions, make the walkthrough inviting and clear. */
+.tour{grid-template-columns:278px minmax(0,1fr);gap:24px}
+.steps{top:94px;gap:7px}
+.step{padding:15px 13px;grid-template-columns:30px 1fr;gap:4px 10px;border-radius:12px}
+.step .n{height:27px;width:27px;border-radius:8px;font-size:.75rem}
+.step .t{font-size:.95rem}
+.step .s{font-size:.8rem;line-height:1.5}
+.step[aria-selected="true"]{border-color:var(--line-strong);box-shadow:0 6px 20px rgba(23,48,29,.05)}
+.stage{gap:16px}
+.stage-top{padding:4px 0}
+.stage-top h3{font-size:1.45rem}
+.seg{border-radius:10px;padding:4px}
+.seg button{padding:8px 12px;border-radius:7px}
+.win{border-radius:12px}
+.win-bar{height:39px}
+.pin{width:32px;height:32px;font-weight:700}
+.note{padding:14px;border-radius:11px;line-height:1.55;box-shadow:0 1px 4px rgba(20,30,22,.025)}
+.note .k{width:24px;height:24px;border-radius:7px}
+/* Featured case studies: every project gets real image space + scan-friendly storytelling. */
+.cases{gap:26px}
+.case{grid-template-columns:minmax(0,1.09fr) minmax(0,.91fr);border-radius:19px;box-shadow:0 3px 18px rgba(20,34,26,.025);transition:border-color .22s,box-shadow .22s;scroll-margin-top:94px}
+.case:hover{border-color:var(--line-strong);box-shadow:var(--shadow)}
+.case.flag{border-color:var(--line-strong)}
+.case-media{background:color-mix(in srgb,var(--sunken) 70%,var(--surface));padding:clamp(18px,2.3vw,31px);gap:15px;align-content:center}
+.case-media .win{border:1px solid var(--line-strong);box-shadow:0 14px 34px rgba(15,35,21,.12)}
+.case-media .win-bar{background:#E9EEE9}
+.image-open{display:block;width:100%;padding:0;margin:0;border:0;background:var(--surface);cursor:zoom-in;text-align:left;position:relative;overflow:hidden}
+.image-open:after{content:"⤢  ENLARGE";position:absolute;right:14px;bottom:12px;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;font-weight:600;background:rgba(21,42,29,.91);color:#fff;padding:8px 11px;border-radius:7px;opacity:0;transform:translateY(5px);transition:opacity .2s,transform .2s}
+.image-open:hover:after,.image-open:focus-visible:after{opacity:1;transform:none}
+.image-open img{display:block;width:100%;height:auto;transition:transform .35s}
+.image-open:hover img{transform:scale(1.015)}
+.thumbs{gap:9px}
+.thumbs button{border-radius:8px;width:94px;border-width:2px;opacity:.55;transition:opacity .2s,border-color .2s,transform .2s}
+.thumbs button:hover{opacity:1;transform:translateY(-2px)}
+.thumbs button[aria-pressed="true"]{opacity:1;border-color:var(--accent)}
+.case-body{padding:clamp(24px,2.75vw,40px);gap:20px}
+.case-body h3,.prod-body h3{font-size:clamp(1.7rem,2.35vw,2.5rem);letter-spacing:-.055em}
+.case-kicker{gap:8px 10px}
+.case-number{font-size:.74rem;color:var(--faint);padding-right:10px;border-right:1px solid var(--line-strong);letter-spacing:.04em}
+.pill{font-size:.7rem;font-weight:600;padding:4px 9px;letter-spacing:.005em}
+.pill::before{width:6px;height:6px}
+.s-flag{background:#172C20;color:#CEF0AA}
+.case-body .eyebrow{font-size:.67rem;letter-spacing:.06em}
+.psi{gap:13px}
+.psi div{grid-template-columns:83px 1fr;gap:14px;font-size:.89rem;line-height:1.65}
+.psi .lbl,.psi dt{font-size:.67rem;letter-spacing:.08em;padding-top:4px;color:var(--faint)}
+.hl{border:1px solid var(--line);border-radius:10px;padding:0 13px;background:color-mix(in srgb,var(--surface) 85%,var(--sunken))}
+.hl summary{padding:10px 2px;font-size:.72rem;font-family:var(--f-sans);letter-spacing:0;text-transform:none;font-weight:600;color:var(--accent-ink)}
+.hl summary:hover{color:var(--fg)}
+.hl ul{margin:0 0 15px;padding:0 6px 0 21px;gap:7px;font-size:.86rem;line-height:1.5;color:var(--muted)}
+.metrics{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:0}
+.metrics div{min-width:0;flex:1;padding:14px 10px 14px 0}
+.metrics div+div{padding-left:12px;border-left:1px solid var(--line)}
+.metrics b{font-size:1.28rem;letter-spacing:-.045em}
+.metrics span{font-size:.72rem;line-height:1.45;display:block;margin-top:4px}
+.tag{font-size:.67rem;padding:3px 8px;background:var(--sunken);border-radius:6px;color:var(--muted)}
+.case-actions{padding-top:3px}
+.case-actions .btn:first-child{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+@media(max-width:1000px){.case{grid-template-columns:1fr}.case:nth-child(even) .case-media{order:0;border-left:0}.case-media{border-right:0;border-bottom:1px solid var(--line)}.case-media .win{max-width:800px}.case-body{gap:16px}}
+@media(max-width:650px){.tour{grid-template-columns:1fr}.steps{gap:6px}.step{padding:12px;min-width:165px}.sec-head h2,#expH{font-size:2.25rem!important}.case-media{padding:17px}.case-body{padding:22px}.case-body h3{font-size:1.9rem}.psi div{grid-template-columns:68px 1fr;gap:10px}.thumbs button{width:80px}.metrics div{padding-right:6px}.metrics div+div{padding-left:9px}.metrics b{font-size:1.13rem}}
+/* Supporting tools, products, index. Consistent card language, less chrome. */
+.tools{gap:14px}
+.tool,.mcard{border-radius:14px;transition:transform .2s,border-color .2s,box-shadow .2s}
+.tool:hover,.mcard:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:var(--shadow)}
+.tool{padding:20px;gap:14px}
+.tool .ico{width:42px;height:42px;border-radius:10px}
+.dive,.prod{border-radius:18px;box-shadow:0 3px 20px rgba(15,34,24,.025)}
+.dive{padding:30px;gap:32px}
+.dive-body h3{font-size:clamp(1.65rem,2.35vw,2.4rem)}
+.prod-media{padding:26px;background:var(--sunken)}
+.prod-body{padding:32px}
+.prod-body>div:nth-child(2)>p{line-height:1.55;color:var(--muted)}
+.biz div{border-radius:10px;padding:13px}
+.mcard .body{padding:20px;gap:13px}
+.mcard h4{font-size:1.1rem}
+.mcard .thumb{aspect-ratio:16/9}
+.mcard .stat{padding-top:14px}
+.toolbar{align-items:start;gap:13px;margin-bottom:18px}
+.search{max-width:420px}
+.search input{height:43px;border-radius:9px}
+.search svg{top:14px}
+.search .kbd{top:12px}
+.chip{height:35px;font-size:.8rem;padding:0 11px}
+.table{border-radius:12px}
+.row{padding:17px 20px;transition:background .15s}
+.row.head{padding-block:12px;font-size:.68rem}
+.row .nm{font-size:.92rem}
+.row .ds{font-size:.84rem}
+.detail{padding:7px 20px 20px}
+@media(max-width:650px){.row{padding:15px 12px;gap:10px}.row.head{padding-block:11px}.row .nm{font-size:.84rem}.row .pill{font-size:.63rem;padding:3px 6px}.chip{height:34px}.search{max-width:none}}
+.exp{gap:62px}
+.role{padding:23px 0}
+.role .logo{height:48px;width:48px;border-radius:11px;background:var(--accent-soft);color:var(--accent-ink);border-color:var(--line)}
+.role h4{font-size:1.04rem}
+.role .meta{font-size:.8rem}
+.role ul{line-height:1.65;color:var(--muted);font-size:.88rem}
+.how{border-radius:13px;padding:22px;gap:14px}
+.skills{gap:22px}
+.contact{background:#14251B;color:#F3FAF0;border-radius:19px;padding:clamp(30px,4vw,60px);gap:35px}
+.contact h2{font-size:clamp(2.3rem,3.8vw,4rem);line-height:1.11;letter-spacing:-.06em}
+#contactH .serif{color:#C8F0A4}
+.contact p{font-size:.97rem;line-height:1.8;color:#B9CABC;opacity:1}
+.mailcard{background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.13);border-radius:14px;padding:23px;gap:16px}
+.mailcard .addr{font-size:clamp(.83rem,1.3vw,1rem)}
+.contact .btn.inv{background:#C7EEA0!important;color:#183021!important;border-color:#C7EEA0!important}
+.contact .btn:not(.inv){background:rgba(255,255,255,.065);border-color:rgba(255,255,255,.19);color:#EEF6EE}
+.contact .btn:not(.inv):hover{background:rgba(255,255,255,.12)}
+footer{padding-block:29px 45px}
+.lb{background:rgba(8,17,11,.91)}
+@media(max-width:980px){.prod{grid-template-columns:1fr}.prod:nth-child(even) .prod-media{order:0;border-left:0}.prod-media{border-bottom:1px solid var(--line);border-right:0}}
+@media(max-width:650px){.prod-media{padding:15px}.prod-body{padding:21px}.dive{padding:18px}.contact{padding:28px 22px}.mailcard{padding:17px}.mailcard .row2{gap:8px}.contact .btn{font-size:.78rem}.hero-status{letter-spacing:.07em}.case-body .tags{gap:5px}}
+@media(hover:none){.image-open:after{opacity:1;transform:none;font-size:.61rem}}
+@media(prefers-reduced-motion:reduce){.stack .win,.case,.mcard,.tool,.image-open img{transition:none!important}}
+
 </style>
 </head>
 <body>
 
-<nav class="nav gut" aria-label="Main">
+<a class="skip" href="#apps">Skip to projects</a>
+<nav class="nav gut" aria-label="Main navigation">
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
   <div class="wrap">
-    <a class="brand" href="#top"><span class="avatar">DG</span><span>Dalius Gervinskas</span></a>
+    <a class="brand" href="#top"><span class="avatar">DG<span class="avatar-dot" aria-hidden="true"></span></span><span>Dalius <span class="brand-last">Gervinskas</span></span></a>
     <div class="navlinks" id="navlinks">
+      <a href="#apps">Selected work</a>
       <a href="#tour">Product tour</a>
-      <a href="#apps">Apps</a>
       <a href="#deep">Deep dives</a>
-      <a href="#products">Products</a>
-      <a href="#projects">All projects</a>
-      <a href="#experience">Experience</a>
+      <a href="#products">New products</a>
+      <a href="#projects">Project index</a>
+      <a href="#experience">About</a>
     </div>
     <div class="right">
       <a class="btn sm ghost" href="https://github.com/gervdalius-droid" target="_blank" rel="noopener" aria-label="GitHub profile"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg><span class="ghl">GitHub</span></a>
-      <button class="btn sm primary" id="navMail">Copy email</button>
+      <a class="btn sm nav-contact" href="#contact">Get in touch <span aria-hidden="true">↗</span></a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-controls="mobileNav" aria-expanded="false"><span></span><span></span></button>
     </div>
+  </div>
+  <div class="mobile-nav" id="mobileNav" hidden>
+    <a href="#apps"><span>01</span> Selected work</a>
+    <a href="#tour"><span>02</span> Product tour</a>
+    <a href="#deep"><span>03</span> Deep dives</a>
+    <a href="#products"><span>04</span> New products</a>
+    <a href="#projects"><span>05</span> Project index</a>
+    <a href="#experience"><span>06</span> Experience</a>
+    <a href="#contact"><span>↗</span> Contact</a>
   </div>
 </nav>
 
 <main id="top">
 <!-- HERO -->
 <header class="hero gut">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">Runs a business · builds the tools it needs</span>
-      <h1 style="margin-top:14px">I turn everyday business headaches into <span class="serif">tools that fix them.</span></h1>
-      <p class="lead">I run operations, sales and project delivery at Dėdės Baldai, a bespoke furniture company in Vilnius. When something keeps costing the team time, like a quote that takes too long, an order nobody can find or a drawing that waits on one person, I build a tool for it. The team now uses those tools every day.</p>
-      <div class="cta">
-        <a class="btn primary" href="#tour">Take the product tour</a>
-        <a class="btn" href="https://gervdalius-droid.github.io/offer/" target="_blank" rel="noopener">Open a live app
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h7v7M13 3 4 12"/></svg></a>
+  <div class="wrap">
+    <div class="hero-shell">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="hero-meta"><span class="hero-status"><span class="live-dot"></span> BUILT FOR REAL WORK</span><span class="hero-loc">VILNIUS, LITHUANIA <span aria-hidden="true">↗</span></span></div>
+          <h1>I build the tools<br> I wish we'd<br> <span class="serif">already had.</span></h1>
+          <p class="lead">I run operations, sales and project delivery at a furniture business. When the tools on the market don't fit the way we work, I build better ones. These are the results.</p>
+          <div class="cta">
+            <a class="btn hero-primary" href="#apps">Explore the work <span aria-hidden="true">↗</span></a>
+            <a class="btn hero-secondary" href="#tour">See how it works <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-footnote"><span class="footline"></span> REAL TOOLS. REAL SCREENS. ACTUAL USERS.</div>
+        </div>
+        <div class="hero-showcase">
+          <div class="showcase-head"><span><span class="sparkle" aria-hidden="true">✳</span> A few things I've built</span><span class="showcase-count mono">01 — 03</span></div>
+          <div class="stack" aria-label="Preview real screenshots of three projects">
+            <button class="win w1" type="button" data-go="0" aria-label="Explore the Quote calculator in the product tour"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Quote calculator</span></span><span class="window-arrow" aria-hidden="true">↗</span></div><img src="img/offer-quote.webp" alt="Quote calculator cost to quote breakdown" width="1600" height="1000"></button>
+            <button class="win w2" type="button" data-go="4" aria-label="Explore Nesting in the product tour"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Nesting</span></span><span class="window-arrow" aria-hidden="true">↗</span></div><img src="img/nesting-layout.webp" alt="Nesting board layout" width="1600" height="1000"></button>
+            <button class="win w3" type="button" data-go="2" aria-label="Explore ShopFlow in the product tour"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>ShopFlow · production overview</span></span><span class="window-arrow" aria-hidden="true">↗</span></div><img src="img/shopflow-dashboard.webp" alt="ShopFlow production dashboard" width="1600" height="1000"></button>
+          </div>
+          <div class="showcase-footer"><span>CLICK A SCREEN TO EXPLORE</span><span class="mono">[ INTERACTIVE TOUR ]</span></div>
+        </div>
       </div>
-      <div class="facts">
-        <div><b>26 → 25</b><span>panels to CNC programs in one click, sample kitchen</span></div>
-        <div><b>1,057</b><span>automated tests in ShopFlow, the production tracker</span></div>
-        <div><b>1</b><span>paid CAM licence replaced by my own post-processor</span></div>
-      </div>
+      <span class="hero-corner hero-corner-tl" aria-hidden="true"></span><span class="hero-corner hero-corner-br" aria-hidden="true"></span>
     </div>
-    <div class="stack" aria-label="Screens from three of my apps">
-      <button class="win w1" data-go="0" aria-label="Open the tour at Quote"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Quote calculator</span></span></div><img src="img/offer-quote.webp" alt="Quote calculator: cost to quote breakdown" width="1600" height="1000"></button>
-      <button class="win w2" data-go="4" aria-label="Open the tour at Cut"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>Nesting</span></span></div><img src="img/nesting-layout.webp" alt="Nesting: board layout" width="1600" height="1000"></button>
-      <button class="win w3" data-go="2" aria-label="Open the tour at Plan production"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span>ShopFlow</span></span></div><img src="img/shopflow-dashboard.webp" alt="ShopFlow: production dashboard" width="1600" height="1000"></button>
-    </div>
+    <div class="proof-bar" aria-label="Selected project proof points">
+      <div class="proof-intro"><span class="eyebrow">NOT JUST CONCEPTS</span><strong>Built to solve<br><em>actual problems.</em></strong></div>
+      <div class="proof"><b>26 <span>→</span> 25</b><span>Panels to CNC programs<br>in a single export</span></div>
+      <div class="proof"><b>1,057</b><span>Automated ShopFlow<br>tests</span></div>
+      <div class="proof"><b>1</b><span>Paid CAM licence<br>replaced</span></div>
     </div>
   </div>
 </header>
@@ -400,7 +668,7 @@ img{max-width:100%}
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <span class="eyebrow">Product tour · real screens</span>
+        <span class="eyebrow section-label"><span class="section-mark">01</span> HOW IT WORKS</span>
         <h2 id="tourH" style="margin-top:8px">Follow one kitchen through the shop</h2>
         <p>Every screen below is a screenshot of my working apps with sample data loaded. The part list exported in step 4 is the same file the nesting app reads in step 5.</p>
       </div>
@@ -421,8 +689,8 @@ img{max-width:100%}
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <span class="eyebrow">Case studies</span>
-        <h2 id="appsH" style="margin-top:8px">The main tools</h2>
+        <span class="eyebrow section-label"><span class="section-mark">02</span> FEATURED PROJECTS</span>
+        <h2 id="appsH" style="margin-top:8px">Work that made <span class="serif">a difference.</span></h2>
         <p>ShopFlow and Nesting carry the most weight: production runs through one, every board is cut through the other. All four are public on GitHub as demo builds with no customer data.</p>
       </div>
     </div>
@@ -450,7 +718,7 @@ img{max-width:100%}
 <section class="block gut" id="deep" aria-labelledby="deepH">
   <div class="wrap">
     <div class="sec-head"><div>
-      <span class="eyebrow">Deep dives</span>
+      <span class="eyebrow section-label"><span class="section-mark">03</span> TECHNICAL DEEP DIVES</span>
       <h2 id="deepH" style="margin-top:8px">Two problems with no off-the-shelf fix</h2>
       <p>Drawings took the engineer hours and still had mistakes. The CNC's control software was hard to read and had no vendor support. Both needed tools that fit the machines and people we have.</p>
     </div></div>
@@ -537,7 +805,7 @@ img{max-width:100%}
 <section class="block gut" id="products" aria-labelledby="prodH">
   <div class="wrap">
     <div class="sec-head"><div>
-      <span class="eyebrow">New products</span>
+      <span class="eyebrow section-label"><span class="section-mark">04</span> OUTSIDE THE WORKSHOP</span>
       <h2 id="prodH" style="margin-top:8px">Taking the same approach beyond the workshop</h2>
       <p>Two products I'm building as businesses of their own. Both started from a problem I kept seeing around me.</p>
     </div></div>
@@ -552,7 +820,7 @@ img{max-width:100%}
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <span class="eyebrow">Index</span>
+        <span class="eyebrow section-label"><span class="section-mark">05</span> COMPLETE INDEX</span>
         <h2 id="projH" style="margin-top:8px">Everything I've built</h2>
         <p>Workshop systems, product experiments and side projects. Click a row for details.</p>
       </div>
@@ -572,7 +840,7 @@ img{max-width:100%}
 <section class="block gut" id="experience" aria-labelledby="expH">
   <div class="wrap exp">
     <div>
-      <span class="eyebrow">Experience</span>
+      <span class="eyebrow section-label"><span class="section-mark">06</span> ABOUT ME</span>
       <h2 id="expH" style="margin-top:8px;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:600;margin-bottom:24px">Business first, software second</h2>
       <div class="roles">
         <div class="role"><span class="logo">DB</span><div>
@@ -614,14 +882,14 @@ img{max-width:100%}
   <div class="wrap">
     <div class="contact" id="contact">
       <div>
-        <h2 id="contactH">Like to see how these were built?</h2>
-        <p>I'm happy to walk you through any of these apps live: the problem behind it, how it's used day to day, and what I'd do next.</p>
+        <h2 id="contactH">Have a problem worth <span class="serif">solving?</span></h2>
+        <p>I'm always happy to talk about the business problem, the build, and what actually works in practice. Let's talk.</p>
       </div>
       <div class="mailcard">
         <span class="eyebrow" style="color:inherit;opacity:.7">Email</span>
         <span class="addr" id="addr">dalius.gervinskas@gmail.com</span>
         <div class="row2">
-          <button class="btn inv" id="copyMail">Copy email</button>
+          <a class="btn inv" href="mailto:dalius.gervinskas@gmail.com">Write an email <span aria-hidden="true">↗</span></a><button class="btn" id="copyMail">Copy address</button>
           <a class="btn" href="https://github.com/gervdalius-droid" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
           <a class="btn" href="https://gervdalius-droid.github.io/shopflow/" target="_blank" rel="noopener">ShopFlow demo ↗</a>
           <a class="btn" href="https://gervdalius-droid.github.io/nesting/" target="_blank" rel="noopener">Nesting demo ↗</a>
@@ -858,7 +1126,7 @@ let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("sh
 function copyMail(){const a="dalius.gervinskas@gmail.com";
   const fb=()=>{const r=document.createRange();r.selectNodeContents($("#addr"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("#contact").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});toast("Email selected. Press Ctrl+C to copy.")};
   try{navigator.clipboard.writeText(a).then(()=>toast("Copied dalius.gervinskas@gmail.com"),fb)}catch(e){fb()}}
-$("#navMail").addEventListener("click",copyMail);$("#copyMail").addEventListener("click",copyMail);
+$("#copyMail").addEventListener("click",copyMail);
 
 /* ---------- lightbox ---------- */
 let lbList=[],lbIdx=0,lastFocus=null;
@@ -883,7 +1151,7 @@ function renderSteps(){
 }
 function go(i,v){cur=i;view=v||0;
   $$(".step").forEach((b,k)=>{b.setAttribute("aria-selected",k===i);b.tabIndex=k===i?0:-1;const bar=b.querySelector(".bar i");if(bar)bar.style.width="0"});
-  const sb=$("#st"+i);if(sb&&window.innerWidth<=980)sb.scrollIntoView({block:"nearest",inline:"nearest"});
+  const sb=$("#st"+i);if(sb&&window.innerWidth<=980){const stepsEl=$("#steps");stepsEl.scrollLeft=Math.max(0,sb.offsetLeft-stepsEl.offsetLeft-10)}
   renderStage();
 }
 function renderStage(){
@@ -907,7 +1175,10 @@ function renderStage(){
   const hl=j=>{$$("#stage .pin").forEach(p=>p.classList.toggle("on",p.dataset.p==j));$$("#stage .note").forEach(n=>n.classList.toggle("on",n.dataset.p==j))};
   $$("#stage .pin,#stage .note").forEach(el=>{el.addEventListener("mouseenter",()=>hl(el.dataset.p));el.addEventListener("mouseleave",()=>hl(-1));el.addEventListener("focus",()=>hl(el.dataset.p));el.addEventListener("blur",()=>hl(-1))});
   $$("#stage .pin").forEach(p=>p.addEventListener("click",e=>{e.stopPropagation();stopAuto();hl(p.dataset.p);const n=$(`#stage .note[data-p="${p.dataset.p}"]`);if(n&&window.innerWidth<640)n.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"})}));
-  $("#stage [data-zoom]").addEventListener("click",()=>{stopAuto();openLB(t.views.map(x=>x.k),view)});
+  const zoomImg=$("#stage [data-zoom]");
+  zoomImg.tabIndex=0;zoomImg.setAttribute("role","button");zoomImg.setAttribute("aria-label","Enlarge screenshot: "+s.cap);
+  zoomImg.addEventListener("click",()=>{stopAuto();openLB(t.views.map(x=>x.k),view)});
+  zoomImg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();zoomImg.click()}});
   $("#tPrev").addEventListener("click",()=>{stopAuto();if(cur>0)go(cur-1,0)});
   $("#tNext").addEventListener("click",()=>{stopAuto();if(cur<TOUR.length-1)go(cur+1,0);else $("#apps").scrollIntoView({behavior:reduce?"auto":"smooth"})});
 }
@@ -928,7 +1199,7 @@ $$(".stack .win").forEach(w=>w.addEventListener("click",()=>{stopAuto();go(+w.da
 function renderProds(){
   $("#prods").innerHTML=PRODS.map((c,i)=>{const s=S[c.views[0]];return `<article class="prod" data-i="${i}">
     <div class="prod-media">
-      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" style="cursor:zoom-in"></div>
+      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><button class="image-open" type="button" aria-label="Enlarge ${esc(c.name)} screenshot"><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}"></button></div>
       ${c.views.length>1?`<div class="thumbs" role="group" aria-label="${esc(c.name)} screens">${c.views.map((k,j)=>`<button aria-pressed="${j===0}" data-j="${j}" aria-label="${esc(S[k].cap)}"><img src="${S[k].src}" alt="" loading="lazy" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></button>`).join("")}</div>`:""}
     </div>
     <div class="prod-body">
@@ -942,7 +1213,7 @@ function renderProds(){
     </div></article>`}).join("");
   $$(".prod").forEach(el=>{const c=PRODS[+el.dataset.i];let j=0;
     el.querySelectorAll(".thumbs button").forEach(b=>b.addEventListener("click",()=>{j=+b.dataset.j;const s=S[c.views[j]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((x,q)=>x.setAttribute("aria-pressed",q===j))}));
-    el.querySelector("[data-main]").addEventListener("click",()=>openLB(c.views,j));});
+    el.querySelector(".image-open").addEventListener("click",()=>openLB(c.views,j));});
   $$("[data-lb]").forEach(b=>b.addEventListener("click",()=>openLB(["bSheet","bDraw"],0)));
 }
 
@@ -971,25 +1242,25 @@ function renderMore(){
 function renderCases(){
   $("#cases").innerHTML=CASES.map((c,i)=>{const s=S[c.views[0]];return `<article class="case${c.flag?" flag":""}" data-i="${i}">
     <div class="case-media">
-      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></div>
+      <div class="win"><div class="win-bar"><span class="lights"><i></i><i></i><i></i></span><span class="url"><span data-url>${esc(s.url)}</span></span></div><button class="image-open" type="button" aria-label="Enlarge ${esc(c.name)} screenshot"><img data-main src="${s.src}" alt="${esc(s.cap)}" width="${s.w}" height="${s.h}" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></button></div>
       <div class="thumbs" role="group" aria-label="${esc(c.name)} screens">${c.views.map((k,j)=>`<button aria-pressed="${j===0}" data-k="${k}" data-j="${j}" aria-label="${esc(S[k].cap)}"><img src="${S[k].src}" alt="" loading="lazy" style="aspect-ratio:1.6;object-fit:cover;object-position:top"></button>`).join("")}</div>
     </div>
     <div class="case-body">
-      <div class="case-kicker">${c.flag?`<span class="pill s-flag">Flagship</span>`:""}<span class="pill ${ST[c.status][1]}">${ST[c.status][0]}</span><span class="eyebrow">${esc(c.tag)}</span></div>
+      <div class="case-kicker"><span class="case-number mono">${String(i+1).padStart(2,"0")} / ${String(CASES.length).padStart(2,"0")}</span>${c.flag?`<span class="pill s-flag">Flagship</span>`:""}<span class="pill ${ST[c.status][1]}">${ST[c.status][0]}</span><span class="eyebrow">${esc(c.tag)}</span></div>
       <h3>${esc(c.name)}</h3>
       <div class="psi">
         <div><span class="lbl">Problem</span><span>${esc(c.problem)}</span></div>
         <div><span class="lbl">Built</span><span>${esc(c.built)}</span></div>
         <div><span class="lbl">Result</span><span>${esc(c.impact)}</span></div>
       </div>
-      ${c.hl?`<details class="hl" open><summary>What it does</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>`:""}<div class="metrics">${c.metrics.map(m=>`<div><b>${esc(m[0])}</b><span>${esc(m[1])}</span></div>`).join("")}</div>
+      ${c.hl?`<details class="hl"><summary>Explore all features</summary><ul>${c.hl.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></details>`:""}<div class="metrics">${c.metrics.map(m=>`<div><b>${esc(m[0])}</b><span>${esc(m[1])}</span></div>`).join("")}</div>
       <div class="tags">${c.stack.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
       ${c.note?`<p class="muted" style="font-size:.84rem">${esc(c.note)}</p>`:""}<div class="case-actions">${c.live?`<a class="btn primary sm" href="${c.live}" target="_blank" rel="noopener">Open live app ↗</a>`:""}<button class="btn sm" data-tour="${i}">See it in the tour</button></div>
     </div></article>`}).join("");
   $$(".case").forEach(el=>{const c=CASES[+el.dataset.i];let j=0;
     const set=k=>{j=k;const s=S[c.views[k]];const m=el.querySelector("[data-main]");m.src=s.src;m.alt=s.cap;el.querySelector("[data-url]").textContent=s.url;el.querySelectorAll(".thumbs button").forEach((b,q)=>b.setAttribute("aria-pressed",q===k))};
     el.querySelectorAll(".thumbs button").forEach(b=>b.addEventListener("click",()=>set(+b.dataset.j)));
-    el.querySelector("[data-main]").addEventListener("click",()=>openLB(c.views,j));
+    el.querySelector(".image-open").addEventListener("click",()=>openLB(c.views,j));
     el.querySelector("[data-tour]").addEventListener("click",()=>{go(CASES[+el.dataset.i].tour,0);$("#tour").scrollIntoView({behavior:reduce?"auto":"smooth"})});
   });
   $("#tools").innerHTML=TOOLS.map(t=>`<div class="tool"><div class="top"><span class="ico"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">${t.i}</svg></span><span class="pill ${ST[t.st][1]}">${ST[t.st][0]}</span></div><h4>${esc(t.n)}</h4><p>${esc(t.d)}</p><div class="tags">${t.k.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div></div>`).join("");
@@ -1032,6 +1303,18 @@ const links=$$("#navlinks a");
 if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id))}})},{rootMargin:"-45% 0px -50% 0px"});
   ["tour","apps","deep","products","projects","experience"].forEach(id=>io.observe(document.getElementById(id)))}
 
+
+/* ---------- navigation and reading progress ---------- */
+const menuButton=$("#menuToggle"), mobileMenu=$("#mobileNav");
+function setMenu(open){mobileMenu.hidden=!open;menuButton.setAttribute("aria-expanded",String(open));menuButton.setAttribute("aria-label",open?"Close navigation":"Open navigation");document.body.classList.toggle("menu-open",open)}
+menuButton.addEventListener("click",()=>setMenu(mobileMenu.hidden));
+$$("#mobileNav a").forEach(a=>a.addEventListener("click",()=>setMenu(false)));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!mobileMenu.hidden)setMenu(false)});
+document.addEventListener("click",e=>{if(!mobileMenu.hidden&&!e.target.closest(".nav"))setMenu(false)});
+let progressPending=false;
+function updateProgress(){const max=document.documentElement.scrollHeight-innerHeight;const width=max>0?Math.min(100,Math.max(0,scrollY/max*100)):0;$("#readingProgress").style.width=width+"%";progressPending=false}
+addEventListener("scroll",()=>{if(!progressPending){progressPending=true;requestAnimationFrame(updateProgress)}},{passive:true});
+addEventListener("resize",updateProgress);updateProgress();
 renderSteps();go(0,0);renderCases();renderMore();renderProds();renderChips();renderTable();
 })();
 </script>
