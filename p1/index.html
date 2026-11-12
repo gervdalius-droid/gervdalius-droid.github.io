@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="P1 Sessions">
+<meta name="theme-color" content="#050A16">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>P1 Lite Sessions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one glass dashboard frame. Sidebar (sessions, progress, key) | exercise cards | detail (holographic figure + timer, cues, muscles). Stacks on phones with the player first. Single dark look by design. */
+:root{color-scheme:dark;
+  --bg:#050A16; --panel:#0C1629; --panel2:#122140; --line:#223459; --ink:#EAF1FF; --muted:#93A6CC; --dim:#5E7198;
+  --cyan:#22D3EE; --violet:#A78BFA; --violet-d:#7C3AED;
+  --font-display:"Outfit","Segoe UI",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{background:radial-gradient(900px 520px at 12% -8%,#12284f 0%,transparent 62%),radial-gradient(820px 520px at 100% 0%,#211655 0%,transparent 58%),var(--bg);background-color:var(--bg);
+  color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;min-height:100vh;
+  padding-block:18px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}
+ul,ol{list-style:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.gb{border:1px solid transparent;background:linear-gradient(165deg,var(--panel2),var(--panel)) padding-box,linear-gradient(135deg,rgba(34,211,238,.75),rgba(124,58,237,.75)) border-box}
+
+.frame{--state:var(--cyan);max-width:1480px;margin:0 auto;border:1px solid var(--line);border-radius:20px;background:rgba(10,19,37,.78);
+  box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04);display:flex;flex-direction:column;gap:16px;padding:12px}
+.frame[data-mode="work"]{--state:var(--violet)}
+.frame[data-mode="done"]{--state:var(--ink)}
+.side{display:contents}
+.sidehead{order:1}.detail{order:2}.exs{order:3}.sidefoot{order:4}
+@media (min-width:1000px){
+  .frame{display:grid;grid-template-columns:186px minmax(0,300px) minmax(0,1fr);gap:0;padding:0}
+  .sidehead,.detail,.exs,.sidefoot{order:0}
+  .side{display:flex;flex-direction:column;gap:22px;padding:18px 14px;border-right:1px solid var(--line);background:rgba(18,33,64,.45);border-radius:19px 0 0 19px}
+  .exs{padding:18px 16px;border-right:1px solid var(--line)}
+  .detail{padding:18px}
+}
+@media (min-width:1400px){.frame{grid-template-columns:200px minmax(0,440px) minmax(0,1fr)}}
+
+.sidehead,.sidefoot{display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:16px}
+.brand svg{width:26px;height:26px;flex:none}
+h3{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sgroup{display:flex;flex-direction:column;gap:8px}
+.tabs{display:flex;gap:6px}
+@media (min-width:1000px){.tabs{flex-direction:column}}
+.tabs button{flex:1;text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:9px 12px;font-weight:600;color:var(--muted)}
+.tabs button:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.tabs button[aria-selected="true"]{color:var(--ink);background:linear-gradient(165deg,#1a2f58,#14254a) padding-box,linear-gradient(135deg,rgba(34,211,238,.7),rgba(124,58,237,.7)) border-box}
+.track{height:6px;background:#1a2a4c;border-radius:3px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet-d))}
+.small{font-size:13px;color:var(--muted)}
+.key{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.key i{width:22px;height:8px;border-radius:4px;flex:none}
+.key .kp{background:var(--violet-d);box-shadow:0 0 10px rgba(124,58,237,.8)}
+.key .ks{background:var(--cyan);box-shadow:0 0 10px rgba(34,211,238,.6)}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:7px 10px;font-size:13px;font-weight:500;color:var(--muted);text-align:left;flex:1 1 auto}
+.opt:hover{color:var(--ink);border-color:var(--dim)}
+
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.sechead h2{font-family:var(--font-display);font-weight:600;font-size:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:10px}
+.card{position:relative;width:100%;display:flex;flex-direction:column;gap:3px;text-align:center;padding:8px 8px 10px;border-radius:13px;
+  border:1px solid var(--line);background:linear-gradient(180deg,#14264a,#0d1930);min-width:0}
+.card:hover{border-color:var(--dim)}
+.card.cur{border-color:transparent;background:linear-gradient(180deg,#1a3160,#10203f) padding-box,linear-gradient(135deg,var(--cyan),var(--violet-d)) border-box;box-shadow:0 0 22px rgba(34,211,238,.22)}
+.card .th{display:block;aspect-ratio:6/5;width:100%}
+.card .th img{width:100%;height:100%;object-fit:contain;display:block}
+.card .nm{font-family:var(--font-display);font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;line-height:1.2;text-wrap:balance}
+.card .sp{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card.fin .nm{color:var(--muted)}
+.card .n{position:absolute;top:8px;left:10px;font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--dim)}
+.card.cur .n{color:var(--cyan)}
+.pips{position:absolute;top:10px;right:9px;display:flex;gap:4px}
+.pips i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--dim)}
+.pips i.on{background:var(--violet);border-color:var(--violet);box-shadow:0 0 8px rgba(167,139,250,.8)}
+.hint{font-size:12px;color:var(--dim);margin-top:12px}
+
+.dhead{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.dhead h2{flex:1;min-width:0;font-family:var(--font-display);font-weight:600;font-size:clamp(20px,2.4vw,26px);letter-spacing:.03em;text-transform:uppercase;line-height:1.1;text-wrap:balance}
+.nav{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;place-items:center}
+.nav:hover{border-color:var(--dim)}
+.nav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gear{color:var(--muted);font-size:13px;margin-bottom:14px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+@media (min-width:1180px){.dgrid{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+
+.stage{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/5;width:100%;max-height:74vh;
+  border:1px solid transparent;background:radial-gradient(90% 60% at 50% 30%,#1d3566 0%,#101d3a 55%,#0a1226 100%) padding-box,linear-gradient(135deg,var(--cyan),var(--violet-d)) border-box}
+@media (min-width:1180px){.stage{aspect-ratio:3/4;position:sticky;top:12px}}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.chip{position:absolute;top:12px;left:12px;font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--state);background:rgba(5,10,22,.6);border:1px solid color-mix(in srgb,var(--state) 55%,transparent);padding:3px 10px;border-radius:7px}
+.setlabel{position:absolute;top:14px;right:14px;font-weight:500;font-size:13px;color:var(--muted);text-align:right;max-width:55%}
+.note{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 13px;background:linear-gradient(transparent,rgba(5,10,22,.82));font-size:14.5px;font-weight:500;color:var(--ink);text-align:center;text-wrap:balance;pointer-events:none}
+.note:empty{display:none}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+
+.panels{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{border-radius:14px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.panel h3{color:var(--ink);font-size:14px;padding-bottom:8px;border-bottom:1px solid rgba(147,166,204,.22)}
+.readout{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.big{font-family:var(--font-display);font-weight:700;font-size:clamp(64px,9vw,92px);line-height:.82;color:var(--state);font-variant-numeric:tabular-nums;min-width:1.1ch;text-shadow:0 0 28px color-mix(in srgb,var(--state) 45%,transparent)}
+.rside{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.sub{font-weight:500;font-size:14px}
+.phase{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:.1em;text-transform:uppercase;color:var(--state);min-height:1.4em}
+.transport{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.tbtn{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:10px;padding:11px 8px;font-weight:600;font-size:14px;min-width:0}
+.tbtn:hover{border-color:var(--dim)}
+.playbtn{width:64px;height:64px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--cyan),var(--violet-d));color:#050A16;display:grid;place-items:center;box-shadow:0 0 26px rgba(34,211,238,.35)}
+.playbtn svg{width:26px;height:26px;fill:currentColor}
+.wrow{display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px solid rgba(147,166,204,.22)}
+.wrow .lab{flex:1;font-size:13px;color:var(--muted)}
+.wrow #wval{min-width:64px;text-align:center;font-family:var(--font-display);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.step{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:20px;line-height:1}
+.step:hover{border-color:var(--dim)}
+.vrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mic{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px;font-weight:600;font-size:14px}
+.mic i{width:10px;height:10px;border-radius:50%;background:var(--dim)}
+.mic[aria-pressed="true"]{border-color:var(--cyan)}
+.mic[aria-pressed="true"] i{background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.heard{font-size:13px;color:var(--ink);min-width:0;overflow-wrap:anywhere}
+.how{display:flex;flex-direction:column;gap:8px;counter-reset:how}
+.how li{position:relative;padding-left:30px;counter-increment:how}
+.how li::before{content:counter(how);position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--cyan);border:1px solid rgba(34,211,238,.55)}
+.cues{display:flex;flex-direction:column;gap:7px}
+.cues li{position:relative;padding-left:16px}
+.cues li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+.mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mrow .lab{font-size:12px;color:var(--muted);width:58px;flex:none}
+.mchip{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid currentColor}
+.mchip.p{color:#C4B5FD;background:rgba(124,58,237,.28);box-shadow:0 0 12px rgba(124,58,237,.35)}
+.mchip.s{color:#67E8F9;background:rgba(34,211,238,.12)}
+</style>
+
+<div class="frame" id="player" data-mode="rest">
+  <aside class="side">
+    <div class="sidehead">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#7C3AED"/></linearGradient></defs><path fill="url(#bg1)" d="M13.5 2 5 13.2h5.2L9.6 22 19 9.8h-5.6z"/></svg>
+        <span>P1 Lite Sessions</span>
+      </div>
+      <div class="sgroup">
+        <h3>Sessions</h3>
+        <div class="tabs" role="tablist" aria-label="Session">
+          <button id="tabA" role="tab" aria-selected="true">Session A</button>
+          <button id="tabB" role="tab" aria-selected="false">Session B</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidefoot">
+      <div class="sgroup">
+        <h3>Progress</h3>
+        <div class="track"><i id="sfill"></i></div>
+        <p class="small" id="overall"></p>
+      </div>
+      <div class="sgroup">
+        <h3>Muscle key</h3>
+        <div class="key"><i class="kp"></i>Main working muscles</div>
+        <div class="key"><i class="ks"></i>Helping muscles</div>
+      </div>
+      <div class="sgroup">
+        <h3>Options</h3>
+        <div class="opts">
+          <button class="opt" id="skin">Body: X-ray</button>
+          <button class="opt" id="sound">Sound on</button>
+          <button class="opt" id="restart">Restart session</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="exs" aria-label="Exercises">
+    <div class="sechead"><h2 id="planTitle">Exercises</h2><span class="small" id="planTotal"></span></div>
+    <ol class="cards" id="list"></ol>
+    <p class="hint">Tap a card to jump to that exercise. Drag the figure to turn it; double-tap resets the view. Space plays and pauses, arrow keys step back and forward.</p>
+  </section>
+
+  <section class="detail" aria-label="Player">
+    <div class="dhead">
+      <button class="nav" id="exPrev" aria-label="Previous exercise"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+      <h2 id="exname"></h2>
+      <button class="nav" id="exNext" aria-label="Next exercise"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+    </div>
+    <p class="gear" id="gear"></p>
+    <div class="dgrid">
+      <div class="stage" id="stage">
+        <canvas id="gl" aria-label="3D figure showing the exercise and the muscles it works"></canvas>
+        <div class="loading" id="loading">Loading 3D model…</div>
+        <div class="chip" id="chip">Get ready</div>
+        <div class="setlabel" id="setlabel"></div>
+        <div class="note" id="note"></div>
+      </div>
+      <div class="panels">
+        <div class="panel gb">
+          <h3>Set timer</h3>
+          <div class="readout">
+            <div class="big" id="big">0</div>
+            <div class="rside"><div class="sub" id="sub"></div><div class="phase" id="phase"></div></div>
+          </div>
+          <div class="track"><i id="fill"></i></div>
+          <div class="transport">
+            <button class="tbtn" id="prev">Back</button>
+            <button class="playbtn" id="play" aria-label="Start">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIcon" d="M7 4.5v15l13-7.5z"/></svg>
+            </button>
+            <button class="tbtn" id="next">Skip</button>
+          </div>
+          <div class="wrow">
+            <span class="lab">Weight to set on the device</span>
+            <button class="step" id="wdown" aria-label="Reduce weight">−</button>
+            <span id="wval">not set</span>
+            <button class="step" id="wup" aria-label="Increase weight">+</button>
+          </div>
+        </div>
+        <div class="panel gb">
+          <h3>How to do it</h3>
+          <ol class="how" id="how"></ol>
+        </div>
+        <div class="panel gb">
+          <h3>Coaching cues</h3>
+          <ul class="cues" id="cue"></ul>
+        </div>
+        <div class="panel gb">
+          <h3>Working muscles</h3>
+          <div class="sgroup" id="muscles"></div>
+        </div>
+        <div class="panel gb">
+          <h3>Voice control</h3>
+          <div class="vrow">
+            <button class="mic" id="mic" aria-pressed="false"><i></i><span id="micLabel">Turn on voice</span></button>
+            <span class="heard" id="heard"></span>
+          </div>
+          <p class="small" id="vhint">Say: start · stop · next · back · more weight · less weight · weight 20. Lithuanian works too: pradėk · stok · kitas · atgal · daugiau · mažiau.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/fflate.min.js"></script>
+<script src="vendor/FBXLoader.js"></script>
+<script src="vendor/RoomEnvironment.js"></script>
+<script src="man.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- exercise library ----------
+   Poses use a side-on grid: x forward (200 = centre), y down (262 = ankle height when standing), leg length 92.
+   p = hip centre, t = torso lean in degrees, roll = turn about the spine, hd = head tilt.
+   Hands h = [forward, up, outward] from the shoulder (arm length 66); up = null puts the hand on the floor.
+   Feet f = [x, y] (optional third value = fixed sideways position). */
+const ST={p:[200,171],t:0,roll:0,hd:0,hL:[2,-64,3],hR:[2,-64,3],fL:[200,262],fR:[200,262]};
+const mk=(b,o)=>{o=o||{};const r=Object.assign({},b,o);if(o.h){r.hL=r.hR=o.h;}if(o.f){r.fL=r.fR=o.f;}return r;};
+const P=o=>mk(ST,o);
+const PLK=mk(ST,{p:[204,245.4],t:81,hd:-18,h:[32,null,0],f:[113.6,260]});
+const DOG=mk(ST,{p:[174,220.7],t:74,hd:-14,h:[0,null,0],f:[128.1,266.9]});
+const HT={hd:20,f:[251.9,262]},CP={p:[232,210.2],t:-90,hd:8,f:[268,262]};
+const SP=mk(ST,{p:[204,229],t:73.3,roll:-90,hL:[0,null,-32],hR:[0,64,0],fL:[116,265.7,0],fR:[116,245.4,0]});
+const FLOORCAM={ty:.5,d:3.7,n:1.15},STANDCAM={ty:.96,d:4.2,n:.6},TALLCAM={ty:1.06,d:4.9,n:.5};
+const EX={
+  goblet:{A:P({t:2,h:[10,-5,5]}),B:P({p:[176,222],t:22,h:[10,-5,5]}),on:true,bf:true,fz:7,kp:[1,.2,.3],ep:[1,-.8,.45],palm:[1,.4,0],
+    tempo:[2,.4,1.6,.4],ph:["Down","Hold","Up"],unit:206,cab:"bar",bar:true,m:[["quads","glutes"],["abs","upback"]]},
+  widerow:{A:P({p:[185,180],t:55,hd:-25,h:[1,-62,12]}),B:P({p:[185,180],t:55,hd:-25,h:[-13,-26,16]}),fz:4,ep:[-.5,.6,1.5],palm:[-1,0,0],
+    tempo:[1.2,1,1.8,.4],ph:["Pull","Squeeze","Lower"],unit:214,cab:"bar",bar:true,m:[["upback","lats"],["biceps","lowback","delts"]]},
+  ohp:{A:P({h:[12,4,11]}),B:P({h:[6,63,8]}),on:true,fz:3,ep:[1,-.8,.5],palm:[1,0,0],
+    cam:TALLCAM,tempo:[1.4,.3,1.8,.4],ph:["Press","Top","Lower"],unit:203,cab:"both",m:[["delts"],["triceps","abs"]]},
+  hipthrust:{A:mk(ST,Object.assign({p:[195,248.4],t:-55.7,h:[50,-13,8]},HT)),B:mk(ST,Object.assign({p:[205.8,216],t:-90,h:[59,22,8]},HT)),
+    fz:5,kp:[.2,1,.1],ep:[0,-1,1],palm:[0,-1,0],cam:FLOORCAM,
+    tempo:[1.2,1,1.6,.4],ph:["Drive up","Pause","Lower"],unit:203,cab:"bar",bar:true,bench:{z0:-.9,z1:-.38,top:.42},m:[["glutes"],["hams","abs"]]},
+  curl:{A:P({h:[3,-64,3]}),B:P({h:[20,-8,3]}),on:true,fz:3,ep:[-.6,-1,.15],palm:"sup",
+    tempo:[1.3,.3,1.8,.3],ph:["Curl","Top","Lower"],unit:203,cab:"both",m:[["biceps"],["forearms"]]},
+  plank:{A:PLK,B:mk(PLK,{p:[204,244]}),timed:true,open:true,ep:[-.2,-1,0],cam:FLOORCAM,m:[["abs","obl"],["delts","glutes","quads"]]},
+  birddog:{A:DOG,B:mk(DOG,{hR:[64,2,0],fL:[84,221.5]}),alt:true,point:true,open:true,palm:[-1,-1,0],kp:[.3,-1,0],ep:[-1,0,0],cam:FLOORCAM,
+    tempo:[1.5,2,1.5,.5],ph:["Reach","Hold","Return"],m:[["lowback","glutes","abs"],["delts","hams"]]},
+  lunge:{A:P({h:[1,-65,3]}),B:P({p:[196,206],t:8,h:[-2,-65,3],fL:[140,259],fR:[214,262]}),on:true,fz:2,kp:[1,-.5,.1],ep:[-1,0,.1],palm:[0,0,-1],
+    tempo:[1.8,.3,1.5,.5],ph:["Step back","Bottom","Stand"],unit:203,cab:"both",side2:"swap",m:[["quads","glutes"],["hams","abs"]]},
+  chest:{A:mk(ST,Object.assign({h:[3,18,10]},CP)),B:mk(ST,Object.assign({h:[0,64,2]},CP)),fz:8,kp:[.2,1,.2],ep:[.6,-1,1.2],palm:[1,0,0],cam:FLOORCAM,
+    tempo:[1.4,.3,1.8,.4],ph:["Press","Top","Lower"],unit:140,cab:"both",bench:{z0:-.66,z1:.38,top:.44},m:[["chest"],["delts","triceps"]]},
+  row1:{A:P({p:[186,178],t:50,hd:-20,hL:[-48,-34,6],hR:[18,-60,0],fL:[218,262],fR:[158,262]}),
+    B:P({p:[186,178],t:50,hd:-20,hL:[-48,-34,6],hR:[-19,-30,2],fL:[218,262],fR:[158,262]}),fz:2,ep:[-1,.8,.5],palm:[0,0,-1],
+    tempo:[1.2,.6,1.8,.4],ph:["Pull","Squeeze","Lower"],unit:290,cab:"R",side2:"swap",m:[["lats","upback"],["biceps","delts","abs"]]},
+  lateral:{A:P({h:[2,-64,4]}),B:P({h:[6,-2,63]}),on:true,fz:3,ep:[-.5,1,0],palm:[0,0,-1],palmB:[0,-1,0],
+    tempo:[1.3,.3,1.8,.4],ph:["Raise","Top","Lower"],unit:203,cab:"both",m:[["delts"],["upback"]]},
+  triceps:{A:P({t:4,h:[-18,13,-20],fL:[188,262],fR:[212,262]}),B:P({t:4,h:[3,63,-20],fL:[188,262],fR:[212,262]}),fz:2,ep:[1,.6,.3],palm:[0,0,-1],
+    cam:TALLCAM,tempo:[1.3,.3,1.8,.4],ph:["Extend","Top","Lower"],unit:150,cab:"mid",m:[["triceps"],["abs","delts"]]},
+  pallof:{A:P({h:[15,-18,-20]}),B:P({h:[60,-14,-20]}),fz:6,ep:[0,-1,.7],palm:[0,0,-1],
+    tempo:[1.2,2,1.2,.5],ph:["Press out","Hold","Return"],unit:200,ux:.85,cab:"mid",side2:"flip",m:[["obl","abs"],["delts","glutes"]],
+    note:"Stand side-on: the cable pulls across your body from the side."},
+  sideplank:{A:SP,B:mk(SP,{p:[204,226.5]}),timed:true,open:true,ep:[0,-1,0],cam:FLOORCAM,m:[["obl"],["delts","glutes","abs"]]}
+};
+const HOW={
+  goblet:["Stand on the platform, feet shoulder-width apart, bar resting on the front of the shoulders.","Sit down and back until the thighs are about level with the floor.","Push through the whole foot to stand up tall."],
+  widerow:["Hinge at the hips with a flat back, bar hanging below the shoulders.","Pull the bar to the lower chest with the elbows flared out.","Squeeze for 1 s, then lower with control."],
+  ohp:["Stand on the platform with the handles at shoulder height, palms forward.","Press straight up until the arms are straight.","Lower slowly back to the shoulders."],
+  hipthrust:["Rest the upper back on the bench, bar across the hips, feet flat on the floor.","Drive the hips up until the body is level from knees to shoulders.","Pause 1 s at the top, then lower without resting on the floor."],
+  curl:["Stand tall with the handles at your sides, palms forward.","Curl the handles up to the shoulders without swinging.","Lower slowly until the arms are straight."],
+  plank:["Put the forearms on the floor with the elbows under the shoulders.","Lift the hips so the body is one line from head to heels.","Hold and keep breathing. Stop when the hips start to drop."],
+  birddog:["Start on hands and knees with a flat back.","Reach one arm forward and the opposite leg straight back.","Hold 2 s, return, then switch sides."],
+  lunge:["Stand on the platform holding the handles at your sides.","Step one foot back and lower until both knees are bent to about 90°.","Push through the front foot to stand. Finish the reps, then switch legs."],
+  chest:["Lie on the bench with the handles beside the chest and the feet on the floor.","Press both handles straight up until the arms are straight.","Lower slowly until the hands are level with the chest."],
+  row1:["Take a staggered stance and lean forward with a flat back, one handle in one hand.","Pull the handle to the hip, keeping the elbow close to the body.","Lower with control. Finish the reps, then switch arms."],
+  lateral:["Stand tall with the handles at your sides and the elbows slightly bent.","Raise the arms out to the sides up to shoulder height.","Lower slowly without shrugging."],
+  triceps:["Face away from the panel and hold the handle behind the head with both hands.","Straighten the arms overhead while the upper arms stay still.","Lower slowly back behind the head."],
+  pallof:["Stand side-on to the panel and hold the handle at the chest with both hands.","Press the handle straight out in front of you.","Hold 2 s and bring it back. Finish the reps, then face the other way."],
+  sideplank:["Lie on your side with the supporting hand under the shoulder and the feet stacked.","Lift the hips so the body is one straight line.","Hold, then switch sides."]
+};
+const MNAME={quads:"Quads",hams:"Hamstrings",glutes:"Glutes",calves:"Calves",abs:"Abs",obl:"Obliques",lowback:"Lower back",upback:"Upper back",lats:"Lats",chest:"Chest",delts:"Shoulders",biceps:"Biceps",triceps:"Triceps",forearms:"Forearms"};
+
+/* ---------- the two sessions, straight from the programme ---------- */
+const PROG={
+A:[
+ {ex:"goblet",name:"Front squat",gear:"Bar on the front of the shoulders, or goblet squat with one handle",sets:3,reps:[10,12],spec:"3 × 10–12",rest:90,cue:"Chest up, sit between the heels."},
+ {ex:"widerow",name:"Wide-grip bent-over row",gear:"Bar, or handles with elbows flared",sets:3,reps:[10,12],spec:"3 × 10–12",rest:90,cue:"Hands wider than shoulders, elbows out at about 70–90°, pull to the lower chest, squeeze 1 s. Slightly lighter weight."},
+ {ex:"ohp",name:"Standing overhead press",gear:"Both handles",sets:3,reps:[8,10],spec:"3 × 8–10",rest:90,cue:"Squeeze glutes so the lower back doesn’t arch."},
+ {ex:"hipthrust",name:"Hip thrust / glute bridge",gear:"Bar or handles across the hips",sets:3,reps:[12,12],spec:"3 × 12",rest:60,cue:"Pause 1 s at the top."},
+ {ex:"curl",name:"Biceps curl",gear:"Handles",sets:2,reps:[12,12],spec:"2 × 12",rest:60,cue:"Elbows stay at the sides."},
+ {ex:"plank",name:"Plank",gear:"Bodyweight",sets:2,secs:[30,45],spec:"2 × 30–45 s",rest:30,cue:"Straight line, squeeze glutes, hips don’t sag."},
+ {ex:"birddog",name:"Bird dog",gear:"Bodyweight",sets:2,reps:[8,8],spec:"2 × 8/side",rest:30,cue:"Opposite arm and leg, hold 2 s, hips level."}
+],
+B:[
+ {ex:"lunge",name:"Reverse lunge or split squat",gear:"Handles",sets:3,reps:[8,8],perSide:"leg",spec:"3 × 8/leg",rest:90,cue:"Front knee follows the toes."},
+ {ex:"chest",name:"Chest press on a bench",gear:"Handles on the bench, or push-ups",sets:3,reps:[8,12],spec:"3 × 8–12",rest:90,cue:"Push-ups can be done with hands raised if they’re too hard."},
+ {ex:"row1",name:"Single-arm row",gear:"One handle, staggered stance",sets:3,reps:[10,10],perSide:"side",spec:"3 × 10/side",rest:60,cue:"Elbow close to the body, don’t twist the torso."},
+ {ex:"lateral",name:"Lateral raise",gear:"Handles",sets:2,reps:[12,15],spec:"2 × 12–15",rest:60,cue:"Light weight, lead with the elbows."},
+ {ex:"triceps",name:"Overhead triceps extension",gear:"One handle, facing away from the panel",sets:2,reps:[12,12],spec:"2 × 12",rest:60,cue:"Elbows point forward, close to the head."},
+ {ex:"pallof",name:"Pallof press",gear:"One handle, standing side-on",sets:2,reps:[10,10],perSide:"side",spec:"2 × 10/side",rest:60,cue:"Press out, hold 2 s, don’t let the cable rotate you."},
+ {ex:"sideplank",name:"Side plank",gear:"Bodyweight",sets:2,secs:[20,30],perSide:"side",spec:"2 × 20–30 s/side",rest:30,cue:"Hips stacked and lifted; knees down if needed."},
+ {ex:"birddog",name:"Bird dog",gear:"Bodyweight",sets:2,reps:[8,8],spec:"2 × 8/side",rest:30,cue:"Opposite arm and leg, hold 2 s, hips level."}
+]};
+
+/* ---------- 3D figure ---------- */
+const Fig=(function(){
+  if(!window.THREE||!THREE.FBXLoader)return {ok:false};
+  const T=THREE,V=(x,y,z)=>new T.Vector3(x||0,y||0,z||0),Q=()=>new T.Quaternion();
+  const canvas=document.getElementById("gl"),stage=document.getElementById("stage");
+  let renderer;
+  try{renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});}catch(e){return {ok:false};}
+  renderer.setPixelRatio(Math.min(2.5,window.devicePixelRatio||1));
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  const scene=new T.Scene();
+  try{if(T.RoomEnvironment){const pm=new T.PMREMGenerator(renderer);scene.environment=pm.fromScene(new T.RoomEnvironment(),.04).texture;}}catch(e){}
+  const cam=new T.PerspectiveCamera(30,1.25,.1,60);
+  const COL={work:new T.Color(0x8b5cf6),rest:new T.Color(0x22d3ee)},stateCol=COL.rest.clone();let stateTarget=COL.rest;
+
+  // lights
+  scene.add(new T.HemisphereLight(0xdfe9ff,0x1a1410,.28));
+  const key=new T.SpotLight(0xfff4e6,1.15,24,.5,.6,1);key.position.set(-3.0,5.2,3.8);key.castShadow=true;
+  key.shadow.mapSize.set(2048,2048);key.shadow.bias=-.0006;key.shadow.normalBias=.02;key.shadow.radius=5;key.shadow.camera.near=1;key.shadow.camera.far=14;
+  key.target.position.set(0,.8,0);scene.add(key,key.target);
+  const rim=new T.DirectionalLight(0x4f7dff,1.1);rim.position.set(2.4,2.6,-3.2);scene.add(rim);
+  const fill=new T.PointLight(0xffe2c4,.3,12);fill.position.set(-2,1.4,-2.5);scene.add(fill);
+
+  // floor: soft pool of light, shadow catcher, two thin rings in the state colour
+  const fc=document.createElement("canvas");fc.width=fc.height=512;const fx=fc.getContext("2d"),fg=fx.createRadialGradient(256,256,0,256,256,256);
+  fg.addColorStop(0,"rgba(52,84,150,.9)");fg.addColorStop(.35,"rgba(30,48,96,.6)");fg.addColorStop(1,"rgba(10,18,38,0)");fx.fillStyle=fg;fx.fillRect(0,0,512,512);
+  const ftex=new T.CanvasTexture(fc);ftex.encoding=T.sRGBEncoding;
+  const floor=new T.Mesh(new T.CircleGeometry(6,64),new T.MeshBasicMaterial({map:ftex,transparent:true,depthWrite:false,toneMapped:false}));
+  floor.rotation.x=-Math.PI/2;scene.add(floor);
+  const shadow=new T.Mesh(new T.CircleGeometry(6,32),new T.ShadowMaterial({opacity:.36}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.001;shadow.receiveShadow=true;scene.add(shadow);
+  const ringMat=new T.MeshBasicMaterial({color:0x22c9a4,transparent:true,opacity:.45});
+  const rings=[[1.78,1.8],[2.5,2.508]].map(r=>{const m=new T.Mesh(new T.RingGeometry(r[0],r[1],96),ringMat);m.rotation.x=-Math.PI/2;m.position.y=.004;scene.add(m);return m;});
+
+  /* ----- equipment, modelled to the P1 Lite's published size: 750 x 350 x 55 mm ----- */
+  const PLAT=.055,UW=.75,UD=.35,OUT=.33;
+  const M=(o)=>new T.MeshStandardMaterial(o);
+  const shell=M({color:0x08090a,roughness:.78,metalness:0,envMapIntensity:.15}),rubber=M({color:0x07080a,roughness:.85,metalness:0,envMapIntensity:.25});
+  const steel=M({color:0xc9d0d8,roughness:.22,metalness:1,envMapIntensity:1.1}),blackSteel=M({color:0x1b1e22,roughness:.35,metalness:.9});
+  const vinyl=M({color:0x15171a,roughness:.55,metalness:0,envMapIntensity:.5}),strapM=M({color:0x0c0d0f,roughness:.9,metalness:0,envMapIntensity:.3});
+  const cord=M({color:0x8d959e,roughness:.6,metalness:.3});
+  const glow=M({color:0x050505,emissive:0x22c9a4,emissiveIntensity:1.8,roughness:.4});
+  const rr=(w,h,r)=>{const s=new T.Shape(),x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;};
+  const slab=(w,d,h,r,mat)=>{const b=.006,g=new T.ExtrudeGeometry(rr(w-2*b,d-2*b,r),{depth:h-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments:4,curveSegments:16});g.rotateX(-Math.PI/2);g.translate(0,b,0);const m=new T.Mesh(g,mat);m.castShadow=m.receiveShadow=true;return m;};
+  const add=(g,m,x,y,z)=>{m.position.set(x||0,y||0,z||0);m.castShadow=true;g.add(m);return m;};
+
+  const unit=new T.Group();unit.add(slab(UW,UD,PLAT,.045,shell));
+  (function(){ // anti-slip standing pad with the wordmark
+    const c=document.createElement("canvas");c.width=1024;c.height=420;const x=c.getContext("2d");
+    x.fillStyle="#17191c";x.fillRect(0,0,1024,420);x.strokeStyle="rgba(255,255,255,.055)";x.lineWidth=2;
+    for(let i=-420;i<1024;i+=14){x.beginPath();x.moveTo(i,0);x.lineTo(i+420,420);x.stroke();x.beginPath();x.moveTo(i+420,0);x.lineTo(i,420);x.stroke();}
+    x.fillStyle="rgba(255,255,255,.62)";x.font="700 46px Arial, Helvetica, sans-serif";x.textAlign="center";x.textBaseline="middle";
+    const word="INNODIGYM";let px=512-(word.length-1)*21;for(const ch of word){x.fillText(ch,px,372);px+=42;}
+    const tex=new T.CanvasTexture(c);tex.encoding=T.sRGBEncoding;tex.anisotropy=8;
+    const pw=.5,pd=.27,g=new T.ShapeGeometry(rr(pw,pd,.025),12);
+    const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,.5+uv.getX(i)/pw,.5+uv.getY(i)/pd);
+    g.rotateX(-Math.PI/2);const m=new T.Mesh(g,M({map:tex,roughness:.92,metalness:0,envMapIntensity:.25}));m.position.y=PLAT+.0006;m.receiveShadow=true;unit.add(m);
+  })();
+  [-1,1].forEach(sg=>{ // cable outlets with swivel collars
+    const ring=new T.Mesh(new T.TorusGeometry(.03,.006,12,40),steel);ring.rotation.x=Math.PI/2;add(unit,ring,sg*OUT,PLAT+.003,0);
+    add(unit,new T.Mesh(new T.CylinderGeometry(.024,.024,.004,32),rubber),sg*OUT,PLAT+.002,0);
+    add(unit,new T.Mesh(new T.CylinderGeometry(.011,.015,.026,20),blackSteel),sg*OUT,PLAT+.013,0);
+    add(unit,new T.Mesh(new T.BoxGeometry(.3,.005,.006),glow),0,PLAT*.5,sg*(UD/2+.0005)).castShadow=false;
+  });
+  add(unit,new T.Mesh(new T.CylinderGeometry(.012,.012,.004,24),glow),UW/2-.045,PLAT+.001,-UD/2+.04).castShadow=false;
+  scene.add(unit);
+
+  const cables=[0,1].map(()=>{const m=new T.Mesh(new T.CylinderGeometry(.0038,.0038,1,8),cord);m.castShadow=true;scene.add(m);return m;});
+  const mkHandle=()=>{const g=new T.Group(),grip=new T.Mesh(new T.CylinderGeometry(.0165,.0165,.112,20),rubber);grip.rotation.z=Math.PI/2;add(g,grip);
+    [-1,1].forEach(sg=>{const cap=new T.Mesh(new T.CylinderGeometry(.019,.019,.008,20),steel);cap.rotation.z=Math.PI/2;add(g,cap,sg*.06,0,0);
+      const L=Math.hypot(.06,.085),st=new T.Mesh(new T.BoxGeometry(.022,L,.003),strapM);st.rotation.z=sg*Math.atan2(.06,.085);add(g,st,sg*.03,-.0425,0);});
+    const ring=new T.Mesh(new T.TorusGeometry(.012,.003,8,20),steel);add(g,ring,0,-.092,0);scene.add(g);return g;};
+  const grips=[mkHandle(),mkHandle()],APEX=.1;
+  const bar=new T.Group();(function(){const b=new T.Mesh(new T.CylinderGeometry(.0125,.0125,1.2,20),blackSteel);b.rotation.z=Math.PI/2;add(bar,b);
+    [-1,1].forEach(sg=>{const s=new T.Mesh(new T.CylinderGeometry(.0135,.0135,.14,20),steel);s.rotation.z=Math.PI/2;add(bar,s,sg*.53,0,0);
+      const h=new T.Mesh(new T.TorusGeometry(.016,.0035,8,20),steel);h.rotation.y=Math.PI/2;add(bar,h,sg*OUT,-.026,0);});scene.add(bar);})();
+  const bench=new T.Group(),bpad=new T.Group();bench.add(bpad);let benchKey="";
+  const legMat=blackSteel;scene.add(bench);
+  function buildBench(b){
+    const key=b.z0+"|"+b.z1+"|"+b.top;if(key===benchKey)return;benchKey=key;
+    while(bench.children.length)bench.remove(bench.children[0]);
+    const len=b.z1-b.z0,zc=(b.z0+b.z1)/2,p=slab(.3,len,.065,.03,vinyl);p.position.set(0,b.top-.065,zc);bench.add(p);
+    const board=new T.Mesh(new T.BoxGeometry(.24,.02,len-.06),legMat);add(bench,board,0,b.top-.075,zc);
+    const h=b.top-.085;[b.z0+.14,b.z1-.14].forEach(z=>{add(bench,new T.Mesh(new T.BoxGeometry(.04,h,.04),legMat),0,h/2,z);
+      add(bench,new T.Mesh(new T.BoxGeometry(.42,.03,.045),legMat),0,.015,z);
+      [-1,1].forEach(sg=>add(bench,new T.Mesh(new T.BoxGeometry(.05,.012,.05),rubber),sg*.19,.006,z));});
+    add(bench,new T.Mesh(new T.BoxGeometry(.03,.03,len-.3),legMat),0,.1,zc);
+  }
+
+  // camera rig
+  const C={az:.5,el:.1,ty:.96,d:4.2,tty:.96,td:4.2,n:.6,tn:.6,drag:false};
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let px=0,py=0;
+  canvas.addEventListener("pointerdown",e=>{C.drag=true;px=e.clientX;py=e.clientY;try{canvas.setPointerCapture(e.pointerId);}catch(_){}});
+  canvas.addEventListener("pointermove",e=>{if(!C.drag)return;C.az+=(e.clientX-px)*.008;C.el=Math.max(.02,Math.min(1.1,C.el+(e.clientY-py)*.005));px=e.clientX;py=e.clientY;});
+  const up=()=>{C.drag=false;};canvas.addEventListener("pointerup",up);canvas.addEventListener("pointercancel",up);
+  canvas.addEventListener("dblclick",()=>{C.az=.5;C.el=.1;});
+  function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener("resize",resize);
+  resize();
+
+  /* ----- the body: a rigged, photo-textured athlete from Microsoft's open Rocketbox library ----- */
+  const F={ok:true,ready:false,failed:false};
+  const BONE={Hips:"Pelvis",Head:"Head",LeftArm:"L_UpperArm",LeftForeArm:"L_Forearm",LeftHand:"L_Hand",RightArm:"R_UpperArm",RightForeArm:"R_Forearm",RightHand:"R_Hand",
+    LeftUpLeg:"L_Thigh",LeftLeg:"L_Calf",LeftFoot:"L_Foot",RightUpLeg:"R_Thigh",RightLeg:"R_Calf",RightFoot:"R_Foot"};
+  let HR={},lastEnds=[],B={},rest={},L={},uni={uP:{value:new T.Color(.34,.07,1)},uS:{value:new T.Color(.03,.72,1)},uG:{value:.4}},body=null;
+  const fail=()=>{F.failed=true;document.getElementById("loading").textContent="The 3D model could not load";};
+  const tex=(f,srgb)=>{const t=new T.TextureLoader().load(f);if(srgb)t.encoding=T.sRGBEncoding;t.anisotropy=8;return t;};
+  try{
+    const bin=atob(window.MAN_FBX||"");if(!bin.length)throw 0;
+    const buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);window.MAN_FBX=null;
+    const warn=console.warn;console.warn=()=>{};let fbx;try{fbx=new T.FBXLoader().parse(buf.buffer,"");}finally{console.warn=warn;}
+    const root=new T.Group();root.scale.setScalar(.01);root.add(fbx);scene.add(root);
+    fbx.traverse(o=>{if(o.isLight)o.visible=false;});
+    root.updateMatrixWorld(true);
+    const find=n=>{let r=null;fbx.traverse(o=>{if(o.isBone&&o.name==="Bip01_"+n)r=o;});return r;};
+    for(const k in BONE){B[k]=find(BONE[k]);if(!B[k])throw 0;}
+    for(const n in B){rest[n]={q:B[n].quaternion.clone(),wq:B[n].getWorldQuaternion(Q()),wp:B[n].getWorldPosition(V())};}
+    const dist=(a,b)=>rest[a].wp.distanceTo(rest[b].wp);
+    L.thigh=dist("LeftUpLeg","LeftLeg");L.shin=dist("LeftLeg","LeftFoot");L.ua=dist("LeftArm","LeftForeArm");L.fa=dist("LeftForeArm","LeftHand");
+    L.s=(L.thigh+L.shin)/92;L.ka=(L.ua+L.fa)/66;L.aH=rest.LeftFoot.wp.y;L.hipLat=Math.abs(rest.LeftUpLeg.wp.x);
+    const hjc=rest.LeftUpLeg.wp.clone().add(rest.RightUpLeg.wp).multiplyScalar(.5);
+    L.hipOff=rest.Hips.wp.clone().sub(hjc);
+    L.child={};[["LeftArm","LeftForeArm"],["LeftForeArm","LeftHand"],["RightArm","RightForeArm"],["RightForeArm","RightHand"],["LeftUpLeg","LeftLeg"],["LeftLeg","LeftFoot"],["RightUpLeg","RightLeg"],["RightLeg","RightFoot"]]
+      .forEach(([a,b])=>L.child[a]=B[b].position.clone().normalize());
+    const fingers=[];fbx.traverse(o=>{if(o.isBone){const m=/_([LR])_Finger(\d)(\d?)$/.exec(o.name);if(m)fingers.push({b:o,q:o.quaternion.clone(),side:m[1],thumb:m[2]==="0",tip:!!m[3]});}});
+    F.fingers=(aL,aR)=>{const av=V(0,0,1);fingers.forEach(f=>{const a=(f.side==="L"?aL:aR)*(f.thumb?(f.tip?.35:0):(f.tip?1.05:.85));f.b.quaternion.copy(f.q).multiply(Q().setFromAxisAngle(av,a));});};
+    [["L","Left",1],["R","Right",-1]].forEach(([o,S_,sg])=>{const hw=rest[S_+"Hand"].wp,fp=n=>find(o+"_Finger"+n).getWorldPosition(V());
+      const f0=fp(2).sub(hw).normalize();let p0=fp(1).sub(hw).cross(fp(4).sub(hw)).normalize();if(p0.dot(V(-sg,-1,0))<0)p0.negate();
+      p0.sub(f0.clone().multiplyScalar(p0.dot(f0))).normalize();
+      HR[o]={f0,p0,qi:Q().setFromRotationMatrix(new T.Matrix4().makeBasis(f0,p0,f0.clone().cross(p0))).invert()};});
+    F.fingers(1,1);
+    fbx.traverse(o=>{
+      if(!o.isSkinnedMesh)return;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;
+      const inject=(m,holo)=>{m.customProgramCacheKey=()=>holo?"holo":"real";m.onBeforeCompile=sh=>{
+          sh.uniforms.uP=uni.uP;sh.uniforms.uS=uni.uS;sh.uniforms.uG=uni.uG;
+          sh.vertexShader=sh.vertexShader.replace("#include <common>","attribute vec2 aM;varying vec2 vM;\n#include <common>").replace("#include <begin_vertex>","#include <begin_vertex>\nvM=aM;");
+          sh.fragmentShader=sh.fragmentShader.replace("#include <common>","varying vec2 vM;uniform vec3 uP;uniform vec3 uS;uniform float uG;\n#include <common>")
+            .replace("#include <color_fragment>","#include <color_fragment>\nfloat m1=clamp(vM.x,0.,1.);float m2=clamp(vM.y,0.,1.)*(1.-m1);"+(holo
+              ?"float sk=smoothstep(.08,.6,dot(diffuseColor.rgb,vec3(.3,.5,.2)));vec3 hb=vec3(.035,.1,.24)*(.4+1.25*sk);diffuseColor.rgb=mix(hb,uP*(.2+.5*sk),m1);diffuseColor.rgb=mix(diffuseColor.rgb,uS*(.12+.3*sk),m2);"
+              :"float lum=dot(diffuseColor.rgb,vec3(.3,.5,.2));diffuseColor.rgb=mix(diffuseColor.rgb,uP*(.25+lum*1.1),m1*.9);diffuseColor.rgb=mix(diffuseColor.rgb,uS*(.25+lum*1.1),m2*.8);"))
+            .replace("#include <emissivemap_fragment>","#include <emissivemap_fragment>\n"+(holo
+              ?"float fr=pow(1.-clamp(abs(dot(normalize(vViewPosition),normal)),0.,1.),2.2);totalEmissiveRadiance+=vec3(.08,.42,1.)*(fr*.75+pow(fr,4.)*1.2)+uP*m1*(.14+uG*.5)+uS*m2*(.1+uG*.08);"
+              :"totalEmissiveRadiance+=uP*m1*(.08+uG*.4)+uS*m2*.1;"));
+        };return m;};
+      const nb=tex("man_body_normal.jpg"),nh=tex("man_head_normal.jpg"),olds=[].concat(o.material).map(m=>/head/i.test(m.name));
+      const real=olds.map(head=>{const m=M({map:tex(head?"man_head_color.jpg":"man_body_color.jpg",true),normalMap:head?nh:nb,roughness:.62,metalness:0,envMapIntensity:.55});return head?m:inject(m,false);});
+      const holo=olds.map((head,i)=>{const m=inject(M({map:real[i].map,normalMap:head?nh:nb,roughness:.42,metalness:.1,envMapIntensity:.35}),true);m.normalScale.set(1.5,1.5);return m;});
+      F.setSkin=x=>{const a=x?holo:real;o.material=a.length>1?a:a[0];};F.setSkin(true);
+      body=o;buildRegions(o);
+    });
+    if(!body)throw 0;
+    F.ready=true;document.getElementById("loading").hidden=true;
+  }catch(e){try{console.error("model",e&&e.message||e);}catch(_){}fail();}
+
+  /* muscle regions painted from landmarks on the skeleton, so each area follows the body it sits on */
+  function ss(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);}
+  function band(x,a,b,c,d){return ss(a,b,x)*(1-ss(c,d,x));}
+  function buildRegions(mesh){
+    const geo=mesh.geometry,pos=geo.attributes.position,si=geo.attributes.skinIndex,sw=geo.attributes.skinWeight,n=pos.count;
+    const names=mesh.skeleton.bones.map(b=>b.name.replace("Bip01_","").replace(/^[LR]_/,""));
+    const R={};Object.keys(MNAME).forEach(k=>R[k]=new Float32Array(n));
+    const hipY=rest.LeftUpLeg.wp.y,kneeY=rest.LeftLeg.wp.y,ankY=rest.LeftFoot.wp.y,S=rest.LeftArm.wp,E=rest.LeftForeArm.wp,shY=S.y;
+    const ax_=E.clone().sub(S),al2=ax_.lengthSq(),v=V(),d=V();mesh.updateMatrixWorld(true);
+    for(let i=0;i<n;i++){
+      v.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld);
+      const w={};[[si.getX(i),sw.getX(i)],[si.getY(i),sw.getY(i)],[si.getZ(i),sw.getZ(i)],[si.getW(i),sw.getW(i)]].forEach(([idx,wt])=>{if(wt>0){const nm=names[idx];w[nm]=(w[nm]||0)+wt;}});
+      const g=k=>w[k]||0,ax=Math.abs(v.x),y=v.y,z=v.z;
+      const tw=g("Pelvis")+g("Spine")+g("Spine1")+g("Spine2")+g("Neck")+g("Clavicle"),ua=g("UpperArm"),th=g("Thigh");
+      const nT=(y-hipY)/(shY-hipY),r=(y-kneeY)/(hipY-kneeY),fT=ss(-.035,.035,z),bT=1-fT,sd=ss(.1,.15,ax);
+      d.set(ax,y,z).sub(S);const u=d.dot(ax_)/al2,dS=d.length(),fA=ss(-.02,.015,z-(S.z+(E.z-S.z)*u));
+      const legF=ss(-.03,.03,z-.012);
+      R.quads[i]=th*legF*band(r,.03,.14,.9,1.04);
+      R.hams[i]=th*(1-legF)*band(r,.03,.14,.7,.8);
+      R.glutes[i]=(th+tw)*ss(.015,-.035,z)*band(r,.7,.82,1.2,1.3);
+      R.calves[i]=g("Calf")*ss(.03,-.02,z-.01)*band((y-ankY)/(kneeY-ankY),.3,.45,.95,1.05);
+      R.abs[i]=tw*fT*(1-sd*.9)*band(nT,.0,.1,.6,.68);
+      R.obl[i]=tw*ss(.095,.135,ax)*ss(-.1,-.03,z)*band(nT,.06,.14,.58,.66);
+      R.lowback[i]=tw*bT*(1-ss(.08,.13,ax))*band(nT,.02,.1,.4,.5);
+      R.chest[i]=(tw+ua)*fT*band(nT,.64,.72,.9,.99)*ss(.2,.15,ax);
+      R.upback[i]=(tw+ua*.5)*bT*band(nT,.64,.74,1.1,1.18)*ss(.2,.15,ax);
+      R.lats[i]=(tw+ua*.5)*bT*ss(.06,.11,ax)*band(nT,.36,.46,.8,.9)*ss(.24,.2,ax);
+      const delt=Math.max((ua+g("Clavicle"))*ss(.34,.22,u)*ss(.15,.18,ax),ss(.11,.075,dS)*ss(.14,.17,ax));
+      R.delts[i]=delt;
+      R.biceps[i]=ua*ss(.18,.3,u)*fA*(1-delt);
+      R.triceps[i]=ua*ss(.18,.3,u)*(1-fA)*(1-delt);
+      R.forearms[i]=g("Forearm");
+    }
+    geo.setAttribute("aM",new T.BufferAttribute(new Float32Array(n*2),2));
+    mesh.userData.R=R;
+  }
+  F.setMuscles=function(m){
+    if(!F.ready)return;
+    const R=body.userData.R,a=body.geometry.attributes.aM,arr=a.array,n=a.count;
+    for(let i=0;i<n;i++){let p=0,s=0;for(const k of m[0])p+=R[k][i];for(const k of m[1])s+=R[k][i];arr[2*i]=Math.min(1,p*1.15);arr[2*i+1]=Math.min(1,s*1.1);}
+    a.needsUpdate=true;
+  };
+
+  /* posing */
+  const X=V(1,0,0),Y=V(0,1,0);
+  function aim(name,dir){
+    const b=B[name],pq=b.parent.getWorldQuaternion(Q()),q0=pq.clone().multiply(rest[name].q),d0=L.child[name].clone().applyQuaternion(q0);
+    const wq=Q().setFromUnitVectors(d0.normalize(),dir.clone().normalize()).multiply(q0);
+    b.quaternion.copy(pq.invert().multiply(wq));b.updateMatrixWorld(true);return wq;
+  }
+  function ik(a,b,l1,l2,pole){
+    const dir=b.clone().sub(a);const d0=dir.length()||1e-4;const n=dir.clone().multiplyScalar(1/d0);
+    const d=Math.min(l1+l2-.004,Math.max(Math.abs(l1-l2)+.004,d0));
+    const pp=pole.clone().sub(n.clone().multiplyScalar(pole.dot(n)));if(pp.lengthSq()<1e-6)pp.set(0,0,1).sub(n.clone().multiplyScalar(n.z));pp.normalize();
+    const x=(l1*l1-l2*l2+d*d)/(2*d),h=Math.sqrt(Math.max(0,l1*l1-x*x));
+    return {j:a.clone().add(n.clone().multiplyScalar(x)).add(pp.multiplyScalar(h)),e:a.clone().add(n.multiplyScalar(d))};
+  }
+  const lerp=(a,b,k)=>a+(b-a)*k;
+  let hands={L:V(),R:V()},handDir={L:V(),R:V()},handF={L:V(),R:V()},handP={L:V(),R:V()},curl={L:1,R:1};
+  F.pose=function(ex,k,swap,flip){
+    if(!F.ready)return;
+    const A=ex.A,Bp=ex.B,s=L.s,ka=L.ka,yOff=ex.on?PLAT:0;
+    const uz=((ex.unit||200)-200)*s,ux=ex.ux||0;
+    const qYaw=Q().setFromAxisAngle(Y,flip?Math.PI:0);
+    const yaw=v=>flip?v.set(-v.x,v.y,-v.z):v;
+    const W=(x,y,lat)=>yaw(V(lat,(262-y)*s+L.aH,(x-200)*s));
+    const t=lerp(A.t,Bp.t,k)*Math.PI/180,roll=lerp(A.roll||0,Bp.roll||0,k)*Math.PI/180,hd=lerp(A.hd||0,Bp.hd||0,k)*Math.PI/180;
+    const qd=qYaw.clone().multiply(Q().setFromAxisAngle(X,t)).multiply(Q().setFromAxisAngle(Y,roll));
+    const hjc=W(lerp(A.p[0],Bp.p[0],k),lerp(A.p[1],Bp.p[1],k),0);hjc.y+=yOff;
+    const hp=hjc.clone().add(L.hipOff.clone().applyQuaternion(qd));
+    const par=B.Hips.parent;par.updateWorldMatrix(true,false);
+    B.Hips.position.copy(par.worldToLocal(hp.clone()));
+    B.Hips.quaternion.copy(par.getWorldQuaternion(Q()).invert().multiply(qd.clone().multiply(rest.Hips.wq)));
+    B.Head.quaternion.copy(rest.Head.q);
+    B.Hips.updateMatrixWorld(true);
+    if(hd){const hpq=B.Head.parent.getWorldQuaternion(Q()),hw=Q().setFromAxisAngle(X.clone().applyQuaternion(qd),hd).multiply(hpq.clone().multiply(rest.Head.q));B.Head.quaternion.copy(hpq.invert().multiply(hw));}
+    [["Left",1],["Right",-1]].forEach(([S_,sg])=>{
+      const own=sg>0?"L":"R",src=swap?(sg>0?"R":"L"):own;
+      const sh=B[S_+"Arm"].getWorldPosition(V());
+      const tgt=spec=>{const o=V(spec[2]*ka*sg,(spec[1]||0)*ka,spec[0]*ka);if(ex.bf)o.applyQuaternion(qd);else yaw(o);const p=sh.clone().add(o);if(spec[1]==null)p.y=.045;return p;};
+      const dv=v=>ex.bf?v.applyQuaternion(qd):yaw(v);const tA=tgt(A["h"+src]),tB=tgt(Bp["h"+src]),ht=tA.clone().lerp(tB,k);
+      {const o=ht.clone().sub(sh),l0=o.length(),l1=lerp(tA.distanceTo(sh),tB.distanceTo(sh),k);if(l0>1e-4)ht.copy(sh).add(o.multiplyScalar(l1/l0));}
+      const ep=ex.ep||[-.5,-1,.3],r=ik(sh,ht,L.ua,L.fa,dv(V(ep[2]*sg,ep[1],ep[0])));
+      aim(S_+"Arm",r.j.clone().sub(sh));aim(S_+"ForeArm",r.e.clone().sub(r.j));
+      hands[own].copy(r.e);handDir[own].copy(r.e).sub(r.j).normalize();
+      { // wrist: turn the palm the way the grip needs, or lay the hand flat on the floor
+        const hb=B[S_+"Hand"],hpq=hb.parent.getWorldQuaternion(Q()),hr=HR[own],rw=rest[S_+"Hand"].wq;
+        let wq=hpq.clone().multiply(rest[S_+"Hand"].q);
+        const orient=(Fv,Pv)=>{const Pn=Pv.clone().sub(Fv.clone().multiplyScalar(Pv.dot(Fv)));if(Pn.lengthSq()<1e-4)return null;Pn.normalize();
+          return Q().setFromRotationMatrix(new T.Matrix4().makeBasis(Fv,Pn,Fv.clone().cross(Pn))).multiply(hr.qi).multiply(rw);};
+        const pa=ex.palm,pb=ex.palmB||ex.palm;let pv=null;
+        if(pa==="sup")pv=sh.clone().sub(r.e);else if(pa)pv=dv(V(lerp(pa[2],pb[2],k)*sg,lerp(pa[1],pb[1],k),lerp(pa[0],pb[0],k)));
+        if(pv){const q=orient(handDir[own],pv);if(q)wq=q;}
+        const fw=(A["h"+src][1]==null?1-k:0)+(Bp["h"+src][1]==null?k:0);
+        if(fw>0){const q=orient(yaw(V(0,0,1)),V(0,-1,0));if(q)wq.slerp(q,fw);}
+        hb.quaternion.copy(hpq.invert().multiply(wq));
+        const dq=wq.clone().multiply(rw.clone().invert());
+        handF[own].copy(hr.f0).applyQuaternion(dq);handP[own].copy(hr.p0).applyQuaternion(dq);
+        curl[own]=ex.open?.08:ex.cab==="mid"?.55:1;
+      }
+      const hj=B[S_+"UpLeg"].getWorldPosition(V());
+      const ft=spec=>{const p=W(spec[0],spec[1],spec[2]!=null?spec[2]*s:sg*(L.hipLat+(ex.fz||2)*s));
+        if(yOff&&Math.abs(p.z-uz)<UD/2+.04&&Math.abs(p.x-ux)<UW/2)p.y+=yOff;return p;};
+      const fa=ft(A["f"+src]).lerp(ft(Bp["f"+src]),k);
+      const kp=ex.kp||[1,.2,.15],lr=ik(hj,fa,L.thigh,L.shin,yaw(V(kp[2]*sg,kp[1],kp[0])));
+      aim(S_+"UpLeg",lr.j.clone().sub(hj));
+      const lq=aim(S_+"Leg",lr.e.clone().sub(lr.j));
+      const shin=lr.e.clone().sub(lr.j).normalize(),w=ss(.5,.8,-shin.y);
+      let inh=lq.clone().multiply(rest[S_+"Foot"].q);
+      if(ex.point)inh=Q().setFromAxisAngle(yaw(X.clone()),1.1).multiply(inh);
+      const flat=qYaw.clone().multiply(rest[S_+"Foot"].wq);
+      B[S_+"Foot"].quaternion.copy(lq.clone().invert().multiply(inh.slerp(flat,w)));
+    });
+    // equipment
+    unit.visible=ex.unit!=null;unit.position.set(ux,0,uz);
+    F.fingers(curl.L,curl.R);
+    const palm=(o,d)=>hands[o].clone().add(handF[o].clone().multiplyScalar(ex.gf!=null?ex.gf:.08)).add(handP[o].clone().multiplyScalar(d||.032));
+    const knuck=o=>handF[o].clone().cross(handP[o]).normalize();
+    const pL=palm("L"),pR=palm("R"),mid=pL.clone().add(pR).multiplyScalar(.5),out=sg=>V(ux+sg*OUT,PLAT+.02,uz);
+    const sets=[]; // [outlet, handle centre, grip axis]
+    if(ex.cab==="both")sets.push([out(flip?-1:1),pL,knuck("L")],[out(flip?1:-1),pR,knuck("R")]);
+    else if(ex.cab==="mid")sets.push([out(ex.outlet||-1),palm("L",.012).add(palm("R",.012)).multiplyScalar(.5),handF.L.clone().add(handF.R).normalize()]);
+    else if(ex.cab==="R")sets.push([out((swap?1:-1)*(flip?-1:1)),swap?pL:pR,knuck(swap?"L":"R")]);
+    const ends=[];
+    grips.forEach((g,i)=>{const e=sets[i];g.visible=!!e;if(!e)return;
+      const xv=e[2],yv=e[1].clone().sub(e[0]);yv.sub(xv.clone().multiplyScalar(yv.dot(xv))).normalize();
+      const zv=xv.clone().cross(yv).normalize();
+      g.position.copy(e[1]);g.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(xv,yv,zv));
+      ends.push([e[0],e[1].clone().sub(yv.multiplyScalar(APEX))]);});
+    bar.visible=!!ex.bar;
+    if(ex.bar){bar.position.copy(mid);[1,-1].forEach(sg=>ends.push([out(sg),mid.clone().add(V(sg*OUT,-.04,0))]));}
+    lastEnds=ends;
+    cables.forEach((c,i)=>{const e=ends[i];c.visible=!!e;if(!e)return;const d=e[1].clone().sub(e[0]),len=d.length();
+      c.position.copy(e[0]).add(e[1]).multiplyScalar(.5);c.scale.set(1,len,1);c.quaternion.setFromUnitVectors(Y,d.multiplyScalar(1/len));});
+    bench.visible=!!ex.bench;if(ex.bench)buildBench(ex.bench);
+    const c=ex.cam||STANDCAM;C.tty=c.ty;C.td=c.d;C.tn=c.n;
+  };
+  F.frame=function(mode,k,now){
+    stateTarget=mode==="work"?COL.work:COL.rest;stateCol.lerp(stateTarget,.08);
+    rim.color.copy(stateCol);glow.emissive.copy(stateCol);ringMat.color.copy(stateCol);
+    uni.uG.value=mode==="work"?.2+.8*k:.3;
+    C.ty+=(C.tty-C.ty)*.06;C.d+=(C.td-C.d)*.06;
+    C.n+=((C.tn||1.15)-C.n)*.06;const narrow=Math.max(1,C.n/cam.aspect);
+    const az=C.az+(reduce||C.drag?0:.07*Math.sin(now*.00035)),d=C.d*narrow;
+    cam.position.set(-Math.cos(az)*Math.cos(C.el)*d,C.ty+Math.sin(C.el)*d,Math.sin(az)*Math.cos(C.el)*d);
+    cam.lookAt(0,C.ty,0);
+    renderer.render(scene,cam);
+  };
+  F.cam=C;
+  F.clearance=function(){ // how far cables and bar stay from the body (negative = passing through)
+    const wp=n=>B[n].getWorldPosition(V()),caps=[],add=(n,a,b,r)=>caps.push({n,a,b,r});
+    const shL=wp("LeftArm"),shR=wp("RightArm"),neck=shL.clone().add(shR).multiplyScalar(.5),hd=wp("Head");
+    add("torso",wp("Hips"),neck,.12);add("torsoL",wp("LeftUpLeg"),shL,.08);add("torsoR",wp("RightUpLeg"),shR,.08);
+    add("head",hd,hd.clone().add(hd.clone().sub(neck).normalize().multiplyScalar(.1)),.1);
+    ["Left","Right"].forEach(s=>{add(s+"Thigh",wp(s+"UpLeg"),wp(s+"Leg"),.075);add(s+"Shin",wp(s+"Leg"),wp(s+"Foot"),.05);add(s+"UArm",wp(s+"Arm"),wp(s+"ForeArm"),.045);add(s+"FArm",wp(s+"ForeArm"),wp(s+"Hand"),.038);});
+    const sd=(p,a,b)=>{const ab=b.clone().sub(a),t=Math.max(0,Math.min(1,p.clone().sub(a).dot(ab)/ab.lengthSq()));return p.distanceTo(a.clone().add(ab.multiplyScalar(t)));};
+    const worst={};const note=(k,d)=>{if(d<0&&(worst[k]==null||d<worst[k]))worst[k]=+d.toFixed(3);};
+    lastEnds.forEach((e,i)=>{const len=e[0].distanceTo(e[1]);for(let t=0;t<=1;t+=.02){const p=e[0].clone().lerp(e[1],t),fh=(1-t)*len;
+      caps.forEach(c=>{if(fh<.1||(/Arm/.test(c.n)&&fh<.24))return;note("cable"+i+":"+c.n,sd(p,c.a,c.b)-c.r-.004);});}});
+    if(bar.visible)for(let t=-.6;t<=.6;t+=.03){const p=bar.position.clone().add(V(t,0,0));caps.forEach(c=>{if(/Arm/.test(c.n))return;note("bar:"+c.n,sd(p,c.a,c.b)-c.r-.012);});}
+    return worst;
+  };
+  /* card thumbnails: each exercise rendered once from the same model */
+  if(F.ready)(function(){
+    F.thumbs={};const w=300,h=250;renderer.setPixelRatio(1);renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
+    floor.visible=false;rings.forEach(r=>r.visible=false);uni.uG.value=.7;
+    for(const k in EX){const ex=EX[k],c=ex.cam||STANDCAM,d=c.d*(c===FLOORCAM?.74:.86),az=.5,el=.12;
+      try{F.setMuscles(ex.m);F.pose(ex,ex.timed?0:.7,false,false);
+        cam.position.set(-Math.cos(az)*Math.cos(el)*d,c.ty+Math.sin(el)*d,Math.sin(az)*Math.cos(el)*d);cam.lookAt(0,c.ty,0);
+        renderer.render(scene,cam);F.thumbs[k]=canvas.toDataURL("image/png");}catch(e){}}
+    floor.visible=true;rings.forEach(r=>r.visible=true);renderer.setPixelRatio(Math.min(2.5,window.devicePixelRatio||1));resize();
+  })();
+  return F;
+})();
+if(!Fig.ok){const l=document.getElementById("loading");if(l)l.textContent="3D view is not available in this browser";}
+
+/* ---------- state ---------- */
+const $=id=>document.getElementById(id);
+const S={sess:"A",steps:[],i:0,t:0,playing:false,done:false,sound:true,lastRem:null,listKey:"",exKey:"",dbg:null};
+try{const s=localStorage.getItem("p1.sess");if(s==="A"||s==="B")S.sess=s;if(localStorage.getItem("p1.sound")==="0")S.sound=false;}catch(e){}
+
+const repDur=ex=>ex.tempo[0]+ex.tempo[1]+ex.tempo[2]+ex.tempo[3];
+const range=r=>r[0]===r[1]?String(r[0]):r[0]+"–"+r[1];
+const ease=x=>x*x*(3-2*x);
+
+function build(){
+  const prog=PROG[S.sess],steps=[{type:"ready",dur:8,e:0,set:1,side:1}];
+  prog.forEach((it,e)=>{
+    const ex=EX[it.ex];
+    for(let s=1;s<=it.sets;s++){
+      const reps=it.reps?it.reps[1]*(ex.alt?2:1):0;
+      const dur=it.secs?it.secs[1]:reps*repDur(ex);
+      steps.push({type:"work",e,set:s,side:1,dur,reps});
+      if(it.perSide){
+        steps.push({type:"switch",dur:6,e,set:s,side:2});
+        steps.push({type:"work",e,set:s,side:2,dur,reps});
+      }
+      if(!(e===prog.length-1&&s===it.sets))steps.push({type:"rest",dur:it.rest,e,set:s,side:1});
+    }
+  });
+  S.steps=steps;S.total=steps.reduce((a,s)=>a+s.dur,0);S.i=0;S.t=0;S.done=false;S.playing=false;S.lastRem=null;S.listKey="";
+}
+
+/* ---------- rendering ---------- */
+function setText(n,s){if(n._t!==s){n.textContent=s;n._t=s;}}
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
+const SIDE=["","Left","Right"];
+function nextWork(i){for(let j=i;j<S.steps.length;j++)if(S.steps[j].type==="work")return S.steps[j];return null;}
+
+function drawMuscles(ex,it){drawWeight(it);
+  const box=$("muscles");box.textContent="";
+  [["Main",ex.m[0],"p"],["Helping",ex.m[1],"s"]].forEach(([label,keys,cls])=>{
+    const row=document.createElement("div");row.className="mrow";
+    const l=document.createElement("span");l.className="lab";l.textContent=label;row.append(l);
+    keys.forEach(k=>{const c=document.createElement("span");c.className="mchip "+cls;c.textContent=MNAME[k];row.append(c);});
+    box.append(row);});
+  const ol=$("how");ol.textContent="";(HOW[it.ex]||[]).forEach(s=>{const li=document.createElement("li");li.textContent=s;ol.append(li);});
+  const ul=$("cue");ul.textContent="";
+  it.cue.split(/[,.;]\s+|\.$/).forEach(s=>{s=s.trim();if(!s)return;const li=document.createElement("li");li.textContent=s.charAt(0).toUpperCase()+s.slice(1);ul.append(li);});
+}
+
+function draw(now){
+  const prog=PROG[S.sess],st=S.steps[S.i];
+  const shown=st.type==="work"?st:(nextWork(S.i)||st);
+  const it=prog[shown.e],ex=EX[it.ex];
+  const mode=S.done?"done":st.type;
+  $("player").dataset.mode=mode==="work"?"work":mode==="done"?"done":"rest";
+
+  let k=0,phase="",rep=0;
+  if(ex.timed){k=.5-.5*Math.cos(S.t*Math.PI/2);}
+  else{
+    const T=ex.tempo,rd=repDur(ex),u=S.t%rd;
+    rep=Math.floor(S.t/rd);
+    if(st.type==="work"&&S.t>=st.dur){k=0;rep=st.reps-1;}
+    else if(u<T[0]){k=ease(u/T[0]);phase=ex.ph[0];}
+    else if(u<T[0]+T[1]){k=1;phase=ex.ph[1];}
+    else if(u<T[0]+T[1]+T[2]){k=1-ease((u-T[0]-T[1])/T[2]);phase=ex.ph[2];}
+  }
+  const side2=shown.side===2;
+  const swap=(ex.alt&&rep%2===1)||(side2&&ex.side2==="swap");
+  if(Fig.ok&&!S.dbg){
+    const key=S.sess+shown.e;
+    if(key!==S.exKey){S.exKey=key;Fig.setMuscles(ex.m);drawMuscles(ex,it);}
+    Fig.pose(ex,k,swap,side2&&ex.side2==="flip");
+    Fig.frame(mode==="work"?"work":"rest",ex.timed?1:k,now);
+  }else if(Fig.ok&&S.dbg){Fig.frame("work",S.dbg.k,0);}
+  else if(S.exKey!==S.sess+shown.e){S.exKey=S.sess+shown.e;drawMuscles(ex,it);}
+
+  setText($("chip"),{ready:"Get ready",work:"Work",rest:"Rest",switch:"Switch sides",done:"Done"}[mode]);
+  setText($("setlabel"),(mode==="work"||mode==="done"?"":"Up next · ")+"Set "+shown.set+" of "+it.sets+(it.perSide?" · "+SIDE[shown.side]+" "+it.perSide:""));
+  setText($("note"),ex.note?ex.note+" "+it.cue:it.cue);
+  setText($("exname"),it.name);
+  setText($("gear"),it.gear+" · "+it.spec+" · rest "+it.rest+" s");
+  const rem=st.dur-S.t;
+  if(mode==="done"){setText($("big"),"✓");setText($("sub"),"Session complete");setText($("phase"),"");}
+  else if(mode==="work"&&!ex.timed){
+    setText($("big"),String(Math.min(st.reps,rep+1)));
+    setText($("sub"),ex.alt?"of "+st.reps+" reps, alternating ("+range(it.reps)+" per side)":"of "+range(it.reps)+" reps"+(it.perSide?" per "+it.perSide:""));
+    setText($("phase"),phase);
+  }else if(mode==="work"){
+    setText($("big"),fmt(rem));
+    setText($("sub"),"Hold "+range(it.secs)+" s"+(it.perSide?" per "+it.perSide:""));
+    setText($("phase"),Math.floor(S.t)>=it.secs[0]?"Minimum reached":"Hold");
+  }else{
+    setText($("big"),fmt(rem));
+    const newEx=st.type==="rest"&&shown.e!==st.e;
+    setText($("sub"),mode==="ready"?"Set up for the first exercise":mode==="switch"?"Now the "+SIDE[2].toLowerCase()+" "+it.perSide:newEx?"Next exercise: "+it.name:"Next: set "+shown.set+" of "+it.sets);
+    setText($("phase"),mode==="rest"&&newEx?"Change equipment":"");
+  }
+  $("fill").style.width=(S.done?100:Math.min(100,S.t/st.dur*100)).toFixed(1)+"%";
+
+  let left=rem;for(let j=S.i+1;j<S.steps.length;j++)left+=S.steps[j].dur;
+  $("sfill").style.width=(S.done?100:Math.max(0,100*(1-left/S.total))).toFixed(1)+"%";
+  setText($("overall"),S.done?"All "+prog.length+" exercises finished":"Exercise "+(shown.e+1)+" of "+prog.length+" · about "+Math.max(1,Math.round(left/60))+" min left");
+  setText($("next"),S.done?"Skip":mode==="work"?"Set done":mode==="rest"?"Skip rest":"Skip");
+  const icon=S.playing?"M6 4.5h4.5v15H6zM13.5 4.5H18v15h-4.5z":"M7 4.5v15l13-7.5z";
+  if($("playIcon")._d!==icon){$("playIcon").setAttribute("d",icon);$("playIcon")._d=icon;}
+  const pl=S.playing?"Pause":S.t>0||S.i>0?"Resume":"Start";
+  if($("play")._l!==pl){$("play").setAttribute("aria-label",pl);$("play")._l=pl;}
+
+  const lk=S.sess+S.i+(S.done?"d":"");
+  if(lk!==S.listKey){S.listKey=lk;drawList(shown.e);}
+}
+
+function jump(e){const n=PROG[S.sess].length;e=Math.max(0,Math.min(n-1,e));const j=S.steps.findIndex(s=>s.type==="work"&&s.e===e);go(e===0?0:j);}
+function drawList(curE){
+  const prog=PROG[S.sess],list=$("list");S.curE=curE;
+  const done=prog.map(()=>0);
+  S.steps.forEach((s,j)=>{if(s.type==="work"&&(j<S.i||S.done)&&(!prog[s.e].perSide||s.side===2))done[s.e]++;});
+  list.textContent="";
+  prog.forEach((it,e)=>{
+    const li=document.createElement("li"),b=document.createElement("button");
+    b.className="card"+(e===curE&&!S.done?" cur":"")+(done[e]>=it.sets?" fin":"");b.id="row"+e;
+    const n=document.createElement("span");n.className="n";n.textContent=e+1;
+    const pips=document.createElement("span");pips.className="pips";pips.setAttribute("aria-label",done[e]+" of "+it.sets+" sets done");
+    for(let s=0;s<it.sets;s++){const i=document.createElement("i");if(s<done[e])i.className="on";pips.append(i);}
+    const th=document.createElement("span");th.className="th";
+    const src=Fig.thumbs&&Fig.thumbs[it.ex];if(src){const im=document.createElement("img");im.src=src;im.alt="";th.append(im);}
+    const nm=document.createElement("span");nm.className="nm";nm.textContent=it.name;
+    const sp=document.createElement("span");sp.className="sp";sp.textContent=it.spec;
+    b.append(n,pips,th,nm,sp);
+    b.addEventListener("click",()=>jump(e));
+    li.append(b);list.append(li);
+  });
+  setText($("planTitle"),"Session "+S.sess+" exercises");
+  setText($("planTotal"),"about "+Math.round(S.total/60)+" min");
+}
+
+/* ---------- engine ---------- */
+let ac=null,wake=null;
+function beep(f,d){
+  if(!S.sound||!ac)return;
+  try{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.03);}catch(e){}
+}
+function go(i){
+  if(i>=S.steps.length){S.done=true;S.playing=false;S.i=S.steps.length-1;S.t=S.steps[S.i].dur;releaseWake();}
+  else{S.done=false;S.i=Math.max(0,i);S.t=0;}
+  S.lastRem=null;
+}
+function advance(dt){
+  S.t+=dt;const st=S.steps[S.i],ex=EX[PROG[S.sess][st.e].ex];
+  if(st.type!=="work"||ex.timed){
+    const r=Math.ceil(st.dur-S.t);
+    if(r!==S.lastRem&&r>0&&r<=3)beep(660,.09);
+    S.lastRem=r;
+  }
+  if(S.t>=st.dur){const over=S.t-st.dur;go(S.i+1);if(!S.done)S.t=over;beep(S.done?520:990,S.done?.5:.2);}
+}
+function requestWake(){try{if(navigator.wakeLock)navigator.wakeLock.request("screen").then(w=>{wake=w;}).catch(()=>{});}catch(e){}}
+function releaseWake(){try{if(wake){wake.release();wake=null;}}catch(e){}}
+function toggle(){
+  if(S.done){go(0);}
+  S.playing=!S.playing;
+  if(S.playing){
+    try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume();}catch(e){}
+    requestWake();
+  }else releaseWake();
+}
+function prev(){if(S.done){go(S.steps.length-1);}else if(S.t>2)go(S.i);else go(S.i-1);}
+function next(){if(!S.done)go(S.i+1);}
+function setSession(s){
+  S.sess=s;try{localStorage.setItem("p1.sess",s);}catch(e){}
+  $("tabA").setAttribute("aria-selected",s==="A");$("tabB").setAttribute("aria-selected",s==="B");
+  releaseWake();build();
+}
+function setSound(on){S.sound=on;setText($("sound"),on?"Sound on":"Sound off");try{localStorage.setItem("p1.sound",on?"1":"0");}catch(e){}}
+
+$("play").addEventListener("click",toggle);
+$("prev").addEventListener("click",prev);
+$("next").addEventListener("click",next);
+$("restart").addEventListener("click",()=>{releaseWake();build();});
+$("sound").addEventListener("click",()=>setSound(!S.sound));
+$("tabA").addEventListener("click",()=>setSession("A"));
+$("tabB").addEventListener("click",()=>setSession("B"));
+$("exPrev").addEventListener("click",()=>jump((S.curE||0)-1));
+$("exNext").addEventListener("click",()=>jump((S.curE||0)+1));
+let holoSkin=true;try{holoSkin=localStorage.getItem("p1.skin")!=="real";}catch(e){}
+function setSkin(x){holoSkin=x;if(Fig.setSkin)Fig.setSkin(x);setText($("skin"),x?"Body: X-ray":"Body: Real");try{localStorage.setItem("p1.skin",x?"holo":"real");}catch(e){}}
+$("skin").addEventListener("click",()=>setSkin(!holoSkin));setSkin(holoSkin);
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("button")&&e.code==="Space")return;
+  if(e.code==="Space"){e.preventDefault();toggle();}
+  else if(e.code==="ArrowRight")next();
+  else if(e.code==="ArrowLeft")prev();
+});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&S.playing)requestWake();});
+
+/* ---------- weight note and voice control ---------- */
+let W={};try{W=JSON.parse(localStorage.getItem("p1.w")||"{}")||{};}catch(e){}
+const curIt=()=>PROG[S.sess][S.curE||0];
+function drawWeight(it){const w=W[it.name];setText($("wval"),w!=null?w+" kg":"not set");}
+function setWeight(v){const it=curIt();W[it.name]=Math.max(1,Math.min(100,Math.round(v*2)/2));try{localStorage.setItem("p1.w",JSON.stringify(W));}catch(e){}drawWeight(it);}
+const stepW=d=>{const w=W[curIt().name];setWeight(w!=null?w+d:5);};
+$("wup").addEventListener("click",()=>stepW(1));$("wdown").addEventListener("click",()=>stepW(-1));
+const CMD=[
+ ["weight",/\b(?:weight|svoris|svori)\D{0,12}(\d+(?:[.,]\d+)?)|\b(\d+(?:[.,]\d+)?)\s*(?:kg|kilo\w*)/g],
+ ["up",/\b(increase|more|heavier|add|didink|padidink|daugiau|sunkiau)\b/g],
+ ["down",/\b(reduce|decrease|less|lighter|lower|mazink|sumazink|maziau|lengviau)\b/g],
+ ["play",/\b(start|play|go|resume|begin|continue|pradek|pradeti|pradedam|startas|tesk|testi)\b/g],
+ ["pause",/\b(stop|pause|wait|stok|sustok|stabdyk|pauze|palauk)\b/g],
+ ["next",/\b(next|skip|done|finished|kitas|toliau|baigta|baigiau|praleisk)\b/g],
+ ["back",/\b(back|again|repeat|previous|atgal|pakartok)\b/g]];
+const SAID={play:"Start",pause:"Stop",next:"Next",back:"Back",up:"More weight",down:"Less weight",weight:"Weight"};
+function parseCmds(text){
+  const t=text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""),out=[];
+  CMD.forEach(([name,re])=>{re.lastIndex=0;let m;while((m=re.exec(t))){out.push({name,at:m.index,num:name==="weight"?parseFloat((m[1]||m[2]).replace(",",".")):null});}});
+  return out.sort((a,b)=>a.at-b.at);
+}
+function runCmd(c){
+  if(c.name==="play"){if(!S.playing)toggle();}
+  else if(c.name==="pause"){if(S.playing)toggle();}
+  else if(c.name==="next")next();
+  else if(c.name==="back")prev();
+  else if(c.name==="up")stepW(1);
+  else if(c.name==="down")stepW(-1);
+  else if(c.name==="weight"&&c.num>0)setWeight(c.num);
+  setText($("heard"),"Heard: "+SAID[c.name]+(c.num?" "+c.num+" kg":""));beep(880,.07);
+}
+(async function(){
+  const mic=$("mic"),lab=$("micLabel");let d=null,handled=0;
+  try{d=window.claude&&window.claude.use?await window.claude.use("dictation"):null;}catch(e){}
+  if(!d)d=(function(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
+    let rec=null,on=false,want=false,hP=()=>{},hF=()=>{},hS=()=>{};
+    return {active:()=>on||want,onPartial:f=>{hP=f;},onFinal:f=>{hF=f;},onState:f=>{hS=f;},
+      start(){return new Promise((res,rej)=>{try{rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang=navigator.language||"en-US";
+        rec.onstart=()=>{on=true;hS({state:"listening"});res();};
+        rec.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i],t=r[0].transcript;if(r.isFinal)hF({text:t});else hP({text:t});}};
+        rec.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){want=false;rej({code:"not_granted"});}};
+        rec.onend=()=>{if(want){try{rec.start();return;}catch(_){}}on=false;const w=want;want=false;hS({state:"idle",reason:w?"upstream_error":"stopped"});};
+        want=true;hS({state:"starting"});rec.start();}catch(e){want=false;rej({code:"upstream_error"});}});},
+      stop(){want=false;try{if(rec)rec.stop();}catch(e){}return Promise.resolve();}};})();
+  if(!d){mic.hidden=true;setText($("vhint"),"Voice control is not available in this browser. Use the buttons here instead.");return;}
+  const hear=(text,final)=>{const list=parseCmds(text);
+    // a spoken number can still be growing ("weight 2" -> "weight 20"), so weights wait for the settled phrase
+    for(let i=handled;i<list.length;i++){if(!final&&list[i].name==="weight")break;runCmd(list[i]);handled=i+1;}
+    if(final)handled=0;};
+  d.onPartial(e=>{if(e.text)hear(e.text,false);});
+  d.onFinal(e=>hear(e.text,true));
+  d.onState(e=>{const on=e.state==="listening"||e.state==="starting";mic.setAttribute("aria-pressed",on?"true":"false");
+    lab.textContent=e.state==="listening"?"Listening — tap to turn off":e.state==="starting"?"Starting…":"Turn on voice";
+    if(e.state==="idle"&&e.reason){const why={hidden:"Voice stopped because the page was hidden. Turn it on again.",time_limit:"Voice stopped after 60 minutes. Turn it on again.",not_granted:"Microphone access is off for this page.",unavailable:"Voice control is not available for this account or language.",rate_limited:"Voice is busy. Try again in a moment.",upstream_error:"The microphone or speech service failed. Try again."}[e.reason];
+      if(why)setText($("heard"),why);if(e.reason==="unavailable")mic.hidden=true;}});
+  mic.addEventListener("click",()=>{
+    if(d.active()){d.stop().catch(()=>{});return;}
+    const pr=d.start();
+    try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume();}catch(e){}
+    pr.catch(err=>{const c=err&&err.code;setText($("heard"),c==="not_granted"?"Microphone access was declined.":c==="dismissed"||c==="stopped"?"":"Voice could not start. Try again.");});
+  });
+})();
+
+window.__p1={S,EX,Fig,parseCmds,clear(name,k,swap,flip){Fig.pose(EX[name],k,!!swap,!!flip);return Fig.clearance();},pose(name,k,swap,flip,az,el){S.dbg={k};Fig.setMuscles(EX[name].m);Fig.pose(EX[name],k,!!swap,!!flip);const c=EX[name].cam||STANDCAM;Fig.cam.ty=c.ty;Fig.cam.d=c.d;Fig.cam.n=c.n;if(az!=null)Fig.cam.az=az;if(el!=null)Fig.cam.el=el;}};
+
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.25,(now-last)/1000);last=now;
+  if(S.playing)advance(dt);
+  draw(now);
+  requestAnimationFrame(frame);
+}
+setSound(S.sound);setSession(S.sess);
+requestAnimationFrame(frame);
+})();
+</script>
+
+<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});</script>
+</body>
+</html>
