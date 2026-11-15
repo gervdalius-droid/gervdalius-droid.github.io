@@ -369,8 +369,8 @@ footer{padding-block:26px 40px;font-size:.84rem;color:var(--muted);display:flex;
     <div class="facts">
       <div><b><span data-count="26">26</span></b><span>tools and products built</span></div>
       <div><b>~2 h</b><span>saved every day for the technician</span></div>
-      <div><b><span data-count="1057">1,057</span></b><span>automated tests in ShopFlow</span></div>
-      <div><b>1</b><span>paid CAM licence replaced</span></div>
+      <div><b>~10%</b><span>less board material with Nesting</span></div>
+      <div><b>4–5</b><span>paid software products replaced</span></div>
     </div>
   </div>
 </header>
@@ -610,7 +610,7 @@ const CASES=[
  {id:"shopflow",n:"ShopFlow",short:"ShopFlow",one:"Production tracking built around how the shop really works.",st:"live",flag:true,tag:"Production · Tracking · Shop floor",tour:2,
   live:"https://gervdalius-droid.github.io/shopflow/",
   shots:["sfDash","sfList","sfTime","sfOrder","sfWork","sfScan"],labels:["Dashboard","Orders","Timeline","Order","Worker tablet","Scan station"],
-  metrics:[["1,057","in-browser tests"],["~31k","lines of code"],["Offline","installable app"]],
+  metrics:[["Daily","in use in the workshop"],["~31k","lines of code"],["Offline","installable app"]],
   info:{problem:"MRP tools like MRPEasy charge per seat, assume a straight-line routing and expect everyone at a computer with reliable wifi. A furniture shop has parallel work, one shared tablet and wifi that drops.",
    built:"A production tracker built around how the shop really works: fronts and carcass made in parallel lanes that merge, piece-by-piece progress, PIN sign-in on a shared tablet, QR scan stations, and everything working offline.",
    result:"The system it comes from runs daily in the workshop. The public demo ships with a fictional workshop and no customer data.",
@@ -729,7 +729,7 @@ const PARTS=[
 const AREAS={ops:"Operations",cad:"CAD / CAM",product:"Products",side:"Side projects"};
 const PROJ=[
  {n:"Live shop-floor plan",a:"ops",st:"use",d:"Live plan of the workshop in 2D and 3D: who is at which station, on which project. Runs on the workshop TV, the office PC and phones."},
- {n:"ShopFlow",a:"ops",st:"live",d:"Production tracking with parallel routings, piece-by-piece progress, a shop-floor tablet mode and scan stations. Works offline. 1,057 in-browser tests.",l:"https://gervdalius-droid.github.io/shopflow/"},
+ {n:"ShopFlow",a:"ops",st:"live",d:"Production tracking with parallel routings, piece-by-piece progress, a shop-floor tablet mode and scan stations. Works offline.",l:"https://gervdalius-droid.github.io/shopflow/"},
  {n:"Quote calculator",a:"ops",st:"use",d:"Detailed and quick furniture quotes from one cost model, with a live sketch and a client PDF. 38 releases."},
  {n:"Shop-floor hub",a:"ops",st:"use",d:"One start page and one sign-in for every workshop app, with shared notices."},
  {n:"Workshop performance",a:"ops",st:"built",d:"Counts each person's output against per-operation norms, using the part lists already in ShopFlow."},
