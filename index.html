@@ -368,7 +368,7 @@ footer{padding-block:26px 40px;font-size:.84rem;color:var(--muted);display:flex;
     </div>
     <div class="facts">
       <div><b><span data-count="26">26</span></b><span>tools and products built</span></div>
-      <div><b>26 <i>→</i> 25</b><span>panels to CNC programs in one export</span></div>
+      <div><b>~2 h</b><span>saved every day for the technician</span></div>
       <div><b><span data-count="1057">1,057</span></b><span>automated tests in ShopFlow</span></div>
       <div><b>1</b><span>paid CAM licence replaced</span></div>
     </div>
@@ -625,10 +625,10 @@ const CASES=[
    note:"Demo sign-in: Eglė, PIN 5678 (manager) · Andrius, PIN 1111 (worker)"}},
  {id:"nesting",n:"Nesting",short:"Nesting",one:"Cutting plans for every board, with labels and stock.",st:"use",flag:true,tag:"Cutting · Labels · Stock",tour:4,
   shots:["nLay","nExp"],labels:["Board layout","Export"],
-  metrics:[["~17k","lines of code"],["2","nesting engines"],["4","import formats"]],
+  metrics:[["~10%","less board material"],["~2 h","saved a day for the technician"],["~22k","lines of code"]],
   info:{problem:"Cutting plans were done by hand or in CAM software sold per seat per month, which still couldn't read our files without a workaround.",
    built:"Reads SWOOD and cabinet creator part lists, CSV and DXF. Rectangle packing for panels, true-shape nesting for curved parts, Zebra labels with a QR code per CNC program.",
-   result:"Every board cut in the workshop goes through it. It also reserves and confirms stock in the warehouse.",
+   result:"Layouts use about 10% less board than laying parts out by hand, and the technician saves about two hours a day. Every board cut in the workshop goes through it.",
    hl:["Reads what the shop already produces: SWOOD project files, the cabinet creator export, CSV lists and shaped parts from DXF",
        "Two engines: fast strip packing for rectangular panels, and a Rust true-shape engine compiled to WebAssembly for curved parts",
        "Machine routing per sheet: CNC, saw or both, with kerf and edge trim",
