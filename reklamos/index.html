@@ -431,6 +431,7 @@ en:{
   iq:'Quality of complete designs', iq_pro:'Best – Nano Banana Pro (about $0.13 per image)', iq_fast:'Fast – Nano Banana 2 (about $0.07 per image)', iq_note:'Pro draws text and details much better. If your key has no access to it, the fast model is used.', pro_fallback:'The Pro image model isn’t available for this key, so the fast model was used.',
   to_full:'Redo as a complete AI design', all_full:'Redo all as AI designs', directing:'Art director is inventing the visuals…', on_img:'Headline on the image',
   new_ver:'A new version is ready.', reload:'Update now',
+  checking_img:'Checking the design…', qc_fixed:'The first design had mistakes, so it was redrawn.',
   ai:'AI connection', prov:'Writes the text', prov_gemini:'Google Gemini (free key)', prov_claude:'Claude API (paid key)',
   gkey:'Gemini API key', ckey:'Claude API key', get_key:'Get a key', key_note:'Keys are stored only in this browser on this computer.',
   tmodel:'Text model', imodel:'Image model', cmodel:'Claude model', auto:'Automatic', engine:'Images', eng_art:'Illustrations (drawn by the AI)', eng_photo:'AI photos (Gemini image model)',
@@ -523,6 +524,7 @@ lt:{
   iq:'Viso dizaino kokybė', iq_pro:'Geriausia – Nano Banana Pro (apie 0,13 $ už vaizdą)', iq_fast:'Greita – Nano Banana 2 (apie 0,07 $ už vaizdą)', iq_note:'Pro modelis daug geriau piešia tekstą ir detales. Jei jūsų raktas jo neturi, naudojamas greitasis modelis.', pro_fallback:'Pro vaizdų modelis šiam raktui nepasiekiamas, todėl panaudotas greitasis.',
   to_full:'Perdaryti kaip visą AI dizainą', all_full:'Perdaryti visus kaip AI dizainus', directing:'Meno vadovas kuria vaizdų idėjas…', on_img:'Antraštė ant vaizdo',
   new_ver:'Paruošta nauja versija.', reload:'Atnaujinti dabar',
+  checking_img:'Tikrinamas dizainas…', qc_fixed:'Pirmame dizaine buvo klaidų, todėl jis perpieštas.',
   ai:'AI ryšys', prov:'Tekstą rašo', prov_gemini:'Google Gemini (nemokamas raktas)', prov_claude:'Claude API (mokamas raktas)',
   gkey:'Gemini API raktas', ckey:'Claude API raktas', get_key:'Gauti raktą', key_note:'Raktai saugomi tik šioje naršyklėje, šiame kompiuteryje.',
   tmodel:'Teksto modelis', imodel:'Vaizdų modelis', cmodel:'Claude modelis', auto:'Automatiškai', engine:'Vaizdai', eng_art:'Iliustracijos (piešia AI)', eng_photo:'AI nuotraukos (Gemini vaizdų modelis)',
@@ -881,7 +883,15 @@ Website excerpt (use its real facts, services and wording; do not copy whole sen
 ${String(b.siteText).slice(0, 3500)}
 >>>` : ''}`;
 }
-const RULES = `Hard rules: build every piece on concrete facts from the Brand DNA (products, facts, selling points) and the website excerpt, not on generic claims; stay true to the brand's tone and voice rules; never break anything in doNot; no invented prices, discounts, awards, reviews or statistics unless the brief gives them; no emoji unless the brand voice clearly uses them; write like a sharp human copywriter, never generic AI marketing fluff ("unlock", "elevate", "discover the magic").`;
+const RULES = `HOW TO WRITE (applies to every piece)
+1. Think before writing (silently, do not output): who exactly is reading (one real person from the audience, in one real moment of their day); the problem in THEIR words, as they would complain about it to a friend; what changes for them after the brand; the single strongest proof for it from the Brand DNA or website (a real product detail, process, material, number, place or guarantee).
+2. One idea per piece. Every piece uses a different angle AND a different kind of opening: a question the reader answers "yes, that's me" to; a specific everyday scene; a blunt contrarian statement; a concrete fact or number from the brand; a mistake people make; a before/after.
+3. Be specific. Replace every general claim with the concrete thing behind it ("high quality" → the actual material, tolerance, warranty or step). If a sentence could appear in a competitor's ad unchanged, rewrite it.
+4. Talk about the reader, not the brand: "you" before "we". Short sentences. Active verbs. Spoken rhythm — read it aloud in your head. No exclamation marks unless the brand voice uses them.
+5. Facts only: nothing in doNot; no invented prices, discounts, deadlines, awards, reviews, customer counts or statistics unless the brief or Brand DNA gives them.
+6. Banned: "unlock", "elevate", "discover", "seamless", "game-changer", "take it to the next level", "in today's world", "look no further", "say goodbye to", rhetorical triples, empty superlatives ("best", "perfect", "unique") without proof, hashtags inside sentences, emoji unless the brand voice clearly uses them.
+7. Language quality: write as an educated native copywriter of the copy language, never as a translation from English. For Lithuanian: natural word order, correct cases and diacritics, „lietuviškos“ kabutės, no calques ("atrakinkite", "pakylėkite", "kitas lygis"), address the reader consistently (jūs unless the brand voice says tu), prefer plain everyday words over bureaucratic ones.
+8. Before answering, re-read each piece as the reader would on a phone and silently rewrite anything that is vague, salesy, clumsy, repeats another piece, or breaks a rule above.`;
 const ASPECT = { pt: '4:5', sq: '1:1', st: '9:16', ls: '16:9' };
 const tallChannel = br => /Stories|Reels|9:16|TikTok|Shorts/i.test((br && br.channel) || '');
 function visualCtx(b) {
@@ -918,7 +928,10 @@ What a winning concept looks like:
 - 2-4 story props that explain the situation by themselves. Tiny readable words on props are welcome (max 3 words each, in the copy language), e.g. sticky notes, a phone lock-screen notification, a label, a note on the fridge.
 - A specific place with 2-3 concrete details, lit and colour-graded in the brand colours (name them with hex codes) so the frame is recognisably on-brand.
 - The top third of the frame is calmer and darker, to hold a big headline.
-- Different cast, place and moment for every piece.
+- Different cast, place and moment for every piece. Vary the camera too: one wide scene, one close-up on a telling detail, one unusual angle (from inside a cupboard, from above, over a shoulder).
+- If the brand sells a physical product or craft, the real product, material or work is the hero of at least half of the concepts — shown in use, in a real home or workshop, with a human reaction to it.
+- Describe it so a stranger could paint it: who (age, clothes, expression), doing what, where, with which props, in what light. No abstract words like "showcasing", "symbolizing", "conveying".
+- The image must still make sense with the sound off and the caption hidden: the headline asks or states, the scene answers.
 Forbidden: people smiling at a phone or laptop, friends chatting at a café, handshakes, a hand holding a phone with an app screen, flat-lay desks, coffee cups, generic offices, invented app screenshots, floating icons.
 Two examples of the level expected (other brands — do not reuse their content):
 - Meal-kit brand, headline "Dinner again?": "Stylized 3D animated-feature look. 6 pm in a small city kitchen: a tired dad in a wrinkled work shirt stares into a blindingly bright, almost empty fridge holding only a lemon, a jar of mustard and a sticky note reading 'Buy food!!'; behind him two kids at the counter bang spoons on empty plates, a dog holds its bowl in its mouth. Low camera from inside the fridge looking out, cold fridge light on his face against a warm tomato-red (#E5482D) kitchen glow, cream (#FFF4E0) tiles, the dark upper cabinets fill the top third of the frame."
@@ -948,8 +961,7 @@ ${briefCtx(b, br)}
 
 Write ${n} distinct static ad concepts, each from a different angle (for example: core benefit, craftsmanship or story, problem → solution, social proof without invented numbers, offer or urgency only if the brief has an offer, comparison with the alternative).
 Field rules: headline max 7 words, punchy; subhead max 14 words; cta 1-3 words; primaryText 1-3 short sentences for the feed text above the ad; eyebrow is a 2-3 word label shown above the headline (a category, a proof point or the offer, e.g. "VERIFIED CONTRACTORS" in the copy language); highlight is 1-3 consecutive words copied exactly from the headline that carry the key benefit and are shown in the accent colour; layout is one of "card" (the most complete format: label, two-tone headline, subheadline, framed image, full-width button, logo — use it for about half of the concepts), "photo", "split", "bold", "frame".
-${imgRule(b, br, tallChannel(br) ? '9:16' : '4:5')}
-${fullRule(b, tallChannel(br) ? '9:16' : '4:5', br)}
+Copy craft for ads: the headline names the reader's problem or the outcome in their words (it must make sense alone, without the image); the subhead adds the concrete "how" or the proof; the cta says what happens next ("Get a quote", not "Learn more"); primaryText opens with a line that earns the second line, gives one concrete fact, and ends with the same action as the button. "imagePrompt" and "fullAdPrompt": one English sentence each naming the scene idea (an art director expands them later).
 ${RULES}
 Reply with only JSON: {"ads":[{"angle":"","headline":"","subhead":"","cta":"","primaryText":"","eyebrow":"","highlight":"","layout":"card","imagePrompt":"","fullAdPrompt":""}]}`,
   social: (b, br, n) => `You are the brand's social media lead.
@@ -960,8 +972,7 @@ ${briefCtx(b, br)}
 - Platforms: ${arr(br.platforms).map(p => (PLATFORMS.find(x => x[0] === p) || [0, p])[1]).join(', ') || 'Instagram, Facebook'}
 
 Write ${n} ready-to-publish post${n > 1 ? 's that work as a sequence over the coming days (mix single image, carousel and reel)' : ''}. Each caption starts with a scroll-stopping hook line. "hook" is that first line, max 9 words; it is also printed on the image as the headline, so make it a short question or punchy statement about the customer's problem (ideally 3-6 words). "sub" is one line printed under it, max 8 words, saying what the brand does about it (for example "Whossup finds the day everyone's free."). Also give "eyebrow" (2-3 word label for the image) and "highlight" (1-3 words copied exactly from the hook, shown in the accent colour). Hashtags: 3-8 relevant ones without the # sign. Carousels get 4-7 slides (title max 6 words, text max 20 words), otherwise slides is []. 
-${imgRule(b, Object.assign({}, br, { channel: 'feed' }), '4:5')} For reels use aspect ratio 9:16 instead.
-${fullRule(b, '4:5', br)} The headline it dramatizes is the hook.
+Caption craft: line 1 is the hook. Then 2-4 short lines: the tension (the familiar annoying moment, told concretely), how the brand removes it, and one real detail or fact that makes it believable. End with ONE clear next step (comment, save, message, link in bio — whichever fits the goal). 40-90 words, blank lines between thoughts, no walls of text, hashtags only in the hashtags field. The posts in a sequence must not repeat each other's angle, opening type or wording. "imagePrompt" and "fullAdPrompt": one English sentence each naming the scene idea (an art director expands them later).
 ${RULES}
 Reply with only JSON: {"posts":[{"format":"single|carousel|reel","hook":"","sub":"","caption":"","hashtags":[""],"slides":[{"title":"","text":""}],"eyebrow":"","highlight":"","imagePrompt":"","fullAdPrompt":""}]}`,
 
@@ -971,7 +982,7 @@ ${brandCtx(b)}
 
 ${briefCtx(b, br)}
 
-Write ${n} email${n > 1 ? 's' : ''} of the type in "Channel" (more than one = a sequence). For each: 3 subject lines to A/B test (max 50 characters, different approaches), a preheader (max 90 characters), a heading, a body of 80-180 words in short paragraphs separated by blank lines, a cta button label (1-4 words), and a sendTip (when and to whom).
+Write ${n} email${n > 1 ? 's' : ''} of the type in "Channel" (more than one = a sequence). For each: 3 subject lines to A/B test (max 50 characters, different approaches), a preheader (max 90 characters), a heading, a body of 80-180 words in short paragraphs separated by blank lines, a cta button label (1-4 words), and a sendTip (when and to whom). Email craft: the three subject lines use three different approaches (curiosity about a specific thing, a plain benefit, a direct personal note) and never clickbait; the preheader continues the subject instead of repeating it; the first sentence gets straight to the point — no "We hope this email finds you well"; one idea and one call to action per email; write like one person to one person; end the body with a short P.S. that adds a concrete reason to act.
 ${RULES}
 Reply with only JSON: {"emails":[{"purpose":"","subjects":["","",""],"preheader":"","heading":"","body":"","cta":"","sendTip":""}]}`,
   ideas: (b, br, n) => `You are a marketing strategist for small brands with small budgets.
@@ -989,7 +1000,7 @@ ${brandCtx(b)}
 
 ${briefCtx(b, br)}
 
-Write ${n} short video script${n > 1 ? 's' : ''} (15-30 seconds, 4-7 scenes): a hook in the first 2 seconds, then scenes. Each scene: seconds range like "0-3", what we see, voice-over line (copy language, short enough to say at about 2.5 words per second within the scene), on-screen text (copy language, max 6 words), and "imagePrompt": an English description (40-70 words) of one striking still image for this scene in the brand's visual style — real subjects from the brand's work, camera and light, the brand palette, no text or logos, ${/16:9/.test(br.channel || '') ? 'horizontal 16:9' : /4:5/.test(br.channel || '') ? 'vertical 4:5' : 'vertical 9:16'}. Also "cta": the end-card call to action (max 6 words, copy language). "videoPrompt": one English prompt for an AI video generator for the strongest 8-second shot (camera, subject, setting, light, style, sound, any spoken line in quotes in the copy language). "ugcBrief": 2-3 sentences briefing a customer or creator to film it on a phone.
+Write ${n} short video script${n > 1 ? 's' : ''} (15-30 seconds, 4-7 scenes). The first scene is a pattern interrupt: the viewer's own problem shown or said in the first 2 seconds, never a logo or greeting. Then tension → how the brand solves it (show the real work or product) → one proof detail → the call to action. Voice-over sounds like a person talking, not an advert. Each scene: seconds range like "0-3", what we see, voice-over line (copy language, short enough to say at about 2.5 words per second within the scene), on-screen text (copy language, max 6 words), and "imagePrompt": an English description (50-80 words) of one striking still image for this scene: a specific moment with a clear subject, emotion and 1-2 telling props (never a generic stock scene such as people smiling at a phone), the art style and camera, light and colour grading in the brand palette with hex codes, a calm area for on-screen text, no text or logos, ${/16:9/.test(br.channel || '') ? 'horizontal 16:9' : /4:5/.test(br.channel || '') ? 'vertical 4:5' : 'vertical 9:16'}. Also "cta": the end-card call to action (max 6 words, copy language). "videoPrompt": one English prompt for an AI video generator for the strongest 8-second shot (camera, subject, setting, light, style, sound, any spoken line in quotes in the copy language). "ugcBrief": 2-3 sentences briefing a customer or creator to film it on a phone.
 ${RULES}
 ${visualCtx(b)}
 Reply with only JSON: {"videos":[{"title":"","duration":"","hook":"","cta":"","scenes":[{"seconds":"","visual":"","voiceover":"","onScreenText":"","imagePrompt":""}],"videoPrompt":"","ugcBrief":""}]}`
@@ -1396,6 +1407,20 @@ ${nRefs ? `
 REFERENCE: the attached image${nRefs > 1 ? 's show' : ' shows'} the design style to match — copy the type treatment, text placement, colour mood and level of finish, but create a new scene for this brand and use only the text above.` : ''}
 COMPOSITION: full-bleed edge to edge; no borders, frames, rounded panels, collage or split layout; one clear focal story; rich believable detail; crisp professional finish. Aspect ratio ${aspect}.`;
 }
+async function checkDesign(blob, it, b, type) {
+  const head = str(it.onImg) || str(type === 'social' ? it.hook : it.headline), sub = str(type === 'social' ? it.sub : it.subhead);
+  const small = await downscale(blob, 1024, 'image/jpeg', .85);
+  const d = await ask(`You are a strict proof-reader and art director checking a finished social media design for ${b.name}.
+Expected headline, letter for letter: "${head}"${sub ? `\nExpected line under it: "${sub}"` : ''}${type === 'ads' && it.cta ? `\nExpected button: "${it.cta}"` : ''}
+Check the attached image:
+1. Is every expected text present and spelled exactly (every letter and diacritic)? Read the image text out letter by letter before judging.
+2. Is there any other large text, gibberish lettering, watermark, or a logo or brand mark that was invented?
+3. Is the headline easy to read at phone size (big, high contrast, not covered, not cut off)?
+4. Any obvious visual defects (broken hands or faces, duplicated limbs, melted objects)?
+Small words on props inside the scene (sticky notes, labels, signs) are allowed.
+Reply with only JSON: {"ok":true|false,"problems":["short, concrete instruction to the designer for each problem"]}`, { images: [small] });
+  return { ok: d && d.ok !== false, problems: arr(d && d.problems).map(str).filter(Boolean).slice(0, 5) };
+}
 async function drawArt(id) {
   const e = S.idx.get(id); if (!e) return;
   const b = brandOf(e.c), c = AI.cfg, it = e.it, aspect = it.aspect || '4:5';
@@ -1404,7 +1429,12 @@ async function drawArt(id) {
       if (!c.gkey) throw { code: 'no_key' };
       const refs = await refBlobs(arr(it.refs).length ? it.refs : arr(b.styleRefs).map(r => r.url), 3);
       const logoOver = !!((b.logo && b.logo.url) || (b.logoDark && b.logoDark.url));
-      const blob = await aiImage(fullPrompt(it, b, e.c.type, aspect, refs.length, logoOver), aspect, null, refs, { pro: true });
+      const fp = fullPrompt(it, b, e.c.type, aspect, refs.length, logoOver);
+      let blob = await aiImage(fp, aspect, null, refs, { pro: true });
+      try {
+        const qc = await checkDesign(blob, it, b, e.c.type);
+        if (!qc.ok && qc.problems.length) { blob = await aiImage(fp + '\n\nA previous attempt was rejected. Fix exactly these problems:\n- ' + qc.problems.join('\n- '), aspect, null, refs, { pro: true }); toast(t('qc_fixed')); }
+      } catch {}
       const img = await storeImage(blob); it.gen = img.url; it.pic = img.url; it.layout = 'raw'; it.logoOver = logoOver; return;
     }
     if (c.engine === 'photo' && c.gkey) {
@@ -1453,7 +1483,7 @@ async function runGenerate(br) {
       if (br.mode === 'full') { it.full = true; it.refs = arr(br.refs).slice(0, 3); }
     });
     if (type === 'ads' && tallChannel(br)) { S.fmt = 'st'; LS.set('fmt', 'st'); }
-    if (type === 'ads' || type === 'social') { $$('.progText').forEach(pe => pe.textContent = t('directing')); try { await artDirect(b, br, type, list, S.gen.ctl.signal); } catch (e) { if (e && e.code === 'cancelled') throw e; } }
+    if (type === 'ads' || type === 'social') { $$('.progText').forEach(pe => pe.textContent = t('directing')); for (let k = 0; k < 2; k++) { try { await artDirect(b, br, type, list, S.gen.ctl.signal); break; } catch (e) { if (e && e.code === 'cancelled') throw e; } } }
     c.items = list; delete c.pending;
     if (!str(br.offer)) { const f = list[0]; c.title = str(f.headline || f.hook || f.name || f.title || (f.subjects && f.subjects[0])) || c.title; }
     reindex(); persist(c, true);
@@ -2723,7 +2753,7 @@ async function publishVideo(id) {
 }
 setInterval(pubTick, 30000);
 /* ---- online copy: pick up new versions by itself ---- */
-const APP_V = 9;
+const APP_V = 10;
 async function checkVersion() {
   if (!/^https?:/.test(location.protocol)) return;
   try {
