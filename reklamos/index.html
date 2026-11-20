@@ -432,6 +432,8 @@ en:{
   to_full:'Redo as a complete AI design', all_full:'Redo all as AI designs', directing:'Art director is inventing the visuals…', on_img:'Headline on the image',
   new_ver:'A new version is ready.', reload:'Update now',
   checking_img:'Checking the design…', qc_fixed:'The first design had mistakes, so it was redrawn.',
+  lg_title:'Sign in', lg_sub:'Reklamos Studija is private. Sign in with your office login.', lg_email:'Email', lg_pass:'Password', lg_go:'Sign in', lg_bad:'Wrong email or password.', lg_noaccess:'This login has no access to Reklamos Studija.', lg_net:'Couldn’t reach the server. Check your internet connection and try again.',
+  acc:'Account', acc_out:'Sign out', key_srv:'{n} key is stored on the server, not in this browser.', key_local:'{n} key is stored in this browser.', key_move:'Move the key to the server', key_del:'Remove from the server', key_none:'No {n} key yet. Paste it above, then move it to the server.', key_moved:'Key saved on the server and removed from this browser.', key_on_srv:'stored on the server',
   ai:'AI connection', prov:'Writes the text', prov_gemini:'Google Gemini (free key)', prov_claude:'Claude API (paid key)',
   gkey:'Gemini API key', ckey:'Claude API key', get_key:'Get a key', key_note:'Keys are stored only in this browser on this computer.',
   tmodel:'Text model', imodel:'Image model', cmodel:'Claude model', auto:'Automatic', engine:'Images', eng_art:'Illustrations (drawn by the AI)', eng_photo:'AI photos (Gemini image model)',
@@ -525,6 +527,8 @@ lt:{
   to_full:'Perdaryti kaip visą AI dizainą', all_full:'Perdaryti visus kaip AI dizainus', directing:'Meno vadovas kuria vaizdų idėjas…', on_img:'Antraštė ant vaizdo',
   new_ver:'Paruošta nauja versija.', reload:'Atnaujinti dabar',
   checking_img:'Tikrinamas dizainas…', qc_fixed:'Pirmame dizaine buvo klaidų, todėl jis perpieštas.',
+  lg_title:'Prisijungimas', lg_sub:'Reklamos Studija yra privati. Prisijunkite savo biuro prisijungimu.', lg_email:'El. paštas', lg_pass:'Slaptažodis', lg_go:'Prisijungti', lg_bad:'Neteisingas el. paštas arba slaptažodis.', lg_noaccess:'Šis prisijungimas neturi prieigos prie Reklamos Studijos.', lg_net:'Nepavyko pasiekti serverio. Patikrinkite interneto ryšį ir bandykite dar kartą.',
+  acc:'Paskyra', acc_out:'Atsijungti', key_srv:'{n} raktas saugomas serveryje, ne šioje naršyklėje.', key_local:'{n} raktas saugomas šioje naršyklėje.', key_move:'Perkelti raktą į serverį', key_del:'Pašalinti iš serverio', key_none:'{n} rakto dar nėra. Įklijuokite jį aukščiau ir perkelkite į serverį.', key_moved:'Raktas išsaugotas serveryje ir pašalintas iš šios naršyklės.', key_on_srv:'saugomas serveryje',
   ai:'AI ryšys', prov:'Tekstą rašo', prov_gemini:'Google Gemini (nemokamas raktas)', prov_claude:'Claude API (mokamas raktas)',
   gkey:'Gemini API raktas', ckey:'Claude API raktas', get_key:'Gauti raktą', key_note:'Raktai saugomi tik šioje naršyklėje, šiame kompiuteryje.',
   tmodel:'Teksto modelis', imodel:'Vaizdų modelis', cmodel:'Claude modelis', auto:'Automatiškai', engine:'Vaizdai', eng_art:'Iliustracijos (piešia AI)', eng_photo:'AI nuotraukos (Gemini vaizdų modelis)',
@@ -722,9 +726,81 @@ function updateSaved() { const el = $('#savedState'); if (el) el.innerHTML = S.s
 /* ================= AI providers ================= */
 const CLAUDE_MODELS = [['claude-sonnet-5-5', 'Claude Sonnet 5.5'], ['claude-haiku-5-5', 'Claude Haiku 5.5'], ['claude-opus-5-5', 'Claude Opus 5.5']];
 const AI = {
-  get cfg() { return { prov: LS.get('prov', 'gemini'), gkey: LS.get('gkey', ''), ckey: LS.get('ckey', ''), tmodel: LS.get('tmodel', ''), imodel: LS.get('imodel', ''), cmodel: LS.get('cmodel', 'claude-sonnet-5-5'), engine: LS.get('engine', LS.get('gkey', '') ? 'photo' : 'art'), iq: LS.get('iq', 'pro') }; },
+  get cfg() { return { prov: LS.get('prov', 'gemini'), gkey: LS.get('gkey', '') || (SRV.ok && SRV.has.gemini ? 'server' : ''), ckey: LS.get('ckey', '') || (SRV.ok && SRV.has.claude ? 'server' : ''), tmodel: LS.get('tmodel', ''), imodel: LS.get('imodel', ''), cmodel: LS.get('cmodel', 'claude-sonnet-5-5'), engine: LS.get('engine', LS.get('gkey', '') || (SRV.ok && SRV.has.gemini) ? 'photo' : 'art'), iq: LS.get('iq', 'pro') }; },
   ready() { const c = this.cfg; return c.prov === 'claude' ? !!c.ckey : !!c.gkey; }
 };
+/* ================= account: sign-in and keys kept on the server ================= */
+const SB = { url: 'https://niveinyzkkwtreeeaziv.supabase.co', key: 'sb_publishable_tgzBMZQ-zUkWil0bX75y_A_k6hBt868' }; // publishable key: safe to ship, grants nothing without a login
+const ONLINE = /^https?:/.test(location.protocol), FN = SB.url + '/functions/v1/studio-ai';
+const SRV = { ses: LS.get('ses', null), email: '', has: {}, ok: false, refreshing: null };
+const rawFetch = window.fetch.bind(window);
+async function sbAuth(grant, body) {
+  let r; try { r = await rawFetch(`${SB.url}/auth/v1/token?grant_type=${grant}`, { method: 'POST', headers: { apikey: SB.key, 'content-type': 'application/json' }, body: JSON.stringify(body) }); } catch { throw { code: 'net' }; }
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.access_token) throw { code: 'bad' };
+  SRV.ses = { at: d.access_token, rt: d.refresh_token, exp: Date.now() + ((d.expires_in || 3600) - 90) * 1000 }; LS.set('ses', SRV.ses);
+}
+async function sesToken() {
+  if (!SRV.ses) throw { code: 'bad' };
+  if (Date.now() > SRV.ses.exp) { if (!SRV.refreshing) SRV.refreshing = sbAuth('refresh_token', { refresh_token: SRV.ses.rt }).finally(() => { SRV.refreshing = null; }); await SRV.refreshing; }
+  return SRV.ses.at;
+}
+async function srv(op, body) {
+  const tok = await sesToken(); let r;
+  try { r = await rawFetch(FN, { method: 'POST', headers: { authorization: 'Bearer ' + tok, apikey: SB.key, 'x-studio-op': op, 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }); } catch { throw { code: 'net' }; }
+  if (r.status === 401) throw { code: 'bad' }; if (r.status === 403) throw { code: 'noaccess' };
+  return await r.json().catch(() => ({}));
+}
+async function srvMe() { const d = await srv('me'); SRV.ok = !!d.ok; SRV.email = d.email || ''; SRV.has = d.has || {}; }
+// AI requests go through the server whenever it holds the key, so the key never reaches this browser
+window.fetch = async (input, init = {}) => {
+  const url = typeof input === 'string' ? input : String((input && input.url) || input);
+  const name = url.startsWith('https://generativelanguage.googleapis.com/') ? 'gemini' : url.startsWith('https://api.anthropic.com/') ? 'claude' : '';
+  if (!name || !SRV.ok || !SRV.has[name] || LS.get(name === 'gemini' ? 'gkey' : 'ckey', '')) return rawFetch(input, init);
+  const h = new Headers(init.headers || {}), method = (init.method || 'GET').toUpperCase();
+  const hdr = { authorization: 'Bearer ' + await sesToken(), apikey: SB.key, 'x-studio-op': 'proxy', 'x-studio-target': url, 'x-studio-method': method, 'content-type': h.get('content-type') || 'application/json' };
+  if (h.get('anthropic-version')) hdr['anthropic-version'] = h.get('anthropic-version');
+  return rawFetch(FN, { method: 'POST', headers: hdr, body: method === 'GET' ? '{}' : init.body, signal: init.signal });
+};
+function signOut() { const tok = SRV.ses && SRV.ses.at; LS.set('ses', null); if (tok) rawFetch(SB.url + '/auth/v1/logout', { method: 'POST', headers: { apikey: SB.key, authorization: 'Bearer ' + tok } }).catch(() => {}).finally(() => location.reload()); else location.reload(); }
+function authGate() {
+  return new Promise(async done => {
+    const show = msg => {
+      let g = document.getElementById('gate');
+      if (!g) { g = document.createElement('div'); g.id = 'gate'; g.style.cssText = 'position:fixed;inset:0;z-index:2000;display:grid;place-items:center;background:var(--bg);padding:16px'; document.body.appendChild(g); }
+      g.innerHTML = `<form id="gateForm" style="width:min(100%,380px);display:flex;flex-direction:column;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px">
+        <h1 style="font-size:22px;margin:0">Reklamos Studija</h1><p class="muted" style="margin:0;font-size:14px">${esc(t('lg_sub'))}</p>
+        <div class="field"><label class="lbl" for="lg-email">${esc(t('lg_email'))}</label><input type="email" id="lg-email" autocomplete="username" required></div>
+        <div class="field"><label class="lbl" for="lg-pass">${esc(t('lg_pass'))}</label><input type="password" id="lg-pass" autocomplete="current-password" required></div>
+        ${msg ? `<div class="note err" role="alert">${esc(msg)}</div>` : ''}
+        <button type="submit" class="cta" id="lg-go">${esc(t('lg_go'))}</button></form>`;
+      const f = document.getElementById('gateForm'); document.getElementById('lg-email').focus();
+      f.addEventListener('submit', async ev => {
+        ev.preventDefault(); const btn = document.getElementById('lg-go'); btn.disabled = true;
+        try { await sbAuth('password', { email: document.getElementById('lg-email').value.trim(), password: document.getElementById('lg-pass').value }); await enter(); }
+        catch (e) { show(t(e.code === 'net' ? 'lg_net' : e.code === 'noaccess' ? 'lg_noaccess' : 'lg_bad')); }
+      });
+    };
+    const enter = async () => {
+      try { await srvMe(); } catch (e) { if (e.code !== 'net') { LS.set('ses', null); SRV.ses = null; } throw e; }
+      if (!SRV.ok) throw { code: 'bad' };
+      const g = document.getElementById('gate'); if (g) g.remove(); done();
+    };
+    if (SRV.ses) { try { await enter(); return; } catch (e) { show(e.code === 'net' ? t('lg_net') : e.code === 'noaccess' ? t('lg_noaccess') : ''); return; } }
+    show('');
+  });
+}
+async function moveKey(name) {
+  const lk = name === 'gemini' ? 'gkey' : 'ckey', el = $(name === 'gemini' ? '#set-gkey' : '#set-ckey'), val = str((el && el.value) || LS.get(lk, ''));
+  if (!val) return;
+  try { const d = await srv('setkey', { name, value: val }); if (!d.ok) throw 0; SRV.has[name] = true; LS.set(lk, ''); toast(t('key_moved')); renderModal(); } catch (e) { toast(t(e && e.code === 'net' ? 'lg_net' : 'err_generic')); }
+}
+async function dropKey(name) { try { await srv('setkey', { name, value: '' }); SRV.has[name] = false; renderModal(); } catch { toast(t('err_generic')); } }
+function accountHTML() {
+  if (!ONLINE || !SRV.ok) return '';
+  const row = (name, label) => { const local = LS.get(name === 'gemini' ? 'gkey' : 'ckey', ''); return `<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13.5px">${esc(t(local ? 'key_local' : SRV.has[name] ? 'key_srv' : 'key_none', { n: label }))}</span><div class="row">${local ? `<button type="button" class="btn sm" data-act="movekey" data-n="${name}">${icon('check', 15)}${esc(t('key_move'))}</button>` : ''}${SRV.has[name] ? `<button type="button" class="btn sm danger" data-act="dropkey" data-n="${name}"><span>${esc(t('key_del'))}</span></button>` : ''}</div></div>`; };
+  return `<div class="plan"><h3>${esc(t('acc'))}</h3><div class="row"><span style="font-size:14px">${esc(SRV.email)}</span><span class="sp"></span><button type="button" class="btn sm" data-act="signout">${esc(t('acc_out'))}</button></div>${row('gemini', 'Gemini')}${row('claude', 'Claude')}</div>`;
+}
 const b64 = blob => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(',')[1] || ''); fr.readAsDataURL(blob); });
 function b64ToBlob(data, type) { const bin = atob(data); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: type || 'image/png' }); }
 function quotaErr(status, msg, model, isImage) {
@@ -2084,15 +2160,16 @@ function settingsBody() {
   return `<div class="field"><span class="lbl">${esc(t('language'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="lang" data-l="lt" aria-pressed="${S.lang === 'lt'}">Lietuvių</button><button type="button" class="chip" data-act="lang" data-l="en" aria-pressed="${S.lang === 'en'}">English</button></div></div>
     <div class="plan"><h3>${esc(t('ai'))}</h3>
       <div class="field"><span class="lbl">${esc(t('prov'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="prov" data-p="gemini" aria-pressed="${c.prov === 'gemini'}">${esc(t('prov_gemini'))}</button><button type="button" class="chip" data-act="prov" data-p="claude" aria-pressed="${c.prov === 'claude'}">${esc(t('prov_claude'))}</button></div></div>
-      <div class="field"><label class="lbl" for="set-gkey">${esc(t('gkey'))} · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('get_key'))}</a></label><input type="password" id="set-gkey" data-set="gkey" value="${esc(c.gkey)}" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label class="lbl" for="set-gkey">${esc(t('gkey'))} · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('get_key'))}</a></label><input type="password" id="set-gkey" data-set="gkey" value="${esc(LS.get('gkey', ''))}" placeholder="${SRV.ok && SRV.has.gemini ? esc(t('key_on_srv')) : ''}" autocomplete="off" spellcheck="false"></div>
       ${c.prov === 'gemini' ? `<div class="grid2"><div class="field"><label class="lbl" for="set-tmodel">${esc(t('tmodel'))}</label><select id="set-tmodel" data-set="tmodel">${opt('', t('auto') + (gm.length ? ' (' + bestModel(gm, 'text') + ')' : ''), c.tmodel)}${textModels.map(m => opt(m, /-pro/.test(m) ? m + ' (' + t('paid_only') + ')' : m, c.tmodel)).join('')}</select></div>
         <div class="field"><label class="lbl" for="set-imodel">${esc(t('imodel'))}</label><select id="set-imodel" data-set="imodel">${opt('', t('auto') + (gm.length ? ' (' + bestModel(gm, 'image') + ')' : ''), c.imodel)}${imgModels.map(m => opt(m, m, c.imodel)).join('')}</select></div></div>
       <div class="field"><label class="lbl" for="set-iq">${esc(t('iq'))}</label><select id="set-iq" data-set="iq">${opt('pro', t('iq_pro'), c.iq)}${opt('fast', t('iq_fast'), c.iq)}</select><p class="muted" style="font-size:12.5px">${esc(t('iq_note'))}</p></div>` : ''}
-      ${c.prov === 'claude' ? `<div class="field"><label class="lbl" for="set-ckey">${esc(t('ckey'))} · <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">${esc(t('get_key'))}</a></label><input type="password" id="set-ckey" data-set="ckey" value="${esc(c.ckey)}" autocomplete="off" spellcheck="false"></div>
+      ${c.prov === 'claude' ? `<div class="field"><label class="lbl" for="set-ckey">${esc(t('ckey'))} · <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">${esc(t('get_key'))}</a></label><input type="password" id="set-ckey" data-set="ckey" value="${esc(LS.get('ckey', ''))}" placeholder="${SRV.ok && SRV.has.claude ? esc(t('key_on_srv')) : ''}" autocomplete="off" spellcheck="false"></div>
         <div class="field"><label class="lbl" for="set-cmodel">${esc(t('cmodel'))}</label><select id="set-cmodel" data-set="cmodel">${CLAUDE_MODELS.map(([v, l]) => opt(v, l, c.cmodel)).join('')}</select></div>` : ''}
       <div class="row"><button type="button" class="btn sm" data-act="testai">${esc(t('test'))}</button><span class="muted" id="testOut" style="font-size:13px"></span></div>
       <p class="muted" style="font-size:12.5px">${esc(t('key_note'))}</p></div>
     <div class="field"><span class="lbl">${esc(t('engine'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="engine" data-e="art" aria-pressed="${c.engine !== 'photo'}">${esc(t('eng_art'))}</button><button type="button" class="chip" data-act="engine" data-e="photo" aria-pressed="${c.engine === 'photo'}">${esc(t('eng_photo'))}</button></div><p class="muted" style="font-size:12.5px">${esc(t('eng_photo_hint'))}</p></div>
+    ${accountHTML()}
     ${metaSettingsHTML()}
     <div class="field"><span class="lbl">${esc(t('data'))}</span><p class="muted" style="font-size:13.5px">${esc(t('data_note'))}</p>
       <div class="row"><button type="button" class="btn sm" data-act="export">${icon('dl', 15)}${esc(t('export'))}</button><label class="btn sm up" style="position:relative">${icon('upload', 15)}${esc(t('import'))}<input type="file" accept="application/json,.json" id="importFile"></label></div></div>`;
@@ -2753,7 +2830,7 @@ async function publishVideo(id) {
 }
 setInterval(pubTick, 30000);
 /* ---- online copy: pick up new versions by itself ---- */
-const APP_V = 10;
+const APP_V = 11;
 async function checkVersion() {
   if (!/^https?:/.test(location.protocol)) return;
   try {
@@ -2885,6 +2962,9 @@ document.addEventListener('click', ev => {
     case 'emaildl': { const e = S.idx.get(d.id); if (e) saveFile(`${slug(brandOf(e.c).name)}-email.html`, emailHTML(e.it, brandOf(e.c))); break; }
     case 'delitem': if (!armBtn(el, 'item:' + d.id)) return; deleteItem(d.id); break;
     case 'copy': copyText(COPY.get(d.k) || ''); break;
+    case 'signout': signOut(); break;
+    case 'movekey': moveKey(d.n); break;
+    case 'dropkey': dropKey(d.n); break;
     case 'metaconnect': metaConnect(); break;
     case 'metapick': metaPick(+d.i); break;
     case 'metatest': metaTest(); break;
@@ -3043,6 +3123,7 @@ render();
   reindex();
   if (!S.brands.some(b => b.id === S.brandId)) S.brandId = S.brands[0] ? S.brands[0].id : null;
   if (!LS.get('v8', 0)) { ['ads', 'social'].forEach(tp => { const sv = LS.get('brief_' + tp, null); if (sv && sv.mode) { delete sv.mode; LS.set('brief_' + tp, sv); } }); LS.set('v8', 1); }
+  if (ONLINE) await authGate();
   S.loaded = true; render(); setTimeout(pubTick, 4000);
   if (!AI.ready()) setTimeout(() => { if (!S.modal) { S.modal = { type: 'settings' }; renderModal(true); } }, 400);
 })();
