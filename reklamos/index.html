@@ -434,6 +434,7 @@ en:{
   checking_img:'Checking the design…', qc_fixed:'The first design had mistakes, so it was redrawn.',
   lg_title:'Sign in', lg_sub:'Reklamos Studija is private. Sign in with your office login.', lg_email:'Email', lg_pass:'Password', lg_go:'Sign in', lg_bad:'Wrong email or password.', lg_noaccess:'This login has no access to Reklamos Studija.', lg_net:'Couldn’t reach the server. Check your internet connection and try again.',
   acc:'Account', acc_out:'Sign out', key_srv:'{n} key is stored on the server, not in this browser.', key_local:'{n} key is stored in this browser.', key_move:'Move the key to the server', key_del:'Remove from the server', key_none:'No {n} key yet. Paste it above, then move it to the server.', key_moved:'Key saved on the server and removed from this browser.', key_on_srv:'stored on the server',
+  pw_new:'New password (at least 8 characters)', pw_save:'Change password', pw_ok:'Password changed.', pw_short:'The password must be at least 8 characters.',
   ai:'AI connection', prov:'Writes the text', prov_gemini:'Google Gemini (free key)', prov_claude:'Claude API (paid key)',
   gkey:'Gemini API key', ckey:'Claude API key', get_key:'Get a key', key_note:'Keys are stored only in this browser on this computer.',
   tmodel:'Text model', imodel:'Image model', cmodel:'Claude model', auto:'Automatic', engine:'Images', eng_art:'Illustrations (drawn by the AI)', eng_photo:'AI photos (Gemini image model)',
@@ -529,6 +530,7 @@ lt:{
   checking_img:'Tikrinamas dizainas…', qc_fixed:'Pirmame dizaine buvo klaidų, todėl jis perpieštas.',
   lg_title:'Prisijungimas', lg_sub:'Reklamos Studija yra privati. Prisijunkite savo biuro prisijungimu.', lg_email:'El. paštas', lg_pass:'Slaptažodis', lg_go:'Prisijungti', lg_bad:'Neteisingas el. paštas arba slaptažodis.', lg_noaccess:'Šis prisijungimas neturi prieigos prie Reklamos Studijos.', lg_net:'Nepavyko pasiekti serverio. Patikrinkite interneto ryšį ir bandykite dar kartą.',
   acc:'Paskyra', acc_out:'Atsijungti', key_srv:'{n} raktas saugomas serveryje, ne šioje naršyklėje.', key_local:'{n} raktas saugomas šioje naršyklėje.', key_move:'Perkelti raktą į serverį', key_del:'Pašalinti iš serverio', key_none:'{n} rakto dar nėra. Įklijuokite jį aukščiau ir perkelkite į serverį.', key_moved:'Raktas išsaugotas serveryje ir pašalintas iš šios naršyklės.', key_on_srv:'saugomas serveryje',
+  pw_new:'Naujas slaptažodis (bent 8 simboliai)', pw_save:'Pakeisti slaptažodį', pw_ok:'Slaptažodis pakeistas.', pw_short:'Slaptažodis turi būti bent 8 simbolių.',
   ai:'AI ryšys', prov:'Tekstą rašo', prov_gemini:'Google Gemini (nemokamas raktas)', prov_claude:'Claude API (mokamas raktas)',
   gkey:'Gemini API raktas', ckey:'Claude API raktas', get_key:'Gauti raktą', key_note:'Raktai saugomi tik šioje naršyklėje, šiame kompiuteryje.',
   tmodel:'Teksto modelis', imodel:'Vaizdų modelis', cmodel:'Claude modelis', auto:'Automatiškai', engine:'Vaizdai', eng_art:'Iliustracijos (piešia AI)', eng_photo:'AI nuotraukos (Gemini vaizdų modelis)',
@@ -795,11 +797,15 @@ async function moveKey(name) {
   if (!val) return;
   try { const d = await srv('setkey', { name, value: val }); if (!d.ok) throw 0; SRV.has[name] = true; LS.set(lk, ''); toast(t('key_moved')); renderModal(); } catch (e) { toast(t(e && e.code === 'net' ? 'lg_net' : 'err_generic')); }
 }
+async function changePw() {
+  const el = $('#acc-pw'), pw = el ? el.value : ''; if (pw.length < 8) { toast(t('pw_short')); return; }
+  try { const r = await rawFetch(SB.url + '/auth/v1/user', { method: 'PUT', headers: { apikey: SB.key, authorization: 'Bearer ' + await sesToken(), 'content-type': 'application/json' }, body: JSON.stringify({ password: pw }) }); if (!r.ok) throw 0; el.value = ''; toast(t('pw_ok')); } catch { toast(t('err_generic')); }
+}
 async function dropKey(name) { try { await srv('setkey', { name, value: '' }); SRV.has[name] = false; renderModal(); } catch { toast(t('err_generic')); } }
 function accountHTML() {
   if (!ONLINE || !SRV.ok) return '';
   const row = (name, label) => { const local = LS.get(name === 'gemini' ? 'gkey' : 'ckey', ''); return `<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13.5px">${esc(t(local ? 'key_local' : SRV.has[name] ? 'key_srv' : 'key_none', { n: label }))}</span><div class="row">${local ? `<button type="button" class="btn sm" data-act="movekey" data-n="${name}">${icon('check', 15)}${esc(t('key_move'))}</button>` : ''}${SRV.has[name] ? `<button type="button" class="btn sm danger" data-act="dropkey" data-n="${name}"><span>${esc(t('key_del'))}</span></button>` : ''}</div></div>`; };
-  return `<div class="plan"><h3>${esc(t('acc'))}</h3><div class="row"><span style="font-size:14px">${esc(SRV.email)}</span><span class="sp"></span><button type="button" class="btn sm" data-act="signout">${esc(t('acc_out'))}</button></div>${row('gemini', 'Gemini')}${row('claude', 'Claude')}</div>`;
+  return `<div class="plan"><h3>${esc(t('acc'))}</h3><div class="row"><span style="font-size:14px">${esc(SRV.email)}</span><span class="sp"></span><button type="button" class="btn sm" data-act="signout">${esc(t('acc_out'))}</button></div>${row('gemini', 'Gemini')}${row('claude', 'Claude')}<div class="field"><label class="lbl" for="acc-pw">${esc(t('pw_new'))}</label><div class="row"><input type="password" id="acc-pw" autocomplete="new-password" style="flex:1;min-width:160px"><button type="button" class="btn sm" data-act="setpw">${esc(t('pw_save'))}</button></div></div></div>`;
 }
 const b64 = blob => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(',')[1] || ''); fr.readAsDataURL(blob); });
 function b64ToBlob(data, type) { const bin = atob(data); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: type || 'image/png' }); }
@@ -2158,6 +2164,7 @@ function settingsBody() {
   const imgModels = gm.filter(m => /image/.test(m));
   const opt = (v, l, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`;
   return `<div class="field"><span class="lbl">${esc(t('language'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="lang" data-l="lt" aria-pressed="${S.lang === 'lt'}">Lietuvių</button><button type="button" class="chip" data-act="lang" data-l="en" aria-pressed="${S.lang === 'en'}">English</button></div></div>
+    ${accountHTML()}
     <div class="plan"><h3>${esc(t('ai'))}</h3>
       <div class="field"><span class="lbl">${esc(t('prov'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="prov" data-p="gemini" aria-pressed="${c.prov === 'gemini'}">${esc(t('prov_gemini'))}</button><button type="button" class="chip" data-act="prov" data-p="claude" aria-pressed="${c.prov === 'claude'}">${esc(t('prov_claude'))}</button></div></div>
       <div class="field"><label class="lbl" for="set-gkey">${esc(t('gkey'))} · <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('get_key'))}</a></label><input type="password" id="set-gkey" data-set="gkey" value="${esc(LS.get('gkey', ''))}" placeholder="${SRV.ok && SRV.has.gemini ? esc(t('key_on_srv')) : ''}" autocomplete="off" spellcheck="false"></div>
@@ -2169,7 +2176,6 @@ function settingsBody() {
       <div class="row"><button type="button" class="btn sm" data-act="testai">${esc(t('test'))}</button><span class="muted" id="testOut" style="font-size:13px"></span></div>
       <p class="muted" style="font-size:12.5px">${esc(t('key_note'))}</p></div>
     <div class="field"><span class="lbl">${esc(t('engine'))}</span><div class="chips" role="group"><button type="button" class="chip" data-act="engine" data-e="art" aria-pressed="${c.engine !== 'photo'}">${esc(t('eng_art'))}</button><button type="button" class="chip" data-act="engine" data-e="photo" aria-pressed="${c.engine === 'photo'}">${esc(t('eng_photo'))}</button></div><p class="muted" style="font-size:12.5px">${esc(t('eng_photo_hint'))}</p></div>
-    ${accountHTML()}
     ${metaSettingsHTML()}
     <div class="field"><span class="lbl">${esc(t('data'))}</span><p class="muted" style="font-size:13.5px">${esc(t('data_note'))}</p>
       <div class="row"><button type="button" class="btn sm" data-act="export">${icon('dl', 15)}${esc(t('export'))}</button><label class="btn sm up" style="position:relative">${icon('upload', 15)}${esc(t('import'))}<input type="file" accept="application/json,.json" id="importFile"></label></div></div>`;
@@ -2830,7 +2836,7 @@ async function publishVideo(id) {
 }
 setInterval(pubTick, 30000);
 /* ---- online copy: pick up new versions by itself ---- */
-const APP_V = 11;
+const APP_V = 12;
 async function checkVersion() {
   if (!/^https?:/.test(location.protocol)) return;
   try {
@@ -2963,6 +2969,7 @@ document.addEventListener('click', ev => {
     case 'delitem': if (!armBtn(el, 'item:' + d.id)) return; deleteItem(d.id); break;
     case 'copy': copyText(COPY.get(d.k) || ''); break;
     case 'signout': signOut(); break;
+    case 'setpw': changePw(); break;
     case 'movekey': moveKey(d.n); break;
     case 'dropkey': dropKey(d.n); break;
     case 'metaconnect': metaConnect(); break;
